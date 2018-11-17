@@ -1,7 +1,6 @@
-/*import React from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles';
-import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth'
 
 const styles = theme => ({
   root: {
@@ -15,22 +14,14 @@ function LoginPage(props) {
   const { classes } = props;
 
   return (
-    <div>
-      <div className={classes.root}>
-        <StyledFirebaseAuth
-          uiConfig={props.uiConfig}
-          firebaseAuth={props.authenticate}  
-        />
-      </div>
+    <div className={classes.root}>
+      Login
     </div>
   )
 }
 
 LoginPage.propTypes = {
   classes: PropTypes.object.isRequired,
-  uiConfig: PropTypes.object.isRequired,
-  firebaseAuth: PropTypes.func.isRequired,
 }
 
 export default withStyles(styles)(LoginPage)
-*/

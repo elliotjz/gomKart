@@ -60,6 +60,13 @@ class ChartPage extends Component {
     this.parseData();
   }
 
+  componentDidMount() {
+    // Get the passwords and store them in state
+    fetch('/api')
+      .then(res => res.json())
+      .then(passwords => this.setState({ passwords }));
+  }
+ 
   parseData = () => {
     let values = [["Race"]]
     let players = []
@@ -85,9 +92,29 @@ class ChartPage extends Component {
 
   render() {
     const { classes } = this.props;
-
+    const { passwords } = this.state
     return (
       <div>
+        {
+          passwords !== undefined ? (
+            <div>
+            <h1>5 Passwords.</h1>
+            <ul className="passwords">
+              {passwords.map((password, index) =>
+                <li key={index}>
+                  {password}
+                </li>
+              )}
+            </ul>
+            <button
+              className="more"
+              onClick={this.getPasswords}>
+              Get More
+            </button>
+            </div>
+          ) :
+          <p>no passwords :(</p>
+          }
         <div className={classes.chartContainer}>
           <Chart
             chartType="LineChart"

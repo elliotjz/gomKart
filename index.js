@@ -1,18 +1,22 @@
 const express = require('express')
 const path = require('path')
+const authRoutes = require('./routes/auth-routes')
 
 const app = express()
 
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, 'client/build')))
 
+// setup routes
+app.use('/auth', authRoutes)
+
 // Put all API endpoints under '/api'
 app.get('/api', (req, res) => {
 
-  const passwords = ["One", "Two", "Three"]
+  const data = ["One", "Two", "Three"]
 
   // Return them as json
-  res.json(passwords)
+  res.json(data)
 
   console.log(`sent passwords`)
 })
