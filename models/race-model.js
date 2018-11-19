@@ -8,6 +8,6 @@ const raceSchema = new Schema({
   data: Date
 })
 
-const Race = mongoose.model('user', raceSchema)
+const Race = mongoose.model('race', raceSchema)
 
 module.exports = Race

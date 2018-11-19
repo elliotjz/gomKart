@@ -8,6 +8,6 @@ const playerSchema = new Schema({
   image: String
 })
 
-const Player = mongoose.model('user', playerSchema)
+const Player = mongoose.model('player', playerSchema)
 
 module.exports = Player

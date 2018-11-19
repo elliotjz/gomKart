@@ -1,4 +1,6 @@
 
+const Tournament = require('../models/tournament-model')
+
 const authCheck = (req, res, next) => {
   if (!req.user) {
     // if user is not logged in
@@ -6,6 +8,16 @@ const authCheck = (req, res, next) => {
   } else {
     next()
   }
+}
+
+function makeTournamentCode() {
+  var code = "";
+  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+  for (var i = 0; i < 10; i++)
+    code += possible.charAt(Math.floor(Math.random() * possible.length));
+
+  return code;
 }
 
 module.exports = (app, jsonParser) => {
@@ -29,8 +41,25 @@ module.exports = (app, jsonParser) => {
     }
   })
 
-  app.post('/api/add-tournament', (req, res) => {
-    res.json(["TODO", "add tournament"])
+  app.post('/api/new-tournament', jsonParser, (req, res) => {
+    console.log(req.body)
+    if (req.user) {
+      const code = makeTournamentCode()
+      new Tournament({
+        name: req.body.name,
+        adminUsers: req.user.email,
+        code
+      }).save().then(() => {
+        res.json({
+          success: true
+        })
+      })
+    } else {
+      res.json({
+        success: false,
+        error: 'user is not logged in'
+      })
+    }
   })
 
   app.post('/api/join-tournament', jsonParser, (req, res) => {

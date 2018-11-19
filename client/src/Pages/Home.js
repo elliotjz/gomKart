@@ -49,13 +49,13 @@ class Home extends Component {
                   You don't have any tournaments yet.
                 </Typography>
                 <div className={classes.buttonContainer}>
-                  <Link to="/newtournament"><Button
+                  <Link to="/new"><Button
                     variant="contained"
                     color="primary"
                   >New Tournament</Button></Link>
                 </div>
                 <div className={classes.buttonContainer}>
-                  <Link to="/jointournament"><Button
+                  <Link to="/join"><Button
                     variant="contained"
                     color="primary"
                   >Join Tournament</Button></Link>
