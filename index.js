@@ -1,25 +1,51 @@
 const express = require('express')
 const path = require('path')
-const authRoutes = require('./routes/auth-routes')
+const mongoose = require('mongoose')
+const bodyParser = require('body-parser')
+const cookieSession = require('cookie-session')
+const passport = require('passport')
+
+const passportSetup = require('./config/passport-setup')
+const routes = require('./routes')
+
+
+// Get app secrets
+let keys
+let production
+try {
+  keys = require('./config/keys')
+  production = false
+} catch(e) {
+  production = true
+}
 
 const app = express()
 
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, 'client/build')))
 
-// setup routes
-app.use('/auth', authRoutes)
 
-// Put all API endpoints under '/api'
-app.get('/api', (req, res) => {
+// Middleware
+app.use(cookieSession({
+  maxAge: 24 * 60 * 60 * 1000,
+  keys: [production ? process.env.sessionCookieKey : keys.session.cookieKey]
+}))
+app.use(passport.initialize())
+app.use(passport.session())
 
-  const data = ["One", "Two", "Three"]
+const jsonParser = bodyParser.json()
 
-  // Return them as json
-  res.json(data)
 
-  console.log(`sent passwords`)
+// Connect to mongodb
+const uri = production ? process.env.mongodbURI : keys.mongodb.dbURI
+console.log(production)
+console.log(uri)
+mongoose.connect(uri, () => {
+  console.log('connected to mongodb')
 })
+
+// setup routes
+routes(app, jsonParser)
 
 // The "catchall" handler: for any request that doesn't
 // match one above, send back React's index.html file.

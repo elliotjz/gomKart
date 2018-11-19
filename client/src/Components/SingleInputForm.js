@@ -28,7 +28,7 @@ const styles = theme => ({
   },
 });
 
-class RaceInputForm extends React.Component {
+class SingleInputForm extends React.Component {
 
   constructor(props) {
     super(props)
@@ -47,11 +47,12 @@ class RaceInputForm extends React.Component {
     })
   }
 
-  submitNewPlayer = () => {
+  submitForm = () => {
     if (this.state.name === "") {
       this.setState({ errorMessage: "Player names can't be empty"})
       return
     }
+    this.props.handleSubmit(this.state.name)
     this.setState({
       errorMessage: "",
       successMessage: "Sending...",
@@ -60,13 +61,13 @@ class RaceInputForm extends React.Component {
   }
 
   render() {
-    const { classes } = this.props;
-
+    const { classes } = this.props
+    const { inputLabel, buttonLabel } = this.props
     return (
       <form className={classes.root} autoComplete="off" onSubmit={e => e.preventDefault()}>
         <TextField
           id="name"
-          label="Name"
+          label={inputLabel}
           className={classes.textField}
           margin="dense"
           value={this.state.name}
@@ -86,8 +87,8 @@ class RaceInputForm extends React.Component {
           <Button
             variant="contained"
             color="primary"
-            onClick={this.submitNewPlayer}>
-            Submit
+            onClick={this.submitForm}>
+            {buttonLabel}
           </Button>
         </div>
       </form>
@@ -95,9 +96,11 @@ class RaceInputForm extends React.Component {
   }
 }
 
-RaceInputForm.propTypes = {
+SingleInputForm.propTypes = {
   classes: PropTypes.object.isRequired,
-  players: PropTypes.object.isRequired,
-};
+  handleSubmit: PropTypes.func.isRequired,
+  inputLabel: PropTypes.string.isRequired,
+  buttonLabel: PropTypes.string.isRequired
+}
 
-export default withStyles(styles)(RaceInputForm);
+export default withStyles(styles)(SingleInputForm)

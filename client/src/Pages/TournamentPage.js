@@ -4,8 +4,8 @@ import Typography from '@material-ui/core/Typography'
 import Paper from '@material-ui/core/Paper'
 import { Chart } from 'react-google-charts'
 
-import RaceInputForm from '../Components/RaceInputForm'
-import NewPlayerForm from '../Components/NewPlayerForm'
+import SingleInputForm from '../Components/SingleInputForm'
+import AddRaceForm from '../Components/AddRaceForm';
 
 let dummyData = {
   lastRace: 11,
@@ -50,10 +50,14 @@ const styles = {
   },
 }
 
-class ChartPage extends Component {
-
-  state = {
-    data: dummyData,
+class TournamentPage extends Component {
+  constructor(props) {
+    super(props)
+    this.submitNewPlayer = this.submitNewPlayer.bind(this)
+    this.state = {
+      data: dummyData,
+      passwords: []
+    }
   }
 
   componentWillMount() {
@@ -61,10 +65,18 @@ class ChartPage extends Component {
   }
 
   componentDidMount() {
+    this.getPasswords()
+  }
+
+  getPasswords() {
     // Get the passwords and store them in state
-    fetch('/api')
-      .then(res => res.json())
-      .then(passwords => this.setState({ passwords }));
+    fetch('/api/passwords')
+      .then((res) => {
+          if (res.status === 200) {
+            return res.json()
+          }
+      })
+      .then(passwords => this.setState({ passwords }))
   }
  
   parseData = () => {
@@ -90,31 +102,32 @@ class ChartPage extends Component {
     this.setState({ data: values, players: players })
   }
 
+  submitNewPlayer(name) {
+    console.log(`player name: ${name}`)
+    console.log("TODO: make call to API to add new player.")
+  }
+
   render() {
     const { classes } = this.props;
     const { passwords } = this.state
+
     return (
       <div>
         {
-          passwords !== undefined ? (
+          (passwords !== undefined && passwords.length > 0) ? (
             <div>
-            <h1>5 Passwords.</h1>
-            <ul className="passwords">
-              {passwords.map((password, index) =>
-                <li key={index}>
-                  {password}
-                </li>
-              )}
-            </ul>
-            <button
-              className="more"
-              onClick={this.getPasswords}>
-              Get More
-            </button>
+              <h4>Passwords:</h4>
+              <ul className="passwords">
+                {passwords.map((password, index) =>
+                  <span key={index}>
+                    {password}
+                  </span>
+                )}
+              </ul>
             </div>
           ) :
-          <p>no passwords :(</p>
-          }
+          <p>No Passwords :(</p>
+        }
         <div className={classes.chartContainer}>
           <Chart
             chartType="LineChart"
@@ -126,17 +139,21 @@ class ChartPage extends Component {
         </div>
         <Paper elevation="3" className={classes.formContainer}>
           <Typography variant="h5">Add New Race</Typography>
-          <RaceInputForm
+          <AddRaceForm
             players={this.state.players}
           />
         </Paper>
         <Paper elevation="3" className={classes.formContainer}>
           <Typography variant="h5">Add New Player</Typography>
-          <NewPlayerForm />
+          <SingleInputForm
+            handleSubmit={this.submitNewPlayer}
+            inputLabel="Name"
+            buttonLabel="Add"
+          />
         </Paper>
       </div>
     )
   }
 }
 
-export default withStyles(styles)(ChartPage);
+export default withStyles(styles)(TournamentPage);

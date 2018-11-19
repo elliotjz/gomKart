@@ -58,7 +58,7 @@ const styles = theme => ({
   },
 });
 
-class RaceInputForm extends React.Component {
+class AddRaceForm extends React.Component {
 
   constructor(props) {
     super(props)
@@ -194,9 +194,9 @@ class RaceInputForm extends React.Component {
   }
 }
 
-RaceInputForm.propTypes = {
+AddRaceForm.propTypes = {
   classes: PropTypes.object.isRequired,
   players: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(RaceInputForm);
+export default withStyles(styles)(AddRaceForm);

@@ -1,22 +1,29 @@
-const router = require('express').Router()
+const passport = require('passport')
 
-router.get('/login', (req, res) => {
-  console.log('login')
-  res.render('login')
-})
+module.exports = (app) => {
+  app.get('/auth/login', (req, res) => {
+    console.log('login')
+    res.render('login')
+  })
 
-// auth logout
-router.get('/logout', (req, res) => {
-  // TODO: hand with passport
-  console.log('logout')
-  res.send('logging out')
-})
+  // auth logout
+  app.get('/auth/logout', (req, res) => {
+    // TODO: hand with passport
+    req.logout()
+    res.redirect('/login')
+  })
 
-router.get('/google', (req, res) => {
-  // handle with passport
-  console.log('google')
-  res.send("logging in with google")
-})
+  app.get('/auth/google', passport.authenticate('google', {
+    scope: ['profile', 'email']
+  }))
 
-
-module.exports = router
+  // callback rout for google auth
+  app.get(
+    '/auth/google/redirect',
+    passport.authenticate('google'),
+    (req, res) => {
+      // res.send(req.user)
+      res.redirect('/home')
+    }
+  )
+}

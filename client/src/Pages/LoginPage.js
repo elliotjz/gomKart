@@ -1,6 +1,8 @@
-import React from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import  { Redirect } from 'react-router-dom'
 import { withStyles } from '@material-ui/core/styles';
+import { Button, Typography } from '@material-ui/core';
 
 const styles = theme => ({
   root: {
@@ -8,16 +10,33 @@ const styles = theme => ({
     paddingTop: theme.spacing.unit * 2,
     paddingBottom: theme.spacing.unit * 2,
   },
-});
+  button: {
+    margin: theme.spacing.unit,
+  },
+})
 
-function LoginPage(props) {
-  const { classes } = props;
+class LoginPage extends Component {
+  constructor(props) {
+    super(props)
+  }
 
-  return (
-    <div className={classes.root}>
-      Login
-    </div>
-  )
+  render() {
+    const { classes } = this.props
+
+    return (
+      <div className={classes.root}>
+        <Typography variant='h5'>Login</Typography>
+        <Button
+          variant="contained"
+          color="secondary"
+          className={classes.button}
+          href="/auth/google"
+        >
+          Google+
+        </Button>
+        </div>
+    )
+  }
 }
 
 LoginPage.propTypes = {

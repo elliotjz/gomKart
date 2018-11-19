@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles';
-import { Button } from '@material-ui/core';
+import { Button } from '@material-ui/core'
+import { withStyles } from '@material-ui/core/styles'
+
 
 const styles = theme => ({
   root: {
@@ -14,31 +14,27 @@ const styles = theme => ({
   },
 })
 
-class RegisterPage extends Component {
+class NotFound extends Component {
   constructor(props) {
     super(props)
   }
-
   render() {
     const { classes } = this.props
 
     return (
       <div className={classes.root}>
+        <h1>404 Not Found</h1>
         <Button
           variant="contained"
           color="secondary"
           className={classes.button}
-          href="/auth/google"
+          href="/home"
         >
-          Register
+          Home
         </Button>
-        </div>
+      </div>
     )
   }
 }
 
-RegisterPage.propTypes = {
-  classes: PropTypes.object.isRequired,
-}
-
-export default withStyles(styles)(RegisterPage)
+export default withStyles(styles)(NotFound)

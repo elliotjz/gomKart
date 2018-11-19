@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -25,33 +25,64 @@ const styles = {
   avatar: {
     margin: 10,
   },
-};
+}
 
-function Header(props) {
-  const { classes } = props;
-  return (
-    <div className={classes.root}>
-      <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h6" color="inherit" className={classes.grow}>
-            GOM KART
-          </Typography>
-          {/*props.isSignedIn ?
-            <div className={classes.row}>
-                <Avatar
-                    alt={props.user.displayName}
-                    src={props.user.photoURL}
+class Header extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      user: null
+    }
+  }
+
+  componentWillMount() {
+    this.getUser()
+  }
+
+  getUser() {
+    fetch('/api/profile')
+    .then((res) => {
+      if (res.status === 200) {
+        return res.json()
+      }
+    })
+    .then((resData) => {
+      this.setState({
+        user: resData.user
+      })
+    })
+  }
+
+  render() {
+    const { classes } = this.props
+    const { user } = this.state
+
+    return (
+      <div className={classes.root}>
+        <AppBar position="static">
+          <Toolbar>
+            <Typography variant="h6" color="inherit" className={classes.grow}>
+              GOM KART
+            </Typography>
+            {user ?
+              <div className={classes.row}>
+                  <Avatar
+                    alt={user.username}
+                    src={user.imageURL}
                     className={classes.avatar}
-                />
-                <Button color="inherit" onClick={props.logoutClick}>Logout</Button>
-            </div>
-            :
-            null
-          */}
-        </Toolbar>
-      </AppBar>
-    </div>
-  );
+                  />
+                  <Button color="inherit" href="/auth/logout">Logout</Button>
+              </div>
+              :
+              <div className={classes.row}>
+                  <Button color="inherit" href="/login">Login</Button>
+              </div>
+            }
+          </Toolbar>
+        </AppBar>
+      </div>
+    )
+  }   
 }
 
 Header.propTypes = {
