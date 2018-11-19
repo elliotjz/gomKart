@@ -19,6 +19,11 @@ module.exports = (app, jsonParser) => {
   })
 
   app.get('/api/profile', (req, res) => {
+    console.log("----- REQUEST:")
+    console.log(req)
+    console.log('--------- REQUEST.USER')
+    console.log(req.user)
+    
     if (req.user) {
       res.json({
         user: req.user,
