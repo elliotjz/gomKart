@@ -47,8 +47,6 @@ class Header extends Component {
       }
     })
     .then((resData) => {
-      console.log("received User Data:")
-      console.log(resData)
       this.setState({
         user: resData.user
       })

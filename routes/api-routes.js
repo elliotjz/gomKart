@@ -11,7 +11,6 @@ const authCheck = (req, res, next) => {
 module.exports = (app, jsonParser) => {
   app.get('/home', (req, res) => {
     if (req.user) {
-      // console.log('user is logged in')
       req.next()
     } else {
       res.redirect('/login')
@@ -19,16 +18,10 @@ module.exports = (app, jsonParser) => {
   })
 
   app.get('/api/profile', (req, res) => {
-    console.log("----- REQUEST:")
-    console.log(req)
-    console.log('--------- REQUEST.USER')
-    console.log(req.user)
-    
     if (req.user) {
       res.json({
         user: req.user,
       })
-      console.log(`sent user data`)
     } else {
       res.json({
         error: 'user is not logged in'
@@ -41,7 +34,6 @@ module.exports = (app, jsonParser) => {
   })
 
   app.post('/api/join-tournament', jsonParser, (req, res) => {
-    console.log(req.body)
     res.json(["TODO", "join tournament"])
   })
 

@@ -14,7 +14,6 @@ try {
 const User = require('../models/user-model')
 
 passport.serializeUser((user, done) => {
-  console.log("serializing user ------------")
   done(null, user.id)
 })
 
@@ -31,11 +30,9 @@ passport.use(
     clientSecret: production ? process.env.googleClientSecret : keys.google.clientSecret
   }, (accessToken, refreshToken, profile, done) => {
     // Check if user exists
-    // get email with profile.emails[0].value
     User.findOne({googleID: profile.id}).then((currentUser) => {
       if (currentUser) {
         // user already created
-        console.log('user is:', currentUser)
         done(null, currentUser)
       } else {
         // create new user
@@ -49,8 +46,6 @@ passport.use(
           imageURL,
           email
         }).save().then((newUser) => {
-          console.log("-------New user created!! --------")
-          console.log(newUser)
           done(null, newUser)
         })
       }
