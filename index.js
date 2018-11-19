@@ -38,8 +38,6 @@ const jsonParser = bodyParser.json()
 
 // Connect to mongodb
 const uri = production ? process.env.mongodbURI : keys.mongodb.dbURI
-console.log(production)
-console.log(uri)
 mongoose.connect(uri, () => {
   console.log('connected to mongodb')
 })

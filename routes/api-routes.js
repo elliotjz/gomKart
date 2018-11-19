@@ -11,7 +11,7 @@ const authCheck = (req, res, next) => {
 module.exports = (app, jsonParser) => {
   app.get('/home', (req, res) => {
     if (req.user) {
-      console.log('user is logged in')
+      // console.log('user is logged in')
       req.next()
     } else {
       res.redirect('/login')

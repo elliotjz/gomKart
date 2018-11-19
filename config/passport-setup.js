@@ -14,6 +14,7 @@ try {
 const User = require('../models/user-model')
 
 passport.serializeUser((user, done) => {
+  console.log("serializing user ------------")
   done(null, user.id)
 })
 
