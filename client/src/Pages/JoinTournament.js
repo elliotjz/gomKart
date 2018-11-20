@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { Redirect } from 'react-router-dom'
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography'
 import Paper from '@material-ui/core/Paper'
@@ -24,41 +25,51 @@ class JoinTournament extends Component {
   constructor(props) {
     super(props)
     this.submitJoinTournament = this.submitJoinTournament.bind(this)
+    this.state = {
+      redirect: false
+    }
   }
 
   submitJoinTournament(code) {
     console.log(`joining tournament: ${code}`)
     console.log("TODO: make call to API to add join tournament.")
-    const joinData = {
-      tournamentCode: "j3jd9s923nd",
-      playerID: "098"
-    }
+
     fetch('/api/join-tournament', {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(joinData)
+      body: JSON.stringify({ code })
     })
-      .then((res) => {
-          if (res.status === 200) {
-            return res.json()
-          }
-      })
-      .then(data => console.log(data))
+    .then((res) => {
+        if (res.status === 200) {
+          return res.json()
+        }
+    })
+    .then(data => {
+      if (data.success) {
+        this.setState({
+          redirect: true
+        })
+      }
+    })
   }
 
   render() {
     const { classes } = this.props
+    const { redirect } = this.state
 
     return (
       <div>
-        <Paper elevation="3" className={classes.formContainer}>
-          <Typography variant="h5">Join Tournament</Typography>
-          <SingleInputForm
-            handleSubmit={this.submitJoinTournament}
-            inputLabel="Tournament Code"
-            buttonLabel="Join"
-          />
-        </Paper>
+        {redirect ?
+          <Redirect to="/home"/> :
+          <Paper elevation="3" className={classes.formContainer}>
+            <Typography variant="h5">Join Tournament</Typography>
+            <SingleInputForm
+              handleSubmit={this.submitJoinTournament}
+              inputLabel="Tournament Code"
+              buttonLabel="Join"
+            />
+          </Paper>
+        }
       </div>
     )
   }

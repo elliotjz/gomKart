@@ -31,24 +31,23 @@ class NewTournament extends Component {
   }
 
   submitNewTournament(name) {
-    console.log(`tournament name: ${name}`)
     fetch('/api/new-tournament', {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({ name })
     })
-      .then(res => {
-          if (res.status === 200) {
-            return res.json()
-          }
-      })
-      .then(data => {
-        if (data.success) {
-          this.setState({
-            redirect: true
-          })
+    .then(res => {
+        if (res.status === 200) {
+          return res.json()
         }
-      })
+    })
+    .then(data => {
+      if (data.success) {
+        this.setState({
+          redirect: true
+        })
+      }
+    })
   }
 
   render() {

@@ -72,7 +72,7 @@ class AddRaceForm extends React.Component {
 
   handleChange = event => {
     let formData = { ...this.state.formData, [event.target.name]: event.target.value }
-    this.setState({ formData, successMessage: "" });
+    this.setState({ formData, successMessage: "" })
   }
 
   addPlayer = () => {
@@ -98,10 +98,12 @@ class AddRaceForm extends React.Component {
       if (!valid) return
       raceResults[name] = position
     }
+    this.props.handleRaceSubmit(raceResults)
     this.setState({
       successMessage: "Sending...",
       formData: formDataReset
     })
+    
   }
 
   validatePosition = (name, position, raceResults) => {
@@ -144,6 +146,7 @@ class AddRaceForm extends React.Component {
           player={this}
           handleChange={this.handleChange}
           name={"player" + i}
+          key={i}
           selectedPlayer={this.state.formData["player" + i]}
           position={this.state.formData["player" + i + "Pos"]}
         />)

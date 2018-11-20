@@ -15,10 +15,6 @@ const styles = theme => ({
 })
 
 class RegisterPage extends Component {
-  constructor(props) {
-    super(props)
-  }
-
   render() {
     const { classes } = this.props
 

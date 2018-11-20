@@ -1,14 +1,8 @@
 
 const Tournament = require('../models/tournament-model')
+const Race = require('../models/race-model')
 
-const authCheck = (req, res, next) => {
-  if (!req.user) {
-    // if user is not logged in
-    res.redirect('/login')
-  } else {
-    next()
-  }
-}
+const INITIAL_SCORE = 0
 
 function makeTournamentCode() {
   var code = "";
@@ -18,6 +12,16 @@ function makeTournamentCode() {
     code += possible.charAt(Math.floor(Math.random() * possible.length));
 
   return code;
+}
+
+function getCodeFromQueryString(query) {
+  const vars = query.split('&')
+  for (let i = 0; i < vars.length; i++) {
+    let pair = vars[i].split('=')
+    if (decodeURIComponent(pair[0]) == 'code') {
+      return decodeURIComponent(pair[1])
+    }
+  }
 }
 
 module.exports = (app, jsonParser) => {
@@ -42,17 +46,16 @@ module.exports = (app, jsonParser) => {
   })
 
   app.post('/api/new-tournament', jsonParser, (req, res) => {
-    console.log(req.body)
     if (req.user) {
       const code = makeTournamentCode()
       new Tournament({
         name: req.body.name,
         adminUsers: req.user.email,
-        code
+        code,
+        raceCounter: 1,
+        scoreHistory: []
       }).save().then(() => {
-        res.json({
-          success: true
-        })
+        res.json({ success: true })
       })
     } else {
       res.json({
@@ -62,23 +65,95 @@ module.exports = (app, jsonParser) => {
     }
   })
 
+  app.get('/api/get-tournaments', (req, res) => {
+    if (req.user) {
+      Tournament.find({ adminUsers: req.user.email }).then(tournaments => {
+        res.json({ tournaments })
+      })
+    } else {
+      res.json({
+        error: 'user is not logged in'
+      })
+    }
+  })
+
+  app.get('/api/get-tournament-data', (req, res) => {
+    const query = req._parsedUrl.query
+    const code = getCodeFromQueryString(query)
+    if (code === undefined) {
+      res.json({ error: 'Tournament not found' })
+    } else {
+      Tournament.findOne({ code: code })
+      .then(tournament => {
+        if (tournament === null) {
+          res.json({ error: 'Tournament not found' })
+        } else {
+          res.json({ tournament })
+        }
+      })
+    }
+  })
+
   app.post('/api/join-tournament', jsonParser, (req, res) => {
-    res.json(["TODO", "join tournament"])
+    if (req.user) {
+      Tournament.findOneAndUpdate(
+        { code: req.body.code },
+        {$addToSet: { adminUsers: req.user.email }}
+      ).then(() => {
+        res.json({ success: true })
+      })
+    } else {
+      res.json({
+        error: 'user is not logged in'
+      })
+    }
   })
 
-  app.post('/api/add-player', (req, res) => {
-    res.json(["TODO", "add player"])
+  app.post('/api/add-player', jsonParser, (req, res) => {
+    if (req.user) {
+      const scoreHistoryObject = {
+        name: req.body.name,
+        scores: { "0": 0 }
+      }
+      Tournament.findOneAndUpdate(
+        { code: req.body.code, adminUsers: req.user.email },
+        { $addToSet: { scoreHistory: scoreHistoryObject }},
+        {new: true},
+        (err, tournament) => {
+          if (err) {
+            res.json({ error: "error adding player" })
+          } else {
+            res.json(tournament)
+          }
+        }
+      )
+    } else {
+      req.json({ error: "You must be logged in to add players. "})
+    }
   })
 
-  app.post('/api/add-race', (req, res) => {
-    res.json(["TODO", "add race"])
-  })
-
-  app.post('/api/add-player', (req, res) => {
-    res.json(["TODO", "add player"])
-  })
-
-  app.get('/api/get-scores', (req, res) => {
-    res.json(["TODO", "get scores"])
+  app.post('/api/add-race', jsonParser, (req, res) => {
+    console.log("API Add Race")
+    res.json({"TODO": "TODO"})
+    /* if (req.user) {
+      const date = new Date()
+      new Race({
+        user: req.user.email,
+        tournament: req.body.code,
+        places: req.body.places,
+        date
+      }).save().then(() => {
+        Tournament.findOne({ code: req.body.code }, (err, tournament) => {
+          let newPlayerHistory = tournament.playerHistory
+          for (player in places) {
+            const position = places[player]
+            // TODO -------------
+          }
+        })
+        console.log("Race Added")
+        res.json({ success: true })
+        
+      })
+    } */
   })
 }

@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import  { Redirect } from 'react-router-dom'
 import { withStyles } from '@material-ui/core/styles';
 import { Button, Typography } from '@material-ui/core';
 
@@ -16,9 +15,6 @@ const styles = theme => ({
 })
 
 class LoginPage extends Component {
-  constructor(props) {
-    super(props)
-  }
 
   render() {
     const { classes } = this.props

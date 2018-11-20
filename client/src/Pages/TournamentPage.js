@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import Paper from '@material-ui/core/Paper'
 import { Chart } from 'react-google-charts'
 
 import SingleInputForm from '../Components/SingleInputForm'
-import AddRaceForm from '../Components/AddRaceForm';
+import AddRaceForm from '../Components/AddRaceForm'
 
 let dummyData = {
   lastRace: 11,
@@ -33,12 +33,12 @@ const options = {
   title: "Score History",
   curveType: "function",
   legend: { position: "bottom" }
-};
+}
 
 const styles = {
   chartContainer: {
     width: "100%",
-    margin: '20px auto',
+    margin: '10px auto',
   },
   formContainer: {
     maxWidth: "400px",
@@ -53,30 +53,44 @@ const styles = {
 class TournamentPage extends Component {
   constructor(props) {
     super(props)
-    this.submitNewPlayer = this.submitNewPlayer.bind(this)
+    this.addNewPlayer = this.addNewPlayer.bind(this)
+    this.addRace = this.addRace.bind(this)
     this.state = {
       data: dummyData,
-      passwords: []
+      error: "",
+      tournament: {},
+      players: []
     }
   }
 
   componentWillMount() {
-    this.parseData();
+    this.parseData()
+    this.getTournamentData()
   }
 
-  componentDidMount() {
-    this.getPasswords()
-  }
-
-  getPasswords() {
-    // Get the passwords and store them in state
-    fetch('/api/passwords')
+  getTournamentData() {
+    const params = this.props.location.search
+    fetch(`/api/get-tournament-data${params}`)
       .then((res) => {
           if (res.status === 200) {
             return res.json()
           }
       })
-      .then(passwords => this.setState({ passwords }))
+      .then(data => {
+        if (data.error) {
+          this.setState({ error: data.error })
+        } else {
+          const tournament = data.tournament
+          console.log(tournament)
+          const players = tournament.scoreHistory.map((player) => (
+            player.name
+          ))
+          this.setState({
+            tournament,
+            players
+          })
+        }
+      })
   }
  
   parseData = () => {
@@ -88,72 +102,125 @@ class TournamentPage extends Component {
     }
 
     dummyData.playerHistory.forEach(player => {
-      players.push(player.name);
+      players.push(player.name)
       values[0].push(player.name)
       let lastResult = 0
       for (let i = 1; i < values.length; i++) {
         if (player.scoreHistory.hasOwnProperty(values[i][0].toString())) {
           lastResult = player.scoreHistory[values[i][0].toString()]
         }
-        values[i].push(lastResult);
+        values[i].push(lastResult)
       }
     })
     
     this.setState({ data: values, players: players })
   }
 
-  submitNewPlayer(name) {
-    console.log(`player name: ${name}`)
-    console.log("TODO: make call to API to add new player.")
+  addNewPlayer(name) {
+    const code = this.getQueryVariable('code')
+    fetch('/api/add-player', {
+      method: 'post',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ name, code })
+    })
+    .then(res => {
+      if (res.status === 200) {
+        return res.json()
+      }
+    })
+    .then(tournament => {
+      console.log("tournament")
+      console.log(tournament)
+      const players = tournament.scoreHistory.map((player) => (
+        player.name
+      ))
+      this.setState({
+        tournament,
+        players
+      })
+    })
+  }
+
+  getQueryVariable(variable) {
+    let query = window.location.search.substring(1);
+    let vars = query.split('&')
+    for (let i = 0; i < vars.length; i++) {
+      let pair = vars[i].split('=')
+      if (decodeURIComponent(pair[0]) == variable) {
+        return decodeURIComponent(pair[1])
+      }
+    }
+  }
+
+  addRace(formData) {
+    const code = this.getQueryVariable('code')
+    fetch('/api/add-race', {
+      method: 'post',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ places: formData, code })
+    })
+    .then(res => {
+      if (res.status === 200) {
+        return res.json()
+      }
+    })
+    .then(data => {
+      console.log(data)
+    })
   }
 
   render() {
-    const { classes } = this.props;
-    const { passwords } = this.state
+    const { classes } = this.props
+    const { error,tournament } = this.state
+    const scoreHistory = JSON.stringify(tournament.scoreHistory)
 
     return (
       <div>
-        {
-          (passwords !== undefined && passwords.length > 0) ? (
+        {error === "" ?
+          <div>
             <div>
-              <h4>Passwords:</h4>
-              <ul className="passwords">
-                {passwords.map((password, index) =>
-                  <span key={index}>
-                    {password}
-                  </span>
-                )}
-              </ul>
+              <Typography variant="h4">{tournament.name}</Typography>
+              <Typography variant="h6">Share Code: {tournament.code}</Typography>
+              <Typography variant="h6">{scoreHistory}</Typography>
             </div>
-          ) :
-          <p>No Passwords :(</p>
+            <Paper elevation="3" className={classes.formContainer}>
+              <Typography variant="h5">Add New Race</Typography>
+              <AddRaceForm
+                players={this.state.players}
+                handleRaceSubmit={this.addRace}
+              />
+            </Paper>
+            <Paper elevation="3" className={classes.formContainer}>
+              <Typography variant="h5">Add New Player</Typography>
+              <SingleInputForm
+                handleSubmit={this.addNewPlayer}
+                inputLabel="Name"
+                buttonLabel="Add"
+              />
+            </Paper>
+          </div> :
+          <div>
+            <Typography variant='h3'>Tournament Not Found</Typography>
+          </div>
         }
-        <div className={classes.chartContainer}>
-          <Chart
-            chartType="LineChart"
-            width="100%"
-            height="600px"
-            data={this.state.data}
-            options={options}
-          />
-        </div>
-        <Paper elevation="3" className={classes.formContainer}>
-          <Typography variant="h5">Add New Race</Typography>
-          <AddRaceForm
-            players={this.state.players}
-          />
-        </Paper>
-        <Paper elevation="3" className={classes.formContainer}>
-          <Typography variant="h5">Add New Player</Typography>
-          <SingleInputForm
-            handleSubmit={this.submitNewPlayer}
-            inputLabel="Name"
-            buttonLabel="Add"
-          />
-        </Paper>
       </div>
     )
   }
 }
 
-export default withStyles(styles)(TournamentPage);
+export default withStyles(styles)(TournamentPage)
+
+
+/*
+
+<div className={classes.chartContainer}>
+  <Chart
+    chartType="LineChart"
+    width="100%"
+    height="600px"
+    data={this.state.data}
+    options={options}
+  />
+</div>
+
+*/
