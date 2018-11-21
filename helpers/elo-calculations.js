@@ -10,7 +10,7 @@ module.exports = {
     // append computer players to places object
     for (let i = 1; i <= 12; i++) {
       if (!Object.values(places).includes(i.toString())) {
-        const compName = "__comp__" + i.toString()
+        const compName = "_comp" + i.toString()
         places[compName] = i
       }
     }
@@ -26,9 +26,9 @@ module.exports = {
           // at least one of the players are not computers
           // console.log(`${player}, ${opponent}`)
           const playerOldScore = playerIsComp ?
-            eloScores["__comp__"] : eloScores[player]
+            eloScores["_comp"] : eloScores[player]
           const opponentOldScore = opponentIsComp ?
-            eloScores["__comp__"] : eloScores[opponent]
+            eloScores["_comp"] : eloScores[opponent]
           const scoreChange = this.getPlayerScoreChange(
             playerOldScore,
             opponentOldScore,
@@ -45,7 +45,7 @@ module.exports = {
     for (let player in places) {
       if (player.charAt(0) === '_') {
         // player is a computer
-        eloScores["__comp__"] += scoreChanges[player]
+        eloScores["_comp"] += scoreChanges[player]
       } else {
         // player is not a computer
         eloScores[player] += scoreChanges[player]

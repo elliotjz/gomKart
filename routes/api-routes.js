@@ -2,7 +2,8 @@
 const Tournament = require('../models/tournament-model')
 const Race = require('../models/race-model')
 const eloCalcs = require('../helpers/elo-calculations')
-const INITIAL_SCORE = 0
+const COMP_INITIAL_SCORE = -200
+const PLAYER_INITIAL_SCORE = 200
 
 function makeTournamentCode() {
   var code = "";
@@ -63,8 +64,8 @@ module.exports = (app, jsonParser) => {
     if (req.user) {
       const code = makeTournamentCode()
       const scoreHistory = [{
-        name: "__comp__",
-        scores: { "0": INITIAL_SCORE }
+        name: "_comp",
+        scores: { "0": COMP_INITIAL_SCORE }
       }]
       new Tournament({
         name: req.body.name,
@@ -131,7 +132,7 @@ module.exports = (app, jsonParser) => {
     if (req.user) {
       const scoreHistoryObject = {
         name: req.body.name,
-        scores: { "0": INITIAL_SCORE }
+        scores: { "0": PLAYER_INITIAL_SCORE }
       }
       Tournament.findOneAndUpdate(
         { code: req.body.code, adminUsers: req.user.email },
@@ -154,6 +155,13 @@ module.exports = (app, jsonParser) => {
     if (req.user) {
       const date = new Date()
       const places = req.body.places
+
+      // Make sure they haven't added a computer player
+      if (Object.keys(places).includes("_comp")) {
+        res.json({ error: "Player not in tournament" })
+        return
+      }
+
       new Race({
         user: req.user.email,
         tournament: req.body.code,

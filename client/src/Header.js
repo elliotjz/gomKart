@@ -61,6 +61,9 @@ class Header extends Component {
       <div className={classes.root}>
         <AppBar position="static">
           <Toolbar>
+            <div>
+              <Button color="inherit" href="/home">Home</Button>
+            </div>
             <Typography variant="h6" color="inherit" className={classes.grow}>
               GOM KART
             </Typography>
@@ -75,7 +78,7 @@ class Header extends Component {
               </div>
               :
               <div className={classes.row}>
-                  <Button color="inherit" href="/login">Login</Button>
+                <Button color="inherit" href="/login">Login</Button>
               </div>
             }
           </Toolbar>

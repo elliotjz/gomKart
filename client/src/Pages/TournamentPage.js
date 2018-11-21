@@ -45,7 +45,8 @@ class TournamentPage extends Component {
     this.state = {
       error: "",
       tournament: {},
-      players: []
+      players: [],
+      loading: true
     }
   }
 
@@ -54,6 +55,7 @@ class TournamentPage extends Component {
   }
 
   getTournamentData() {
+    this.setState({ loading: true })
     const params = this.props.location.search
     fetch(`/api/get-tournament-data${params}`)
       .then((res) => {
@@ -63,17 +65,23 @@ class TournamentPage extends Component {
       })
       .then(data => {
         if (data.error) {
-          this.setState({ error: data.error })
+          this.setState({
+            error: data.error,
+            loading: false
+          })
         } else {
           const tournament = data.tournament
           const players = tournament.scoreHistory.map((player) => (
             player.name
           ))
+          const indexOfCompPlayer = players.indexOf("_comp")
+          players.splice(indexOfCompPlayer, 1)
           const parsedData = this.parseData(tournament)
           this.setState({
             tournament,
             players,
-            parsedData
+            parsedData,
+            loading: false
           })
         }
       })
@@ -91,13 +99,15 @@ class TournamentPage extends Component {
 
       // Add scores for each player
       scoreHistory.forEach(player => {
-        values[0].push(player.name)
-        let lastResult = 0
-        for (let i = 1; i < values.length; i++) {
-          if (player.scores.hasOwnProperty(values[i][0].toString())) {
-            lastResult = player.scores[values[i][0].toString()]
+        if (player.name !== "_comp") {
+          values[0].push(player.name)
+          let lastResult = 0
+          for (let i = 1; i < values.length; i++) {
+            if (player.scores.hasOwnProperty(values[i][0].toString())) {
+              lastResult = player.scores[values[i][0].toString()]
+            }
+            values[i].push(lastResult)
           }
-          values[i].push(lastResult)
         }
       })
       return values
@@ -105,6 +115,7 @@ class TournamentPage extends Component {
   }
 
   addNewPlayer(name) {
+    this.setState({ loading: true })
     const code = this.getQueryVariable('code')
     fetch('/api/add-player', {
       method: 'post',
@@ -122,11 +133,14 @@ class TournamentPage extends Component {
       const players = tournament.scoreHistory.map((player) => (
         player.name
       ))
+      const indexOfCompPlayer = players.indexOf("_comp")
+      players.splice(indexOfCompPlayer, 1)
       const parsedData = this.parseData(tournament)
       this.setState({
         tournament,
         players,
-        parsedData
+        parsedData,
+        loading: false
       })
     })
   }
@@ -143,6 +157,7 @@ class TournamentPage extends Component {
   }
 
   addRace(formData) {
+    this.setState({ loading: true })
     const code = this.getQueryVariable('code')
     fetch('/api/add-race', {
       method: 'post',
@@ -152,23 +167,34 @@ class TournamentPage extends Component {
     .then(res => {
       if (res.status === 200) {
         return res.json()
+      } else {
+        this.setState({ loading: false })
       }
     })
     .then(tournament => {
       const parsedData = this.parseData(tournament)
-      this.setState({ tournament, parsedData })
+      this.setState({
+        tournament,
+        parsedData,
+        loading: false
+      })
     })
   }
 
   render() {
     const { classes } = this.props
-    const { tournament, parsedData, players } = this.state
+    const { tournament, parsedData, players, loading } = this.state
     console.log(parsedData)
     console.log(tournament)
     const tournamentExists = tournament !== undefined && Object.keys(tournament).length > 0
 
     return (
       <div>
+      {loading ?
+        <div>
+          <Typography variant='h4' className={classes.h4}>Loading...</Typography>
+        </div> :
+        <div>
         {tournamentExists ?
           <div>
             <Typography variant="h4" className={classes.h4}>{tournament.name}</Typography>
@@ -217,6 +243,8 @@ class TournamentPage extends Component {
           <div>
             <Typography variant='h4' className={classes.h4}>Tournament Not Found</Typography>
           </div>
+        }
+        </div>
         }
       </div>
     )
