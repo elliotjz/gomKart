@@ -1,7 +1,7 @@
 
 const Tournament = require('../models/tournament-model')
 const Race = require('../models/race-model')
-
+const eloCalcs = require('../helpers/elo-calculations')
 const INITIAL_SCORE = 0
 
 function makeTournamentCode() {
@@ -62,12 +62,16 @@ module.exports = (app, jsonParser) => {
   app.post('/api/new-tournament', jsonParser, (req, res) => {
     if (req.user) {
       const code = makeTournamentCode()
+      const scoreHistory = [{
+        name: "__comp__",
+        scores: { "0": INITIAL_SCORE }
+      }]
       new Tournament({
         name: req.body.name,
         adminUsers: req.user.email,
         code,
         raceCounter: 0,
-        scoreHistory: []
+        scoreHistory
       }).save().then(() => {
         res.json({ success: true })
       })
@@ -127,7 +131,7 @@ module.exports = (app, jsonParser) => {
     if (req.user) {
       const scoreHistoryObject = {
         name: req.body.name,
-        scores: { "0": 0 }
+        scores: { "0": INITIAL_SCORE }
       }
       Tournament.findOneAndUpdate(
         { code: req.body.code, adminUsers: req.user.email },
@@ -147,7 +151,6 @@ module.exports = (app, jsonParser) => {
   })
 
   app.post('/api/add-race', jsonParser, (req, res) => {
-    console.log("API Add Race")
     if (req.user) {
       const date = new Date()
       const places = req.body.places
@@ -159,7 +162,7 @@ module.exports = (app, jsonParser) => {
       }).save().then(() => {
         Tournament.findOne({ code: req.body.code }, (err, tournament) => {
           const raceCounter = tournament.raceCounter + 1
-          const scoreHistory = calculateNewScores(tournament, places)
+          const scoreHistory = eloCalcs.getUpdatedScoreHistory(tournament, places)
           Tournament.findOneAndUpdate(
             { code: req.body.code },
             { $set: { raceCounter, scoreHistory }},

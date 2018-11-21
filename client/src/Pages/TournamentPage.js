@@ -12,7 +12,7 @@ import AddRaceForm from '../Components/AddRaceForm'
 
 const options = {
   title: "Score History",
-  curveType: "function",
+  curveType: "none",
   legend: { position: "bottom" }
 }
 
