@@ -24,11 +24,10 @@ class LoginPage extends Component {
         <Typography variant='h5'>Login</Typography>
         <Button
           variant="contained"
-          color="secondary"
           className={classes.button}
           href="/auth/google"
         >
-          Google+
+          Login with Google+
         </Button>
         </div>
     )
