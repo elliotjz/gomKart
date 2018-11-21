@@ -31,7 +31,8 @@ class Home extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      tournaments: []
+      tournaments: [],
+      error: ""
     }
   }
 
@@ -43,9 +44,15 @@ class Home extends Component {
       }
     })
     .then((resData) => {
-      this.setState({
-        tournaments: resData.tournaments
-      })
+      console.log("Got Data!")
+      console.log(resData)
+      if (resData.error) {
+        console.log(resData.error)
+      } else {
+        this.setState({
+          tournaments: resData.tournaments
+        })
+      }
     })
   }
 

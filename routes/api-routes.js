@@ -24,6 +24,20 @@ function getCodeFromQueryString(query) {
   }
 }
 
+function calculateNewScores(tournament, places) {
+  let scoreHist = tournament.scoreHistory
+  const raceCounter = tournament.raceCounter + 1
+  for (player in places) {
+    const position = places[player]
+    for (let i = 0; i < scoreHist.length; i++) {
+      if (player === scoreHist[i].name) {
+        scoreHist[i].scores[raceCounter] = 100 * position
+      }
+    }
+  }
+  return scoreHist
+}
+
 module.exports = (app, jsonParser) => {
   app.get('/home', (req, res) => {
     if (req.user) {
@@ -52,7 +66,7 @@ module.exports = (app, jsonParser) => {
         name: req.body.name,
         adminUsers: req.user.email,
         code,
-        raceCounter: 1,
+        raceCounter: 0,
         scoreHistory: []
       }).save().then(() => {
         res.json({ success: true })
@@ -134,26 +148,32 @@ module.exports = (app, jsonParser) => {
 
   app.post('/api/add-race', jsonParser, (req, res) => {
     console.log("API Add Race")
-    res.json({"TODO": "TODO"})
-    /* if (req.user) {
+    if (req.user) {
       const date = new Date()
+      const places = req.body.places
       new Race({
         user: req.user.email,
         tournament: req.body.code,
-        places: req.body.places,
+        places,
         date
       }).save().then(() => {
         Tournament.findOne({ code: req.body.code }, (err, tournament) => {
-          let newPlayerHistory = tournament.playerHistory
-          for (player in places) {
-            const position = places[player]
-            // TODO -------------
-          }
+          const raceCounter = tournament.raceCounter + 1
+          const scoreHistory = calculateNewScores(tournament, places)
+          Tournament.findOneAndUpdate(
+            { code: req.body.code },
+            { $set: { raceCounter, scoreHistory }},
+            {new: true},
+            (err, tournament) => {
+              if (err) {
+                res.json({ error: err })
+              } else {
+                res.json(tournament)
+              }
+            }
+          )
         })
-        console.log("Race Added")
-        res.json({ success: true })
-        
       })
-    } */
+    }
   })
 }
