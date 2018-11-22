@@ -47,9 +47,11 @@ class Header extends Component {
       }
     })
     .then((resData) => {
-      this.setState({
-        user: resData.user
-      })
+      if (resData !== undefined) {
+        this.setState({
+          user: resData.user
+        })
+      }
     })
   }
 

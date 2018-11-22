@@ -107,6 +107,10 @@ module.exports = (app, jsonParser) => {
         if (tournament === null) {
           res.json({ error: 'Tournament not found' })
         } else {
+          console.log(tournament)
+          tournament.scoreHistory.forEach((d) => {
+            console.log(d)
+          })
           res.json({ tournament })
         }
       })

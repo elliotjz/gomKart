@@ -25,6 +25,9 @@ const styles = {
     display: 'flex',
     justifyContent: 'center',
   },
+  h4: {
+    margin: '20px'
+  }
 }
 
 class Home extends Component {
@@ -44,14 +47,21 @@ class Home extends Component {
       }
     })
     .then((resData) => {
-      console.log("Got Data!")
-      console.log(resData)
-      if (resData.error) {
-        console.log(resData.error)
-      } else {
+      if (!resData) {
         this.setState({
-          tournaments: resData.tournaments
+          error: "We're having trouble connecting to our server. Try again later."
         })
+      } else {
+        if (resData.error) {
+          this.setState({
+            error: resData.error
+          })
+        } else {
+          this.setState({
+            tournaments: resData.tournaments,
+            error: ""
+          })
+        }
       }
     })
   }
@@ -62,46 +72,55 @@ class Home extends Component {
 
   render() {
     const { classes } = this.props
-    const { tournaments } = this.state
+    const { tournaments, error } = this.state
     return (
       <div>
-        <Paper elevation="3" className={classes.paper}>
-          <Typography variant="h5">Tournaments</Typography>
-          {tournaments.length > 0 ?
-            <List component="nav">
-              {tournaments.map((tournament, index) => {
-                const toLink = `/tournament?code=${tournament.code}`
-                return (
-                  <Link key={index} to={toLink}>
-                    <ListItem button>
-                      <ListItemIcon>
-                        <StarIcon />
-                      </ListItemIcon>
-                      <ListItemText primary={tournament.name} />
-                    </ListItem>
-                  </Link>
-                )
-              })}
-            </List>:
-            <div>
-              <Typography variant="p">
-                You don't have any tournaments yet.
-              </Typography>
+        {error === "" ?
+        <div>
+          <Paper elevation="3" className={classes.paper}>
+            <Typography variant="h5">Tournaments</Typography>
+            {tournaments.length > 0 ?
+              <List component="nav">
+                {tournaments.map((tournament, index) => {
+                  const toLink = `/tournament?code=${tournament.code}`
+                  return (
+                    <Link key={index} to={toLink}>
+                      <ListItem button>
+                        <ListItemIcon>
+                          <StarIcon />
+                        </ListItemIcon>
+                        <ListItemText primary={tournament.name} />
+                      </ListItem>
+                    </Link>
+                  )
+                })}
+              </List>:
+              <div>
+                <Typography variant="p">
+                  You don't have any tournaments yet.
+                </Typography>
+              </div>
+            }
+            <div className={classes.buttonContainer}>
+              <Link to="/new"><Button
+                variant="contained"
+                color="primary"
+              >New Tournament</Button></Link>
             </div>
-          }
-          <div className={classes.buttonContainer}>
-            <Link to="/new"><Button
-              variant="contained"
-              color="primary"
-            >New Tournament</Button></Link>
-          </div>
-          <div className={classes.buttonContainer}>
-            <Link to="/join"><Button
-              variant="contained"
-              color="primary"
-            >Join Tournament</Button></Link>
-          </div>
-        </Paper>        
+            <div className={classes.buttonContainer}>
+              <Link to="/join"><Button
+                variant="contained"
+                color="primary"
+              >Join Tournament</Button></Link>
+            </div>
+          </Paper>
+        </div> :
+        <div>
+          <Typography variant="p" className={classes.h4}>
+            {error}
+          </Typography>
+        </div>
+        }
       </div>
     )
   }
