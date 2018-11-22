@@ -31,12 +31,15 @@ const styles = {
     margin: "30px auto",
     padding: "20px",
   },
-  h4: {
+  text: {
     margin: '20px'
   },
   shareCode: {
     color: '#666',
     fontSize: '18px'
+  },
+  error: {
+    color: '#990000'
   }
 }
 
@@ -58,37 +61,32 @@ class TournamentPage extends Component {
     this.getTournamentData()
   }
 
-  getTournamentData() {
+  async getTournamentData() {
     this.setState({ loading: true })
-    const params = this.props.location.search
-    fetch(`/api/get-tournament-data${params}`)
-      .then((res) => {
-          if (res.status === 200) {
-            return res.json()
-          }
+    try {
+      const params = this.props.location.search
+      const res = await fetch(`/api/get-tournament-data${params}`)
+      const resData = await res.json()
+      const tournament = resData.tournament
+      const players = tournament.scoreHistory.map((player) => (
+        player.name
+      ))
+      const indexOfCompPlayer = players.indexOf("_comp")
+      players.splice(indexOfCompPlayer, 1)
+      const parsedData = this.parseData(tournament)
+      this.setState({
+        tournament,
+        players,
+        parsedData,
+        loading: false,
+        error: ""
       })
-      .then(data => {
-        if (!data || data.error) {
-          this.setState({
-            error: data ? data.error : "Error loading data",
-            loading: false
-          })
-        } else {
-          const tournament = data.tournament
-          const players = tournament.scoreHistory.map((player) => (
-            player.name
-          ))
-          const indexOfCompPlayer = players.indexOf("_comp")
-          players.splice(indexOfCompPlayer, 1)
-          const parsedData = this.parseData(tournament)
-          this.setState({
-            tournament,
-            players,
-            parsedData,
-            loading: false
-          })
-        }
+    } catch (err) {
+      this.setState({
+        error: "Error loading data",
+        loading: false
       })
+    }
   }
  
   parseData(tournament) {
@@ -118,22 +116,16 @@ class TournamentPage extends Component {
     }
   }
 
-  addNewPlayer(name) {
+  async addNewPlayer(name) {
     this.setState({ loading: true })
-    const code = this.getQueryVariable('code')
-    fetch('/api/add-player', {
-      method: 'post',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ name, code })
-    })
-    .then(res => {
-      if (res.status === 200) {
-        return res.json()
-      }
-    })
-    .then(tournament => {
-      console.log("tournament")
-      console.log(tournament)
+    try {
+      const code = this.getQueryVariable('code')
+      const res = await fetch('/api/add-player', {
+        method: 'post',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ name, code })
+      })
+      const tournament = await res.json()
       const players = tournament.scoreHistory.map((player) => (
         player.name
       ))
@@ -144,9 +136,15 @@ class TournamentPage extends Component {
         tournament,
         players,
         parsedData,
+        loading: false,
+        error: ""
+      })
+    } catch (err) {
+      this.setState({
+        error: "Error adding player",
         loading: false
       })
-    })
+    }
   }
 
   getQueryVariable(variable) {
@@ -160,49 +158,50 @@ class TournamentPage extends Component {
     }
   }
 
-  addRace(formData) {
+  async addRace(formData) {
     this.setState({ loading: true })
-    const code = this.getQueryVariable('code')
-    fetch('/api/add-race', {
-      method: 'post',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ places: formData, code })
-    })
-    .then(res => {
-      if (res.status === 200) {
-        return res.json()
-      } else {
-        this.setState({ loading: false })
-      }
-    })
-    .then(tournament => {
+    try {
+      const code = this.getQueryVariable('code')
+      const res = await fetch('/api/add-race', {
+        method: 'post',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ places: formData, code })
+      })
+      const tournament = await res.json()
       const parsedData = this.parseData(tournament)
       this.setState({
         tournament,
         parsedData,
+        loading: false,
+        error: ""
+      })
+    } catch (err) {
+      this.setState({
+        error: "Error adding race",
         loading: false
       })
-    })
+    }
   }
 
   render() {
     const { classes } = this.props
-    const { tournament, parsedData, players, loading } = this.state
+    const { tournament, parsedData, players, loading, error } = this.state
     const tournamentExists = tournament !== undefined && Object.keys(tournament).length > 0
 
     return (
       <div>
       {loading ?
         <div>
-          <Typography variant='h5' className={classes.h4}>Loading...</Typography>
+          <Typography variant='h5' className={classes.text}>Loading...</Typography>
         </div> :
         <div>
+        {error !== "" && <Typography className={[classes.text, classes.error]}>{error}</Typography>}
         {!tournamentExists ?
           <div>
-            <Typography variant='h5' className={classes.h4}>Tournament Not Found</Typography>
+            <Typography variant='h5' className={classes.text}>Tournament Not Found</Typography>
           </div> :
           <div>
-            <Typography variant="h5" className={classes.h4}>{tournament.name}</Typography>
+            <Typography variant="h5" className={classes.text}>{tournament.name}</Typography>
             <div>
               <Typography variant="h6" className={classes.shareCode}>
                 Share Code: {tournament.code}

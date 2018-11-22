@@ -19,6 +19,9 @@ const styles = {
   newPlayerBtn: {
     marginBottom: '50px',
   },
+  text: {
+    margin: '20px'
+  }
 }
 
 class JoinTournament extends Component {
@@ -26,49 +29,56 @@ class JoinTournament extends Component {
     super(props)
     this.submitJoinTournament = this.submitJoinTournament.bind(this)
     this.state = {
-      redirect: false
+      redirect: false,
+      error: ""
     }
   }
 
-  submitJoinTournament(code) {
-    console.log(`joining tournament: ${code}`)
-    console.log("TODO: make call to API to add join tournament.")
-
-    fetch('/api/join-tournament', {
-      method: 'post',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ code })
-    })
-    .then((res) => {
-        if (res.status === 200) {
-          return res.json()
-        }
-    })
-    .then(data => {
+  async submitJoinTournament(code) {
+    try {
+      const res = await fetch('/api/join-tournament', {
+        method: 'post',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ code })
+      })
+      const data = await res.json()
       if (data.success) {
         this.setState({
-          redirect: true
+          redirect: true,
         })
       }
-    })
+    } catch (err) {
+      this.setState({
+        error: "We're having trouble connecting to our server. Try again later.",
+      })
+    }
   }
 
   render() {
     const { classes } = this.props
-    const { redirect } = this.state
-
+    const { redirect, error } = this.state
+    
     return (
       <div>
-        {redirect ?
-          <Redirect to="/home"/> :
-          <Paper elevation="3" className={classes.formContainer}>
-            <Typography variant="h5">Join Tournament</Typography>
-            <SingleInputForm
-              handleSubmit={this.submitJoinTournament}
-              inputLabel="Tournament Code"
-              buttonLabel="Join"
-            />
-          </Paper>
+        {error === "" ?
+        <div>
+          {redirect ?
+            <Redirect to="/home"/> :
+            <Paper elevation="3" className={classes.formContainer}>
+              <Typography variant="h5">Join Tournament</Typography>
+              <SingleInputForm
+                handleSubmit={this.submitJoinTournament}
+                inputLabel="Tournament Code"
+                buttonLabel="Join"
+              />
+            </Paper>
+          }
+        </div> :
+        <div>
+          <Typography variant="p" className={classes.text}>
+            {error}
+          </Typography>
+        </div>
         }
       </div>
     )

@@ -19,53 +19,66 @@ const styles = {
   newPlayerBtn: {
     marginBottom: '50px',
   },
+  text: {
+    margin: '20px'
+  }
 }
 
 class NewTournament extends Component {
   constructor(props) {
     super(props)
-    this.submitNewTournament = this.submitNewTournament.bind(this)
+    this.addNewTournament = this.addNewTournament.bind(this)
     this.state = {
-      redirect: false
+      redirect: false,
+      error: ""
     }
   }
 
-  submitNewTournament(name) {
-    fetch('/api/new-tournament', {
-      method: 'post',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ name })
-    })
-    .then(res => {
-        if (res.status === 200) {
-          return res.json()
-        }
-    })
-    .then(data => {
+  async addNewTournament(name) {
+    try {
+      const res = await fetch('/api/new-tournament', {
+        method: 'post',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ name })
+      })
+      const data = await res.json()
       if (data.success) {
         this.setState({
           redirect: true
         })
       }
-    })
+    } catch (err) {
+      this.setState({
+        error: "We're having trouble connecting to our server. Try again later.",
+      })
+    }
   }
 
   render() {
     const { classes } = this.props
-    const { redirect } = this.state
+    const { redirect, error } = this.state
     
     return (
       <div>
-        {redirect ?
-        <Redirect to="/home"/> :
-        <Paper elevation="3" className={classes.formContainer}>
-          <Typography variant="h5">Add New Tournament</Typography>
-          <SingleInputForm
-            handleSubmit={this.submitNewTournament}
-            inputLabel="Name"
-            buttonLabel="Create"
-          />
-        </Paper>
+        {error === "" ?
+        <div>
+          {redirect ?
+          <Redirect to="/home"/> :
+          <Paper elevation="3" className={classes.formContainer}>
+            <Typography variant="h5">Add New Tournament</Typography>
+            <SingleInputForm
+              handleSubmit={this.addNewTournament}
+              inputLabel="Name"
+              buttonLabel="Create"
+            />
+          </Paper>
+          }
+        </div> :
+          <div>
+            <Typography variant="p" className={classes.text}>
+              {error}
+            </Typography>
+          </div>
         }
       </div>
     )

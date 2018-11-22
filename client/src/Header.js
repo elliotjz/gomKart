@@ -39,20 +39,18 @@ class Header extends Component {
     this.getUser()
   }
 
-  getUser() {
-    fetch('/api/profile')
-    .then((res) => {
-      if (res.status === 200) {
-        return res.json()
-      }
-    })
-    .then((resData) => {
+  async getUser() {
+    try {
+      const res = await fetch('/api/profile')
+      const resData = await res.json()
       if (resData !== undefined) {
         this.setState({
           user: resData.user
         })
       }
-    })
+    } catch (err) {
+      console.log("Error getting user data")
+    }
   }
 
   render() {
