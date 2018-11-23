@@ -5,8 +5,10 @@ import Button from '@material-ui/core/Button'
 import AddIcon from '@material-ui/icons/Add'
 import Minimize from '@material-ui/icons/Minimize'
 import Typography from '@material-ui/core/Typography'
+import Paper from '@material-ui/core/Paper'
 
 import PlayerResult from './PlayerResult'
+import { getQueryVariable } from '../helpers'
 
 const formDataReset = {
   "player0": "", "player0Pos": "",
@@ -26,6 +28,11 @@ const formDataReset = {
 const styles = theme => ({
   root: {
     display: 'block',
+  },
+  addRaceContainer: {
+    maxWidth: "400px",
+    margin: "0px auto",
+    padding: "20px",
   },
   formControl: {
     margin: theme.spacing.unit,
@@ -62,11 +69,13 @@ class AddRaceForm extends React.Component {
 
   constructor(props) {
     super(props)
+    this.submitRace = this.submitRace.bind(this)
     this.state = {
       numPlayers: 4,
       errorMessage: "",
       successMessage: "",
       formData: formDataReset,
+      loading: false
     }
   }
 
@@ -87,7 +96,7 @@ class AddRaceForm extends React.Component {
     this.setState({ numPlayers })
   }
 
-  submitRace = () => {
+  submitRace() {
     let raceResults = {}
     for (let i = 0; i < this.state.numPlayers; i++) {
       let name = this.state.formData["player" + i]
@@ -98,38 +107,62 @@ class AddRaceForm extends React.Component {
       if (!valid) return
       raceResults[name] = position
     }
-    this.props.handleRaceSubmit(raceResults)
-    this.setState({
-      successMessage: "Sending...",
-      formData: formDataReset
-    })
-    
+    this.sendRace(raceResults)
+  }
+
+  async sendRace(places) {
+    this.setState({ loading: true })
+    try {
+      const code = getQueryVariable('code')
+      const res = await fetch('/api/add-race', {
+        method: 'post',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ places: places, code })
+      })
+      const tournament = await res.json()
+      if (tournament.error) {
+        this.setState({
+          errorMessage: tournament.error,
+          successMessage: "",
+          loading: false
+        })
+      } else {
+        this.setState({
+          errorMessage: "",
+          successMessage: "Done!",
+          loading: false
+        })
+        this.props.addRaceCallback(tournament)
+        setTimeout(() => this.setState({successMessage: ""}), 2000)
+      }
+      
+    } catch (err) {
+      this.setState({
+        error: "Error adding race",
+        successMessage: "",
+        loading: false
+      })
+    }
   }
 
   validatePosition = (name, position, raceResults) => {
-    // Check name is defined
+    let errorMessage = ""
     if (name === "") {
-      this.setState({
-        errorMessage: "Please complete all inputs.",
-      })
+      // Race position wasn't filled in
+      errorMessage = "Please complete all inputs."
+    } else if (position === "") {
+      // Player doesn't have a position
+      errorMessage = "Every player must have a position"
+    } else if (raceResults.hasOwnProperty(name)) {
+      // Player appears twice
+      errorMessage = "Can't have a duplicate player."
+    }
+
+    if (errorMessage !== "") {
+      this.setState({ errorMessage })
       return false
     }
 
-    // Check the player has a position
-    if (position === "") {
-      this.setState({
-        errorMessage: "Every player must have a position",
-      })
-      return false
-    }
-
-    // Check if the player is not included twice
-    if (raceResults.hasOwnProperty(name)) {
-      this.setState({
-        errorMessage: "Can't have a duplicate player."
-      })
-      return false
-    }
     this.setState({
       errorMessage: "",
     })
@@ -137,8 +170,10 @@ class AddRaceForm extends React.Component {
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes } = this.props
+    const { errorMessage, successMessage, loading } = this.state
     let playerResultList = []
+
     for (let i = 0; i < this.state.numPlayers; i++) {
       playerResultList.push(
         <PlayerResult
@@ -152,47 +187,57 @@ class AddRaceForm extends React.Component {
         />)
     }
     return (
-      <form className={classes.root} autoComplete="off" onSubmit={e => e.preventDefault()}>
-        {playerResultList}
-        {this.state.Message !== "" &&
-          <Typography class={classes.errorMessage}>
-            {this.state.errorMessage}
-          </Typography>
-        }
-        {this.state.successMessage !== "" &&
-          <Typography class={classes.successMessage}>
-            {this.state.successMessage}
-          </Typography>
-        }
-        <div className={classes.buttonContainer}>
-          <div className={classes.plusMinusContainer}>
+      <Paper elevation="4" className={classes.addRaceContainer}>
+        <Typography variant="h5">Add New Race</Typography>
+        <form className={classes.root} autoComplete="off" onSubmit={e => e.preventDefault()}>
+          {playerResultList}
+          {loading ?
+            <Typography class={classes.successMessage}>
+              Sending...
+            </Typography> :
+            <div>
+              {errorMessage !== "" &&
+                <Typography class={classes.errorMessage}>
+                  {errorMessage}
+                </Typography>
+              }
+              {successMessage !== "" &&
+                <Typography class={classes.successMessage}>
+                  {successMessage}
+                </Typography>
+              }
+            </div>
+          }
+          <div className={classes.buttonContainer}>
+            <div className={classes.plusMinusContainer}>
+              <Button
+                variant="fab"
+                color="primary"
+                aria-label="Add"
+                className={classes.button}
+                onClick={this.addPlayer}
+              >
+                <AddIcon />
+              </Button>
+              <Button
+                variant="fab"
+                color="primary"
+                aria-label="Add"
+                className={classes.button}
+                onClick={this.removePlayer}
+              >
+                <Minimize className={classes.minimizeIcon}/>
+              </Button>
+            </div>
             <Button
-              variant="fab"
+              variant="contained"
               color="primary"
-              aria-label="Add"
-              className={classes.button}
-              onClick={this.addPlayer}
-            >
-              <AddIcon />
-            </Button>
-            <Button
-              variant="fab"
-              color="primary"
-              aria-label="Add"
-              className={classes.button}
-              onClick={this.removePlayer}
-            >
-              <Minimize className={classes.minimizeIcon}/>
+              onClick={this.submitRace}>
+              Submit
             </Button>
           </div>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={this.submitRace}>
-            Submit
-          </Button>
-        </div>
-      </form>
+        </form>
+      </Paper>
     );
   }
 }

@@ -128,7 +128,6 @@ module.exports = (app, jsonParser) => {
     if (req.user) {
       const letters = /^[A-Za-z]+$/
       if (!req.body.name.charAt(0).match(letters)) {
-        console.log("No Match")
         res.json({ error: "Player names must start with a letter." })
       } else {
         const scoreHistoryObject = {

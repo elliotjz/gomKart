@@ -2,12 +2,11 @@ import React, { Component } from 'react'
 import { Chart } from 'react-google-charts'
 import { withStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
-import Paper from '@material-ui/core/Paper'
 
 import AddRaceForm from '../Components/AddRaceForm'
 import AddPlayerForm from '../Components/AddPlayerForm'
 import PlayerChips from '../Components/PlayerChips';
-import { colors, getQueryVariable } from '../helpers'
+import { colors } from '../helpers'
 
 const options = {
   title: "Score History",
@@ -20,11 +19,6 @@ const styles = {
   chartContainer: {
     width: "100%",
     margin: '0px auto'
-  },
-  addRaceContainer: {
-    maxWidth: "400px",
-    margin: "0px auto",
-    padding: "20px",
   },
   text: {
     margin: '20px'
@@ -42,7 +36,7 @@ class TournamentPage extends Component {
   constructor(props) {
     super(props)
     this.addPlayerCallback = this.addPlayerCallback.bind(this)
-    this.addRace = this.addRace.bind(this)
+    this.addRaceCallback = this.addRaceCallback.bind(this)
     this.state = {
       error: "",
       tournament: {},
@@ -111,29 +105,12 @@ class TournamentPage extends Component {
     }
   }
 
-  async addRace(formData) {
-    this.setState({ loading: true })
-    try {
-      const code = getQueryVariable('code')
-      const res = await fetch('/api/add-race', {
-        method: 'post',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ places: formData, code })
-      })
-      const tournament = await res.json()
-      const parsedData = this.parseData(tournament)
-      this.setState({
-        tournament,
-        parsedData,
-        loading: false,
-        error: ""
-      })
-    } catch (err) {
-      this.setState({
-        error: "Error adding race",
-        loading: false
-      })
-    }
+  addRaceCallback(tournament) {
+    const parsedData = this.parseData(tournament)
+    this.setState({
+      tournament,
+      parsedData,
+    })
   }
 
   addPlayerCallback(tournament) {
@@ -195,13 +172,10 @@ class TournamentPage extends Component {
               }
             </div>
             {players.length > 0 &&
-              <Paper elevation="4" className={classes.addRaceContainer}>
-                <Typography variant="h5">Add New Race</Typography>
-                <AddRaceForm
-                  players={this.state.players}
-                  handleRaceSubmit={this.addRace}
-                />
-              </Paper>
+              <AddRaceForm
+                players={this.state.players}
+                addRaceCallback={this.addRaceCallback}
+              />
             }
             <AddPlayerForm addPlayerCallback={this.addPlayerCallback} players={players}/>
           </div>
