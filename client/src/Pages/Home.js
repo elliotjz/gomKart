@@ -6,18 +6,13 @@ import Paper from '@material-ui/core/Paper'
 import { Button } from '@material-ui/core'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
-import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemText from '@material-ui/core/ListItemText'
-import StarIcon from '@material-ui/icons/Star'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import Divider from '@material-ui/core/Divider'
 
 const styles = theme => ({
-  chartContainer: {
-    width: "100%",
-    margin: '20px auto',
-  },
   paper: {
-    maxWidth: "400px",
+    maxWidth: "350px",
     margin: "30px auto",
     padding: "20px",
   },
@@ -32,6 +27,12 @@ const styles = theme => ({
   progress: {
     margin: theme.spacing.unit * 2,
   },
+  listLink: {
+    textDecoration: 'none'
+  },
+  listItem: {
+    textAlign: 'center',
+  }
 })
 
 class Home extends Component {
@@ -73,23 +74,22 @@ class Home extends Component {
       <div>
         {error === "" ?
         <div>
-          <Paper elevation="3" className={classes.paper}>
+          <Paper elevation="0" className={classes.paper}>
             <Typography variant="h5">Tournaments</Typography>
             {loading ?
               <CircularProgress className={classes.progress} /> :
               <div>
               {(tournaments && tournaments.length > 0) ?
                 <List component="nav">
+                  <Divider />
                   {tournaments.map((tournament, index) => {
                     const toLink = `/tournament?code=${tournament.code}`
                     return (
-                      <Link key={index} to={toLink}>
-                        <ListItem button>
-                          <ListItemIcon>
-                            <StarIcon />
-                          </ListItemIcon>
+                      <Link key={index} to={toLink} className={classes.listLink}>
+                        <ListItem button className={classes.listItem}>
                           <ListItemText primary={tournament.name} />
                         </ListItem>
+                        <Divider />
                       </Link>
                     )
                   })}

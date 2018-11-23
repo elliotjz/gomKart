@@ -49,37 +49,33 @@ class TournamentData extends Component {
 
     return (
       <div>
-        {(parsedData !== undefined && parsedData[0].length > 1) &&
-          <div>
-            <div className={classes.tabsRoot}>
-              <AppBar position="static" color="default">
-                <Tabs value={value} onChange={this.handleChange}>
-                <Tab icon={<AddIcon />} />
-                <Tab icon={<BarChartIcon />} />
-                <Tab icon={<ListIcon />} />
-                <Tab icon={<SettingsIcon />} />
-                </Tabs>
-              </AppBar>
-              {value === 0 &&
-              <TabContainer>
-                <AddRaceForm
-                  players={players}
-                  addRaceCallback={addRaceCallback}
-                />
-                <AddPlayerForm addPlayerCallback={addPlayerCallback} players={players}/>
-              </TabContainer>}
-              {value === 1 &&
-                <TabContainer>
-                  <TournamentChart players={players} parsedData={parsedData}/>
-                </TabContainer>}
-              {value === 2 &&
-                <TabContainer>
-                  <TournamentRecentRaces players={players} parsedData={parsedData}/>
-                </TabContainer>}
-              {value === 3 && <TabContainer>Setting Coming Soon</TabContainer>}
-            </div>
-          </div>
-        }
+        <div className={classes.tabsRoot}>
+          <AppBar position="static" color="default">
+            <Tabs value={value} onChange={this.handleChange}>
+            <Tab icon={<AddIcon />} />
+            <Tab icon={<BarChartIcon />} />
+            <Tab icon={<ListIcon />} />
+            <Tab icon={<SettingsIcon />} />
+            </Tabs>
+          </AppBar>
+          {value === 0 &&
+          <TabContainer>
+            <AddRaceForm
+              players={players}
+              addRaceCallback={addRaceCallback}
+            />
+            <AddPlayerForm addPlayerCallback={addPlayerCallback} players={players}/>
+          </TabContainer>}
+          {value === 1 &&
+            <TabContainer>
+              <TournamentChart players={players} parsedData={parsedData}/>
+            </TabContainer>}
+          {value === 2 &&
+            <TabContainer>
+              <TournamentRecentRaces players={players} parsedData={parsedData}/>
+            </TabContainer>}
+          {value === 3 && <TabContainer>Setting Coming Soon</TabContainer>}
+        </div>
       </div>
     )
   }
