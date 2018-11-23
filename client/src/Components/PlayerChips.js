@@ -4,7 +4,7 @@ import Chip from '@material-ui/core/Chip'
 
 const styles = {
   chip: {
-    margin: '20px 8px 0px 8px',
+    margin: '8px',
     borderWidth: '3px',
     borderStyle: 'solid'
   }

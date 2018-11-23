@@ -1,32 +1,14 @@
 import React, { Component } from 'react'
-import { Chart } from 'react-google-charts'
 import { withStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import CircularProgress from '@material-ui/core/CircularProgress'
 
-import AddRaceForm from '../Components/AddRaceForm'
-import AddPlayerForm from '../Components/AddPlayerForm'
-import PlayerChips from '../Components/PlayerChips'
-import { colors } from '../helpers'
-
-const options = {
-  title: "Score History",
-  curveType: "none",
-  legend: 'none',
-  colors
-}
+import TournamentHeader from '../Components/TournamentHeader'
+import TournamentData from '../Components/TournamentData'
 
 const styles = theme => ({
-  chartContainer: {
-    width: "100%",
-    margin: '0px auto'
-  },
   text: {
     margin: '20px'
-  },
-  shareCode: {
-    color: '#666',
-    fontSize: '18px'
   },
   error: {
     color: '#990000'
@@ -147,39 +129,13 @@ class TournamentPage extends Component {
             <Typography variant='h5' className={classes.text}>Tournament Not Found</Typography>
           </div> :
           <div>
-            <Typography variant="h5" className={classes.text}>{tournament.name}</Typography>
-            <div>
-              <Typography variant="h6" className={classes.shareCode}>
-                Share Code: {tournament.code}
-              </Typography>
-            </div>
-            <div>
-              {(parsedData !== undefined && parsedData[0].length > 1) &&
-                <div>
-                  <PlayerChips
-                    players={players}
-                    parsedData={parsedData}
-                    colors={colors}
-                  />
-                  <div className={classes.chartContainer}>
-                    <Chart
-                      chartType="LineChart"
-                      width="100%"
-                      height="600px"
-                      data={parsedData}
-                      options={options}
-                    />
-                  </div>
-                </div>
-              }
-            </div>
-            {players.length > 0 &&
-              <AddRaceForm
-                players={this.state.players}
-                addRaceCallback={this.addRaceCallback}
-              />
-            }
-            <AddPlayerForm addPlayerCallback={this.addPlayerCallback} players={players}/>
+            <TournamentHeader name={tournament.name} code={tournament.code} />
+            <TournamentData
+              players={players}
+              parsedData={parsedData}
+              addRaceCallback={this.addRaceCallback}
+              addPlayerCallback={this.addPlayerCallback}
+            />
           </div>
         }
         </div>

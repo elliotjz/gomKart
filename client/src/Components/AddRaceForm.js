@@ -174,14 +174,14 @@ class AddRaceForm extends React.Component {
   }
 
   render() {
-    const { classes } = this.props
+    const { classes, players } = this.props
     const { errorMessage, successMessage, loading } = this.state
     let playerResultList = []
 
     for (let i = 0; i < this.state.numPlayers; i++) {
       playerResultList.push(
         <PlayerResult
-          players={this.props.players}
+          players={players}
           player={this}
           handleChange={this.handleChange}
           name={"player" + i}
@@ -191,56 +191,60 @@ class AddRaceForm extends React.Component {
         />)
     }
     return (
-      <Paper elevation="4" className={classes.addRaceContainer}>
-        <Typography variant="h5">Add New Race</Typography>
-        <form className={classes.root} autoComplete="off" onSubmit={e => e.preventDefault()}>
-          {playerResultList}
-          {loading ?
-            <CircularProgress className={classes.progress} /> :
-            <div>
-              {errorMessage !== "" &&
-                <Typography class={classes.errorMessage}>
-                  {errorMessage}
-                </Typography>
-              }
-              {successMessage !== "" &&
-                <Typography class={classes.successMessage}>
-                  {successMessage}
-                </Typography>
-              }
-            </div>
-          }
-          <div className={classes.buttonContainer}>
-            <div className={classes.plusMinusContainer}>
+      <div>
+        {players.length > 0 &&
+        <Paper elevation="0" className={classes.addRaceContainer}>
+          <Typography variant="h5">Add New Race</Typography>
+          <form className={classes.root} autoComplete="off" onSubmit={e => e.preventDefault()}>
+            {playerResultList}
+            {loading ?
+              <CircularProgress className={classes.progress} /> :
+              <div>
+                {errorMessage !== "" &&
+                  <Typography class={classes.errorMessage}>
+                    {errorMessage}
+                  </Typography>
+                }
+                {successMessage !== "" &&
+                  <Typography class={classes.successMessage}>
+                    {successMessage}
+                  </Typography>
+                }
+              </div>
+            }
+            <div className={classes.buttonContainer}>
+              <div className={classes.plusMinusContainer}>
+                <Button
+                  variant="fab"
+                  color="primary"
+                  aria-label="Add"
+                  className={classes.button}
+                  onClick={this.addPlayer}
+                >
+                  <AddIcon />
+                </Button>
+                <Button
+                  variant="fab"
+                  color="primary"
+                  aria-label="Add"
+                  className={classes.button}
+                  onClick={this.removePlayer}
+                >
+                  <Minimize className={classes.minimizeIcon}/>
+                </Button>
+              </div>
               <Button
-                variant="fab"
+                variant="contained"
                 color="primary"
-                aria-label="Add"
-                className={classes.button}
-                onClick={this.addPlayer}
-              >
-                <AddIcon />
-              </Button>
-              <Button
-                variant="fab"
-                color="primary"
-                aria-label="Add"
-                className={classes.button}
-                onClick={this.removePlayer}
-              >
-                <Minimize className={classes.minimizeIcon}/>
+                onClick={this.submitRace}>
+                Submit
               </Button>
             </div>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={this.submitRace}>
-              Submit
-            </Button>
-          </div>
-        </form>
-      </Paper>
-    );
+          </form>
+        </Paper>
+        }
+      </div>
+    )
   }
 }
 
