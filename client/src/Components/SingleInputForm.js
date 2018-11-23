@@ -4,6 +4,7 @@ import { withStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const styles = theme => ({
   root: {
@@ -25,6 +26,9 @@ const styles = theme => ({
     marginRight: theme.spacing.unit,
     width: 200,
     marginTop: 19,
+  },
+  progress: {
+    margin: theme.spacing.unit * 2,
   },
 });
 
@@ -61,9 +65,7 @@ class SingleInputForm extends React.Component {
           onChange={this.handleChange}
         />
         {loading ?
-          <Typography class={classes.successMessage}>
-            Loading...
-          </Typography> :
+          <div><CircularProgress className={classes.progress} /></div> :
           <div>
             {errorMessage !== "" &&
               <Typography class={classes.errorMessage}>

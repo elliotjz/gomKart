@@ -31,7 +31,8 @@ class NewTournament extends Component {
     this.state = {
       redirect: false,
       errorMessage: "",
-      successMessage: ""
+      successMessage: "",
+      loading: false
     }
   }
 
@@ -45,7 +46,8 @@ class NewTournament extends Component {
 
     if (errorMessage !== "") {
       this.setState({
-        errorMessage
+        errorMessage,
+        loading: false
       })
       return false
     } else {
@@ -56,7 +58,11 @@ class NewTournament extends Component {
   async addNewTournament(name) {
     if (!this.nameVerification(name)) return
 
-    this.setState({ errorMessage: "", successMessage: "Loading..." })
+    this.setState({
+      errorMessage: "",
+      successMessage: "",
+      loading: true
+    })
 
     try {
       const res = await fetch('/api/new-tournament', {
@@ -73,13 +79,14 @@ class NewTournament extends Component {
     } catch (err) {
       this.setState({
         errorMessage: "We're having trouble connecting to our server. Try again later.",
+        loading: false
       })
     }
   }
 
   render() {
     const { classes } = this.props
-    const { redirect, errorMessage, successMessage } = this.state
+    const { redirect, errorMessage, successMessage, loading } = this.state
     
     return (
       <div>
@@ -93,6 +100,7 @@ class NewTournament extends Component {
             buttonLabel="Create"
             successMessage={successMessage}
             errorMessage={errorMessage}
+            loading={loading}
           />
         </Paper>
         }

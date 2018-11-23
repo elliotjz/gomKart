@@ -8,9 +8,10 @@ import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemText from '@material-ui/core/ListItemText'
-import StarIcon from '@material-ui/icons/Star';
+import StarIcon from '@material-ui/icons/Star'
+import CircularProgress from '@material-ui/core/CircularProgress'
 
-const styles = {
+const styles = theme => ({
   chartContainer: {
     width: "100%",
     margin: '20px auto',
@@ -27,8 +28,11 @@ const styles = {
   },
   h4: {
     margin: '20px'
-  }
-}
+  },
+  progress: {
+    margin: theme.spacing.unit * 2,
+  },
+})
 
 class Home extends Component {
   constructor(props) {
@@ -72,7 +76,7 @@ class Home extends Component {
           <Paper elevation="3" className={classes.paper}>
             <Typography variant="h5">Tournaments</Typography>
             {loading ?
-              <Typography variant="p">Loading...</Typography> :
+              <CircularProgress className={classes.progress} /> :
               <div>
               {(tournaments && tournaments.length > 0) ?
                 <List component="nav">

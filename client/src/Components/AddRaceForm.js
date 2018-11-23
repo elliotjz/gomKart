@@ -6,6 +6,7 @@ import AddIcon from '@material-ui/icons/Add'
 import Minimize from '@material-ui/icons/Minimize'
 import Typography from '@material-ui/core/Typography'
 import Paper from '@material-ui/core/Paper'
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import PlayerResult from './PlayerResult'
 import { getQueryVariable } from '../helpers'
@@ -62,6 +63,9 @@ const styles = theme => ({
   },
   successMessage: {
     color: 'green',
+  },
+  progress: {
+    margin: theme.spacing.unit * 2,
   },
 });
 
@@ -192,9 +196,7 @@ class AddRaceForm extends React.Component {
         <form className={classes.root} autoComplete="off" onSubmit={e => e.preventDefault()}>
           {playerResultList}
           {loading ?
-            <Typography class={classes.successMessage}>
-              Sending...
-            </Typography> :
+            <CircularProgress className={classes.progress} /> :
             <div>
               {errorMessage !== "" &&
                 <Typography class={classes.errorMessage}>

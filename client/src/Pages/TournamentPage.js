@@ -2,10 +2,11 @@ import React, { Component } from 'react'
 import { Chart } from 'react-google-charts'
 import { withStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
+import CircularProgress from '@material-ui/core/CircularProgress'
 
 import AddRaceForm from '../Components/AddRaceForm'
 import AddPlayerForm from '../Components/AddPlayerForm'
-import PlayerChips from '../Components/PlayerChips';
+import PlayerChips from '../Components/PlayerChips'
 import { colors } from '../helpers'
 
 const options = {
@@ -15,7 +16,7 @@ const options = {
   colors
 }
 
-const styles = {
+const styles = theme => ({
   chartContainer: {
     width: "100%",
     margin: '0px auto'
@@ -29,8 +30,11 @@ const styles = {
   },
   error: {
     color: '#990000'
-  }
-}
+  },
+  progress: {
+    margin: theme.spacing.unit * 2,
+  },
+})
 
 class TournamentPage extends Component {
   constructor(props) {
@@ -135,9 +139,7 @@ class TournamentPage extends Component {
     return (
       <div>
       {loading ?
-        <div>
-          <Typography variant='h5' className={classes.text}>Loading...</Typography>
-        </div> :
+        <div><CircularProgress className={classes.progress} /></div> :
         <div>
         {error !== "" && <Typography className={[classes.text, classes.error]}>{error}</Typography>}
         {!tournamentExists ?
