@@ -54,8 +54,6 @@ class App extends Component {
   render() {
     const { user, loading, isLoggedIn } = this.state
     const redirect = !loading && !isLoggedIn
-    console.log(isLoggedIn)
-    console.log(redirect)
     
     return (
       <BrowserRouter>

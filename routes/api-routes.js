@@ -110,12 +110,16 @@ module.exports = (app, jsonParser) => {
       Tournament.findOneAndUpdate(
         { code: req.body.code },
         {$addToSet: { adminUsers: req.user.email }}
-      ).then(() => {
-        res.json({ success: true })
+      ).then((tournament) => {
+        if (tournament !== null) {
+          res.json({ success: true })
+        } else {
+          res.json({success: false})
+        }
       })
     } else {
       res.json({
-        error: 'user is not logged in'
+        error: 'User is not logged in'
       })
     }
   })

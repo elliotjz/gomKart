@@ -34,35 +34,22 @@ class SingleInputForm extends React.Component {
     super(props)
     this.state = {
       name: "",
-      errorMessage: "",
-      successMessage: "",
     }
   }
 
   handleChange = event => {
     this.setState({
       name: event.target.value,
-      errorMessage: "",
-      successMessage: "",
     })
   }
 
   submitForm = () => {
-    if (this.state.name === "") {
-      this.setState({ errorMessage: "Player names can't be empty"})
-      return
-    }
     this.props.handleSubmit(this.state.name)
-    this.setState({
-      errorMessage: "",
-      successMessage: "Sending...",
-      name: "",
-    })
   }
 
   render() {
     const { classes } = this.props
-    const { inputLabel, buttonLabel } = this.props
+    const { inputLabel, buttonLabel, errorMessage, loading } = this.props
     return (
       <form className={classes.root} autoComplete="off" onSubmit={e => e.preventDefault()}>
         <TextField
@@ -73,14 +60,14 @@ class SingleInputForm extends React.Component {
           value={this.state.name}
           onChange={this.handleChange}
         />
-        {this.state.Message !== "" &&
+        {errorMessage !== "" &&
           <Typography class={classes.errorMessage}>
-            {this.state.errorMessage}
+            {errorMessage}
           </Typography>
         }
-        {this.state.successMessage !== "" &&
+        {loading &&
           <Typography class={classes.successMessage}>
-            {this.state.successMessage}
+            Loading...
           </Typography>
         }
         <div className={classes.buttonContainer}>
@@ -100,7 +87,8 @@ SingleInputForm.propTypes = {
   classes: PropTypes.object.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   inputLabel: PropTypes.string.isRequired,
-  buttonLabel: PropTypes.string.isRequired
+  buttonLabel: PropTypes.string.isRequired,
+  loading: PropTypes.bool.isRequired
 }
 
 export default withStyles(styles)(SingleInputForm)

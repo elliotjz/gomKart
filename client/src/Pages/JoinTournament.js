@@ -30,11 +30,16 @@ class JoinTournament extends Component {
     this.submitJoinTournament = this.submitJoinTournament.bind(this)
     this.state = {
       redirect: false,
-      error: ""
+      errorMessage: "",
+      loading: false
     }
   }
 
   async submitJoinTournament(code) {
+    this.setState({
+      errorMessage: "",
+      loading: true
+    })
     try {
       const res = await fetch('/api/join-tournament', {
         method: 'post',
@@ -45,22 +50,29 @@ class JoinTournament extends Component {
       if (data.success) {
         this.setState({
           redirect: true,
+          loading: false,
+          errorMessage: ""
+        })
+      } else {
+        this.setState({
+          errorMessage: "There is not tournament with that code.",
+          loading: false
         })
       }
     } catch (err) {
       this.setState({
-        error: "We're having trouble connecting to our server. Try again later.",
+        errorMessage: "We're having trouble connecting to our server. Try again later.",
+        loading: false
       })
     }
   }
 
   render() {
     const { classes } = this.props
-    const { redirect, error } = this.state
+    const { redirect, errorMessage, loading } = this.state
     
     return (
       <div>
-        {error === "" ?
         <div>
           {redirect ?
             <Redirect to="/"/> :
@@ -70,16 +82,12 @@ class JoinTournament extends Component {
                 handleSubmit={this.submitJoinTournament}
                 inputLabel="Tournament Code"
                 buttonLabel="Join"
+                errorMessage={errorMessage}
+                loading={loading}
               />
             </Paper>
           }
-        </div> :
-        <div>
-          <Typography variant="p" className={classes.text}>
-            {error}
-          </Typography>
         </div>
-        }
       </div>
     )
   }
