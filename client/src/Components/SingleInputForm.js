@@ -49,7 +49,7 @@ class SingleInputForm extends React.Component {
 
   render() {
     const { classes } = this.props
-    const { inputLabel, buttonLabel, errorMessage, loading } = this.props
+    const { inputLabel, buttonLabel, errorMessage, successMessage, loading } = this.props
     return (
       <form className={classes.root} autoComplete="off" onSubmit={e => e.preventDefault()}>
         <TextField
@@ -60,16 +60,24 @@ class SingleInputForm extends React.Component {
           value={this.state.name}
           onChange={this.handleChange}
         />
-        {errorMessage !== "" &&
-          <Typography class={classes.errorMessage}>
-            {errorMessage}
-          </Typography>
-        }
-        {loading &&
+        {loading ?
           <Typography class={classes.successMessage}>
             Loading...
-          </Typography>
+          </Typography> :
+          <div>
+            {errorMessage !== "" &&
+              <Typography class={classes.errorMessage}>
+                {errorMessage}
+              </Typography>
+            }
+            {successMessage !== "" &&
+              <Typography class={classes.successMessage}>
+                {successMessage}
+              </Typography>
+            }
+          </div>
         }
+        
         <div className={classes.buttonContainer}>
           <Button
             variant="contained"

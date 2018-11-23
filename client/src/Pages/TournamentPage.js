@@ -4,10 +4,10 @@ import { withStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import Paper from '@material-ui/core/Paper'
 
-import SingleInputForm from '../Components/SingleInputForm'
 import AddRaceForm from '../Components/AddRaceForm'
+import AddPlayerForm from '../Components/AddPlayerForm'
 import PlayerChips from '../Components/PlayerChips';
-import { colors } from '../helpers'
+import { colors, getQueryVariable } from '../helpers'
 
 const options = {
   title: "Score History",
@@ -26,11 +26,6 @@ const styles = {
     margin: "0px auto",
     padding: "20px",
   },
-  addPlayerContainer: {
-    maxWidth: "400px",
-    margin: "30px auto",
-    padding: "20px",
-  },
   text: {
     margin: '20px'
   },
@@ -46,14 +41,14 @@ const styles = {
 class TournamentPage extends Component {
   constructor(props) {
     super(props)
-    this.addNewPlayer = this.addNewPlayer.bind(this)
+    this.addPlayerCallback = this.addPlayerCallback.bind(this)
     this.addRace = this.addRace.bind(this)
     this.state = {
       error: "",
       tournament: {},
       parsedData: null,
       players: [],
-      loading: true
+      loading: true,
     }
   }
 
@@ -116,52 +111,10 @@ class TournamentPage extends Component {
     }
   }
 
-  async addNewPlayer(name) {
-    this.setState({ loading: true })
-    try {
-      const code = this.getQueryVariable('code')
-      const res = await fetch('/api/add-player', {
-        method: 'post',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ name, code })
-      })
-      const tournament = await res.json()
-      const players = tournament.scoreHistory.map((player) => (
-        player.name
-      ))
-      const indexOfCompPlayer = players.indexOf("_comp")
-      players.splice(indexOfCompPlayer, 1)
-      const parsedData = this.parseData(tournament)
-      this.setState({
-        tournament,
-        players,
-        parsedData,
-        loading: false,
-        error: ""
-      })
-    } catch (err) {
-      this.setState({
-        error: "Error adding player",
-        loading: false
-      })
-    }
-  }
-
-  getQueryVariable(variable) {
-    let query = window.location.search.substring(1);
-    let vars = query.split('&')
-    for (let i = 0; i < vars.length; i++) {
-      let pair = vars[i].split('=')
-      if (decodeURIComponent(pair[0]) === variable) {
-        return decodeURIComponent(pair[1])
-      }
-    }
-  }
-
   async addRace(formData) {
     this.setState({ loading: true })
     try {
-      const code = this.getQueryVariable('code')
+      const code = getQueryVariable('code')
       const res = await fetch('/api/add-race', {
         method: 'post',
         headers: {'Content-Type': 'application/json'},
@@ -181,6 +134,20 @@ class TournamentPage extends Component {
         loading: false
       })
     }
+  }
+
+  addPlayerCallback(tournament) {
+    const players = tournament.scoreHistory.map((player) => (
+      player.name
+    ))
+    const indexOfCompPlayer = players.indexOf("_comp")
+    players.splice(indexOfCompPlayer, 1)
+    const parsedData = this.parseData(tournament)
+    this.setState({
+      tournament,
+      parsedData,
+      players
+    })
   }
 
   render() {
@@ -236,14 +203,7 @@ class TournamentPage extends Component {
                 />
               </Paper>
             }
-            <Paper elevation="4" className={classes.addPlayerContainer}>
-              <Typography variant="h5">Add New Player</Typography>
-              <SingleInputForm
-                handleSubmit={this.addNewPlayer}
-                inputLabel="Name"
-                buttonLabel="Add"
-              />
-            </Paper>
+            <AddPlayerForm addPlayerCallback={this.addPlayerCallback} players={players}/>
           </div>
         }
         </div>

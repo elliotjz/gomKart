@@ -126,22 +126,28 @@ module.exports = (app, jsonParser) => {
 
   app.post('/api/add-player', jsonParser, (req, res) => {
     if (req.user) {
-      const scoreHistoryObject = {
-        name: req.body.name,
-        scores: { "0": PLAYER_INITIAL_SCORE }
-      }
-      Tournament.findOneAndUpdate(
-        { code: req.body.code, adminUsers: req.user.email },
-        { $addToSet: { scoreHistory: scoreHistoryObject }},
-        {new: true},
-        (err, tournament) => {
-          if (err) {
-            res.json({ error: "error adding player" })
-          } else {
-            res.json(tournament)
-          }
+      const letters = /^[A-Za-z]+$/
+      if (!req.body.name.charAt(0).match(letters)) {
+        console.log("No Match")
+        res.json({ error: "Player names must start with a letter." })
+      } else {
+        const scoreHistoryObject = {
+          name: req.body.name,
+          scores: { "0": PLAYER_INITIAL_SCORE }
         }
-      )
+        Tournament.findOneAndUpdate(
+          { code: req.body.code, adminUsers: req.user.email },
+          { $addToSet: { scoreHistory: scoreHistoryObject }},
+          {new: true},
+          (err, tournament) => {
+            if (err) {
+              res.json({ error: "error adding player" })
+            } else {
+              res.json(tournament)
+            }
+          }
+        )
+      }
     } else {
       req.json({ error: "You must be logged in to add players. "})
     }
