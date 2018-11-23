@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -28,57 +29,31 @@ const styles = {
 }
 
 class Header extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      user: null
-    }
-  }
-
-  componentWillMount() {
-    this.getUser()
-  }
-
-  async getUser() {
-    try {
-      const res = await fetch('/api/profile')
-      const resData = await res.json()
-      if (resData !== undefined) {
-        this.setState({
-          user: resData.user
-        })
-      }
-    } catch (err) {
-      console.log("Error getting user data")
-    }
-  }
 
   render() {
-    const { classes } = this.props
-    const { user } = this.state
-
+    const { classes, user, isLoggedIn, loading  } = this.props
     return (
       <div className={classes.root}>
         <AppBar position="static">
           <Toolbar>
             <div>
-              <Button color="inherit" href="/home">Home</Button>
+              <Button component={Link} to="/" color="inherit">Home</Button>
             </div>
             <Typography variant="h6" color="inherit" className={classes.grow}>
               GOM KART
             </Typography>
-            {user ?
-              <div className={classes.row}>
+            {!loading &&
+              <div>
+                {isLoggedIn &&
+                <div className={classes.row}>
                   <Avatar
                     alt={user.username}
                     src={user.imageURL}
                     className={classes.avatar}
                   />
                   <Button color="inherit" href="/auth/logout">Logout</Button>
-              </div>
-              :
-              <div className={classes.row}>
-                <Button color="inherit" href="/login">Login</Button>
+                </div>
+                }
               </div>
             }
           </Toolbar>

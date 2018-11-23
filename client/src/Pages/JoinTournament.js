@@ -63,7 +63,7 @@ class JoinTournament extends Component {
         {error === "" ?
         <div>
           {redirect ?
-            <Redirect to="/home"/> :
+            <Redirect to="/"/> :
             <Paper elevation="3" className={classes.formContainer}>
               <Typography variant="h5">Join Tournament</Typography>
               <SingleInputForm

@@ -74,7 +74,7 @@ class Home extends Component {
             {loading ?
               <Typography variant="p">Loading...</Typography> :
               <div>
-              {tournaments.length > 0 ?
+              {(tournaments && tournaments.length > 0) ?
                 <List component="nav">
                   {tournaments.map((tournament, index) => {
                     const toLink = `/tournament?code=${tournament.code}`

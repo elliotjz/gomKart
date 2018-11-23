@@ -40,14 +40,6 @@ function calculateNewScores(tournament, places) {
 }
 
 module.exports = (app, jsonParser) => {
-  app.get('/home', (req, res) => {
-    if (req.user) {
-      req.next()
-    } else {
-      res.redirect('/login')
-    }
-  })
-
   app.get('/api/profile', (req, res) => {
     if (req.user) {
       res.json({
@@ -55,7 +47,7 @@ module.exports = (app, jsonParser) => {
       })
     } else {
       res.json({
-        error: 'user is not logged in'
+        error: 'User is not logged in'
       })
     }
   })
@@ -107,10 +99,6 @@ module.exports = (app, jsonParser) => {
         if (tournament === null) {
           res.json({ error: 'Tournament not found' })
         } else {
-          console.log(tournament)
-          tournament.scoreHistory.forEach((d) => {
-            console.log(d)
-          })
           res.json({ tournament })
         }
       })

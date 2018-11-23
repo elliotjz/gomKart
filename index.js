@@ -54,4 +54,4 @@ app.get('*', (req, res) => {
 const port = process.env.PORT || 5000
 app.listen(port)
 
-console.log(`GOM KART listening on ${port}`)
+console.log(`GOM KART listening at http://localhost:${port}`)

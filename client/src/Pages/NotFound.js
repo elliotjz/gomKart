@@ -25,7 +25,7 @@ class NotFound extends Component {
           variant="contained"
           color="secondary"
           className={classes.button}
-          href="/home"
+          href="/"
         >
           Home
         </Button>
