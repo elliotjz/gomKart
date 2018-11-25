@@ -25,18 +25,21 @@ function getCodeFromQueryString(query) {
   }
 }
 
-function calculateNewScores(tournament, places) {
-  let scoreHist = tournament.scoreHistory
-  const raceCounter = tournament.raceCounter + 1
-  for (player in places) {
-    const position = places[player]
-    for (let i = 0; i < scoreHist.length; i++) {
-      if (player === scoreHist[i].name) {
-        scoreHist[i].scores[raceCounter] = 100 * position
+function addNewScoresToTournament(tournamentCode, scoreHistory, raceCounter, res) {
+  // TODO: Update tournament first, get the race number, then create the race instance
+  // TODO: Can I make this synchronous???
+  Tournament.findOneAndUpdate(
+    { code: tournamentCode },
+    { $set: { raceCounter, scoreHistory }},
+    {new: true},
+    (err, tournament) => {
+      if (err) {
+        res.json({ error: err })
+      } else {
+        res.json(tournament)
       }
     }
-  }
-  return scoreHist
+  )
 }
 
 module.exports = (app, jsonParser) => {
@@ -84,6 +87,22 @@ module.exports = (app, jsonParser) => {
     } else {
       res.json({
         error: 'user is not logged in'
+      })
+    }
+  })
+
+  app.get('/api/get-races', (req, res) => {
+    const query = req._parsedUrl.query
+    const code = getCodeFromQueryString(query)
+    if (code === undefined) {
+      res.json({ error: "Tournament not found" })
+    } else {
+      Race.find({ tournament: code }).then((races) => {
+        if (races === null) {
+          res.json({ error: "No races found"})
+        } else {
+          res.json({ races })
+        }
       })
     }
   })
@@ -156,6 +175,7 @@ module.exports = (app, jsonParser) => {
     if (req.user) {
       const date = new Date()
       const places = req.body.places
+      const tournamentCode = req.body.code
 
       // Make sure they haven't added a computer player
       if (Object.keys(places).includes("_comp")) {
@@ -165,27 +185,18 @@ module.exports = (app, jsonParser) => {
 
       new Race({
         user: req.user.email,
-        tournament: req.body.code,
+        tournament: tournamentCode,
         places,
         date
       }).save().then(() => {
-        Tournament.findOne({ code: req.body.code }, (err, tournament) => {
+        Tournament.findOne({ code: tournamentCode }, (err, tournament) => {
           const raceCounter = tournament.raceCounter + 1
           const scoreHistory = eloCalcs.getUpdatedScoreHistory(tournament, places)
-          Tournament.findOneAndUpdate(
-            { code: req.body.code },
-            { $set: { raceCounter, scoreHistory }},
-            {new: true},
-            (err, tournament) => {
-              if (err) {
-                res.json({ error: err })
-              } else {
-                res.json(tournament)
-              }
-            }
-          )
+          addNewScoresToTournament(tournament.code, scoreHistory, raceCounter, res)
         })
-      })
+      }).catch(err => console.log(err))
     }
   })
+
+  
 }

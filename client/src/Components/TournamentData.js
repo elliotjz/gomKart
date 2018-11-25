@@ -44,7 +44,7 @@ class TournamentData extends Component {
   }
 
   render() {
-    const { players, parsedData, classes, addRaceCallback, addPlayerCallback } = this.props
+    const { players, parsedData, classes, addRaceCallback, addPlayerCallback, location } = this.props
     const { value } = this.state
 
     return (
@@ -72,7 +72,11 @@ class TournamentData extends Component {
             </TabContainer>}
           {value === 2 &&
             <TabContainer>
-              <TournamentRecentRaces players={players} parsedData={parsedData}/>
+              <TournamentRecentRaces
+                players={players} 
+                parsedData={parsedData}
+                location={location}
+              />
             </TabContainer>}
           {value === 3 && <TabContainer>Setting Coming Soon</TabContainer>}
         </div>

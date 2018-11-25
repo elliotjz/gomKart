@@ -32,3 +32,23 @@ export const getQueryVariable = (variable) => {
     }
   }
 }
+
+export const comparePos = (a,b) => {
+  a = parseInt(a.position)
+  b = parseInt(b.position)
+  if (a < b)
+    return -1;
+  if (a > b)
+    return 1;
+  return 0;
+}
+
+export const compareRaces = (a,b) => {
+  a = a.date
+  b = b.date
+  if (a > b)
+    return -1;
+  if (a < b)
+    return 1;
+  return 0;
+}

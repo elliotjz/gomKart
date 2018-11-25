@@ -18,7 +18,7 @@ const styles = theme => ({
   },
 });
 
-class PlayerResult extends React.Component {
+class PlayerResultForm extends React.Component {
   render() {
     const { classes } = this.props;
 
@@ -71,7 +71,7 @@ class PlayerResult extends React.Component {
   }
 }
 
-PlayerResult.propTypes = {
+PlayerResultForm.propTypes = {
   classes: PropTypes.object.isRequired,
   players: PropTypes.object.isRequired,
   handleChange: PropTypes.func.isRequired,
@@ -79,7 +79,7 @@ PlayerResult.propTypes = {
   name: PropTypes.string.isRequired,
 };
 
-export default withStyles(styles)(PlayerResult);
+export default withStyles(styles)(PlayerResultForm);
 
 
 

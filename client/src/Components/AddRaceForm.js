@@ -8,7 +8,7 @@ import Typography from '@material-ui/core/Typography'
 import Paper from '@material-ui/core/Paper'
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-import PlayerResult from './PlayerResult'
+import PlayerResultForm from './PlayerResultForm'
 import { getQueryVariable } from '../helpers'
 
 const formDataReset = {
@@ -180,7 +180,7 @@ class AddRaceForm extends React.Component {
 
     for (let i = 0; i < this.state.numPlayers; i++) {
       playerResultList.push(
-        <PlayerResult
+        <PlayerResultForm
           players={players}
           player={this}
           handleChange={this.handleChange}

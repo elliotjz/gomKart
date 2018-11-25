@@ -114,7 +114,7 @@ class TournamentPage extends Component {
   }
 
   render() {
-    const { classes } = this.props
+    const { classes, location } = this.props
     const { tournament, parsedData, players, loading, error } = this.state
     const tournamentExists = tournament !== undefined && Object.keys(tournament).length > 0
 
@@ -135,6 +135,7 @@ class TournamentPage extends Component {
               parsedData={parsedData}
               addRaceCallback={this.addRaceCallback}
               addPlayerCallback={this.addPlayerCallback}
+              location={location}
             />
           </div>
         }
