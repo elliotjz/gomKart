@@ -70,10 +70,15 @@ class NewTournament extends Component {
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ name })
       })
-      const data = await res.json()
-      if (data.success) {
+      const resData = await res.json()
+      if (resData.success) {
         this.setState({
           redirect: true
+        })
+      } else {
+        this.setState({
+          loading: false,
+          errorMessage: resData.error
         })
       }
     } catch (err) {

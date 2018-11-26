@@ -26,6 +26,12 @@ function getCodeFromQueryString(query) {
   }
 }
 
+function verifyName(name) {
+  if (name.length > 16) return false
+  if (name.match(/^[a-z0-9]+$/i) === null) return false
+  return true
+}
+
 function addNewScoresToTournament(tournamentCode, scoreHistory, raceCounter, res) {
   // TODO: Update tournament first, get the race number, then create the race instance
   // TODO: Can I make this synchronous???
@@ -88,20 +94,24 @@ module.exports = (app, jsonParser) => {
 
   app.post('/api/new-tournament', jsonParser, (req, res) => {
     if (req.user) {
-      const code = makeTournamentCode()
-      const scoreHistory = [{
-        name: "_comp",
-        scores: { "0": COMP_INITIAL_SCORE }
-      }]
-      new Tournament({
-        name: req.body.name,
-        adminUsers: req.user.email,
-        code,
-        raceCounter: 0,
-        scoreHistory
-      }).save().then(() => {
-        res.json({ success: true })
-      })
+      if (verifyName(req.body.name)) {
+        const code = makeTournamentCode()
+        const scoreHistory = [{
+          name: "_comp",
+          scores: { "0": COMP_INITIAL_SCORE }
+        }]
+        new Tournament({
+          name: req.body.name,
+          adminUsers: req.user.email,
+          code,
+          raceCounter: 0,
+          scoreHistory
+        }).save().then(() => {
+          res.json({ success: true })
+        })
+      } else {
+        res.json({ success: false, error: "Name is not valid"})
+      }
     } else {
       res.json({
         success: false,
@@ -177,9 +187,7 @@ module.exports = (app, jsonParser) => {
   app.post('/api/add-player', jsonParser, (req, res) => {
     if (req.user) {
       const letters = /^[A-Za-z]+$/
-      if (!req.body.name.charAt(0).match(letters)) {
-        res.json({ error: "Player names must start with a letter." })
-      } else {
+      if (verifyName(req.body.name)) {
         const scoreHistoryObject = {
           name: req.body.name,
           scores: { "0": PLAYER_INITIAL_SCORE }
@@ -196,6 +204,8 @@ module.exports = (app, jsonParser) => {
             }
           }
         )
+      } else {
+        res.json({ error: "Player name is not valid." })
       }
     } else {
       req.json({ error: "You must be logged in to add players. "})
