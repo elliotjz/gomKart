@@ -12,6 +12,9 @@ const styles = theme => ({
   progress: {
     margin: theme.spacing.unit * 2,
   },
+  title: {
+    marginBottom: '20px'
+  }
 })
 
 class TournamentRecentRaces extends Component {
@@ -29,7 +32,7 @@ class TournamentRecentRaces extends Component {
     const shouldDisplayRaces = races !== undefined && races !== null && races.length > 0
     return (
       <div className={classes.root}>
-        <Typography variant="h4">Recent Races</Typography>
+        <Typography variant="h4" className={classes.title}>Recent Races</Typography>
         <div>
           {error !== "" &&
             <Typography variant='p' className={classes.error}>
