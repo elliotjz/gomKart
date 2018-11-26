@@ -3,6 +3,25 @@ module.exports = {
   SENSITIVITY: 5,
   SENSITIVITY2: 250,
 
+  getUpdatedScoreHistory: function(tournament, places) {
+    let { scoreHistory } = tournament
+    const newEloScores = this.getNewEloScores(tournament, places)
+    const playersInRace = Object.keys(newEloScores)
+    if (newEloScores === undefined && playersInRace.length === 0) {
+      throw "Error calculating new ELO scores"
+    }
+    
+    const raceNumber = tournament.raceCounter + 1
+    const raceNumberStr = raceNumber.toString()
+    for (let i = 0; i < scoreHistory.length; i++) {
+      const playerName = scoreHistory[i].name
+      if (playersInRace.includes(playerName)) {
+        // Update player score in tournament object
+        scoreHistory[i].scores[raceNumberStr] = newEloScores[playerName]
+      }
+    }
+    return scoreHistory
+  },
 
   getNewEloScores: function(tournament, places) {
     const eloScores = this.getOldScores(tournament)
@@ -84,26 +103,6 @@ module.exports = {
     // console.log(result)
     const scoreChange = this.SENSITIVITY * (result - playerExpected)
     return scoreChange
-  },
-
-  getUpdatedScoreHistory: function(tournament, places) {
-    let { scoreHistory } = tournament
-    const newEloScores = this.getNewEloScores(tournament, places)
-    const playersInRace = Object.keys(newEloScores)
-    if (newEloScores === undefined && playersInRace.length === 0) {
-      throw "Error calculating new ELO scores"
-    }
-    
-    const raceNumber = tournament.raceCounter + 1
-    const raceNumberStr = raceNumber.toString()
-    for (let i = 0; i < scoreHistory.length; i++) {
-      const playerName = scoreHistory[i].name
-      if (playersInRace.includes(playerName)) {
-        // Update player score in tournament object
-        scoreHistory[i].scores[raceNumberStr] = newEloScores[playerName]
-      }
-    }
-    return scoreHistory
   }
 }
 

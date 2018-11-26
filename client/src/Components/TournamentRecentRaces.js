@@ -2,93 +2,50 @@ import React, { Component } from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import { Typography } from '@material-ui/core'
 
-import { colors, comparePos, compareRaces } from '../helpers'
-import PlayerChips from './PlayerChips'
 import RaceResult from './RaceResult'
+import CircularProgress from '@material-ui/core/CircularProgress';
 
-const styles = {
-  root: {
-
+const styles = theme => ({
+  error: {
+    color: 'red'
   },
-}
+  progress: {
+    margin: theme.spacing.unit * 2,
+  },
+})
 
 class TournamentRecentRaces extends Component {
   constructor(props) {
     super(props)
-    this.state = {
-      loading: true,
-      races: null,
-      error: ""
-    }
+    this.deleteRace = this.deleteRace.bind(this)
   }
 
-  componentWillMount() {
-    this.getRecentRaces()
-  }
-
-  async getRecentRaces() {
-    this.setState({
-      loading: true
-    })
-    try {
-      const params = this.props.location.search
-      const url = `/api/get-races${params}`
-      const res = await fetch(`/api/get-races${params}`)
-      const resData = await res.json()
-      const parsedRaces = this.parseRaces(resData.races)
-      this.setState({
-        loading: false,
-        error: "",
-        races: parsedRaces
-      })
-    } catch (err) {
-      console.log(err)
-      this.setState({
-        error: "Error loading races",
-        loading: false
-      })
-    }
-  }
-
-  parseRaces(races) {
-    for (let i = 0; i < races.length; i++) {
-      const places = races[i].places[0]
-      let parsedPlaces = []
-      Object.keys(places).forEach(name => {
-        parsedPlaces.push({
-          name: name,
-          position: places[name]
-        })
-      })
-      parsedPlaces.sort(comparePos)
-      races[i].places = parsedPlaces
-    }
-    return races.sort(compareRaces)
+  deleteRace(race) {
+    this.props.deleteRace(race)
   }
   
   render() {
-    const { players, parsedData, classes } = this.props
-    const { error, loading, races } = this.state
+    const { classes, loading, error, races } = this.props
     const shouldDisplayRaces = races !== undefined && races !== null && races.length > 0
-    // if (races) console.log(races[0].user)
     return (
       <div className={classes.root}>
-        {(parsedData !== undefined && parsedData[0].length > 1) &&
-          <div>
-            <PlayerChips
-              players={players}
-              parsedData={parsedData}
-              colors={colors}
-            />
-          </div>
-        }
+        <Typography variant="h4">Recent Races</Typography>
         <div>
-          {error !== "" && <Typography>{error}</Typography>}
-          {loading && <Typography>loading...</Typography>}
+          {error !== "" &&
+            <Typography variant='p' className={classes.error}>
+              {error}
+            </Typography>
+          }
+          {loading &&
+            <div><CircularProgress className={classes.progress} /></div>
+          }
           {shouldDisplayRaces ?
             <div>
               {races.map(race =>
-                <RaceResult race={race} />
+                <RaceResult
+                  race={race}
+                  deleteRace={this.deleteRace}
+                />
               )}
             </div> :
             <Typography variant="p">

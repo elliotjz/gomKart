@@ -5,6 +5,7 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 
 import TournamentHeader from '../Components/TournamentHeader'
 import TournamentData from '../Components/TournamentData'
+import { comparePos, compareRaces } from '../helpers'
 
 const styles = theme => ({
   text: {
@@ -22,11 +23,14 @@ class TournamentPage extends Component {
   constructor(props) {
     super(props)
     this.addPlayerCallback = this.addPlayerCallback.bind(this)
-    this.addRaceCallback = this.addRaceCallback.bind(this)
+    this.updatedTournamentCallback = this.updatedTournamentCallback.bind(this)
+    this.updatedRacesCallback = this.updatedRacesCallback.bind(this)
+
     this.state = {
       error: "",
       tournament: {},
       parsedData: null,
+      races: [],
       players: [],
       loading: true,
     }
@@ -48,7 +52,7 @@ class TournamentPage extends Component {
       ))
       const indexOfCompPlayer = players.indexOf("_comp")
       players.splice(indexOfCompPlayer, 1)
-      const parsedData = this.parseData(tournament)
+      const parsedData = this.parseTournament(tournament)
       this.setState({
         tournament,
         players,
@@ -64,7 +68,7 @@ class TournamentPage extends Component {
     }
   }
  
-  parseData(tournament) {
+  parseTournament(tournament) {
     if (tournament && tournament.length !== {}) {
       let values = [["Race"]]
       const scoreHistory = tournament.scoreHistory
@@ -91,11 +95,34 @@ class TournamentPage extends Component {
     }
   }
 
-  addRaceCallback(tournament) {
-    const parsedData = this.parseData(tournament)
+  parseRaces(races) {
+    for (let i = 0; i < races.length; i++) {
+      const places = races[i].places[0]
+      let parsedPlaces = []
+      Object.keys(places).forEach(name => {
+        parsedPlaces.push({
+          name: name,
+          position: places[name]
+        })
+      })
+      parsedPlaces.sort(comparePos)
+      races[i].places = parsedPlaces
+    }
+    return races.sort(compareRaces)
+  }
+
+  updatedTournamentCallback(tournament) {
+    const parsedData = this.parseTournament(tournament)
     this.setState({
       tournament,
       parsedData,
+    })
+  }
+
+  updatedRacesCallback(races) {
+    const parsedRaces = this.parseRaces(races)
+    this.setState({
+      races: parsedRaces
     })
   }
 
@@ -105,7 +132,7 @@ class TournamentPage extends Component {
     ))
     const indexOfCompPlayer = players.indexOf("_comp")
     players.splice(indexOfCompPlayer, 1)
-    const parsedData = this.parseData(tournament)
+    const parsedData = this.parseTournament(tournament)
     this.setState({
       tournament,
       parsedData,
@@ -115,7 +142,7 @@ class TournamentPage extends Component {
 
   render() {
     const { classes, location } = this.props
-    const { tournament, parsedData, players, loading, error } = this.state
+    const { tournament, parsedData, races, players, loading, error } = this.state
     const tournamentExists = tournament !== undefined && Object.keys(tournament).length > 0
 
     return (
@@ -133,7 +160,9 @@ class TournamentPage extends Component {
             <TournamentData
               players={players}
               parsedData={parsedData}
-              addRaceCallback={this.addRaceCallback}
+              races={races}
+              updatedTournamentCallback={this.updatedTournamentCallback}
+              updatedRacesCallback={this.updatedRacesCallback}
               addPlayerCallback={this.addPlayerCallback}
               location={location}
             />

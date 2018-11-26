@@ -123,10 +123,10 @@ class AddRaceForm extends React.Component {
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ places: places, code })
       })
-      const tournament = await res.json()
-      if (tournament.error) {
+      const resData = await res.json()
+      if (resData.error) {
         this.setState({
-          errorMessage: tournament.error,
+          errorMessage: resData.error,
           successMessage: "",
           loading: false
         })
@@ -136,7 +136,8 @@ class AddRaceForm extends React.Component {
           successMessage: "Done!",
           loading: false
         })
-        this.props.addRaceCallback(tournament)
+        this.props.updatedRacesCallback(resData.races)
+        this.props.updatedTournamentCallback(resData.tournament)
         setTimeout(() => this.setState({successMessage: ""}), 2000)
       }
       
@@ -149,7 +150,7 @@ class AddRaceForm extends React.Component {
     }
   }
 
-  validatePosition = (name, position, raceResults) => {
+  validatePosition(name, position, raceResults) {
     let errorMessage = ""
     if (name === "") {
       // Race position wasn't filled in

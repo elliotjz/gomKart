@@ -2,6 +2,7 @@
 const Tournament = require('../models/tournament-model')
 const Race = require('../models/race-model')
 const eloCalcs = require('../helpers/elo-calculations')
+const sorting = require('../helpers/sorting')
 const COMP_INITIAL_SCORE = -200
 const PLAYER_INITIAL_SCORE = 200
 
@@ -36,10 +37,40 @@ function addNewScoresToTournament(tournamentCode, scoreHistory, raceCounter, res
       if (err) {
         res.json({ error: err })
       } else {
-        res.json(tournament)
+        Race.find({ tournament: tournamentCode }, (err, races) => {
+          res.json({ tournament, races })
+        })
       }
     }
   )
+}
+
+function recalculateScores(code, res) {
+  // get all races younger than the deleted race
+  Race.find({ tournament: code }, (err, races) => { // TODO: query that finds younger races
+    // sort races by race date
+    races.sort(sorting.compareRace)
+
+    Tournament.findOne({ code: code }, (err, tournament) => {
+      // Delete score history. TODO: Change this so that it only re-calculates the
+      // necessary part of the score history.
+      tournament.scoreHistory.forEach(playerHistory => {
+        if (playerHistory.name.charAt(0) === '_') {
+          playerHistory.scores = { "0": COMP_INITIAL_SCORE }
+        } else {
+          playerHistory.scores = { "0": PLAYER_INITIAL_SCORE }
+        }
+      })
+      // Reset race counter
+      tournament.raceCounter = 0
+
+      for (let i = 0; i < races.length; i++) {
+        tournament.scoreHistory = eloCalcs.getUpdatedScoreHistory(tournament, races[i].places[0])
+        tournament.raceCounter += 1
+      }
+      addNewScoresToTournament(code, tournament.scoreHistory, tournament.raceCounter, res)
+    })
+  })
 }
 
 module.exports = (app, jsonParser) => {
@@ -198,5 +229,23 @@ module.exports = (app, jsonParser) => {
     }
   })
 
-  
+  app.post('/api/delete-race', jsonParser, (req, res) => {
+    if (req.user) {
+      const { raceID, tournamentCode } = req.body
+      // Make sure user is an admin of tournament
+      Tournament.findOne({ code: tournamentCode, adminUsers: req.user.email }, (err, tournament) => {
+        if (tournament) {
+          // delete race
+          Race.findOneAndDelete({ _id: raceID, tournament: tournamentCode }, (err, race) => {
+            if (race !== null) recalculateScores(tournamentCode, res)
+          })
+        } else {
+          res.json({error: "User is not an admin of this tournament."})
+        }
+      })
+    } else {
+      res.json({ error: "User is not logged in."})
+    }
+  })
 }
+

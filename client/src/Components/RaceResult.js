@@ -1,5 +1,5 @@
 
-import React from 'react'
+import React, { Component } from 'react'
 import TimeAgo from 'react-timeago'
 import { withStyles } from '@material-ui/core/styles'
 import Chip from '@material-ui/core/Chip'
@@ -17,6 +17,13 @@ const styles = theme => ({
     margin: '5px auto',
     padding: '5px',
   },
+  container: {
+    display: 'flex',
+    justifyContent: 'center'
+  },
+  col: {
+    width: '50%'
+  },
   timeAgo: {
     textAlign: 'left',
     margin: '0 10px 10px 0'
@@ -33,22 +40,48 @@ const PlayerResult = ({ player, classes }) => (
   </ListItem>
 )
 
-const RaceResult = ({ race, classes }) => (
-  <Paper className={classes.root}>
-    <Chip label={ <TimeAgo date={race.date} />} className={classes.chip} />
-       
-    <List>
-      {race.places.map(player =>
-      <div>
-        <Divider />
-        <PlayerResult player={player} classes={classes}/>
-      </div>
-      )}
-    </List>
-    <Button variant="fab" color="secondary" aria-label="Delete" className={classes.button}>
-      <DeleteIcon />
-    </Button>
-  </Paper>
-)
+class RaceResult extends Component {
+  constructor(props) {
+    super(props)
+    this.deleteRace = this.deleteRace.bind(this)
+  }
+  deleteRace() {
+    this.props.deleteRace(this.props.race)
+  }
+
+  render() {
+    const { race, classes } = this.props
+    return (
+      <Paper className={classes.root}>
+        <div className={classes.container}> 
+          <div className={classes.col}>
+            <div>
+              <Chip label={ <TimeAgo date={race.date} />} className={classes.chip} />
+            </div>
+            <div>
+              <Button
+                variant="fab"
+                aria-label="Delete"
+                className={classes.button}
+                onClick={this.deleteRace}
+              >
+                <DeleteIcon />
+              </Button>
+            </div>
+          </div>
+          <List className={classes.col}>
+            {race.places.map(player =>
+            <div>
+              <Divider />
+              <PlayerResult player={player} classes={classes}/>
+            </div>
+            )}
+          </List>
+          
+        </div>
+      </Paper>
+    )
+  }
+}
 
 export default withStyles(styles)(RaceResult)
