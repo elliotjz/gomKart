@@ -11,8 +11,8 @@ module.exports = {
   },
 
   comparePlayerNames: function(a, b) {
-    a = a.name
-    b = b.name
+    a = a.name.toLowerCase()
+    b = b.name.toLowerCase()
     if (a < b)
       return -1;
     if (a > b)
