@@ -192,15 +192,27 @@ module.exports = (app, jsonParser) => {
           name: req.body.name,
           scores: { "0": PLAYER_INITIAL_SCORE }
         }
-        Tournament.findOneAndUpdate(
+        Tournament.findOne(
           { code: req.body.code, adminUsers: req.user.email },
-          { $addToSet: { scoreHistory: scoreHistoryObject }},
-          {new: true},
           (err, tournament) => {
             if (err) {
               res.json({ error: "error adding player" })
             } else {
-              res.json(tournament)
+              let { scoreHistory } = tournament
+              scoreHistory.push(scoreHistoryObject)
+              scoreHistory.sort(sorting.comparePlayerNames)
+              Tournament.findOneAndUpdate(
+                { code: req.body.code, adminUsers: req.user.email },
+                { $set: { scoreHistory: scoreHistory }},
+                {new: true},
+                (err, tournament) => {
+                  if (err) {
+                    res.json({ error: "error adding player" })
+                  } else {
+                    res.json(tournament)
+                  }
+                }
+              )
             }
           }
         )
