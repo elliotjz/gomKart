@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { withStyles } from '@material-ui/core/styles'
-import { Typography } from '@material-ui/core'
+import { Typography, Button } from '@material-ui/core'
 
 import RaceResult from './RaceResult'
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -20,15 +20,28 @@ const styles = theme => ({
 class TournamentRecentRaces extends Component {
   constructor(props) {
     super(props)
+    this.state = {
+      numberOfRaces: 10
+    }
     this.deleteRace = this.deleteRace.bind(this)
+    this.displayMoreRaces = this.displayMoreRaces.bind(this)
   }
 
   deleteRace(race) {
     this.props.deleteRace(race)
   }
+
+  displayMoreRaces() {
+    const { numberOfRaces } = this.state
+    this.setState({
+      numberOfRaces: numberOfRaces + 10
+    })
+  }
   
   render() {
     const { classes, loading, error, races } = this.props
+    const { numberOfRaces } = this.state
+    const racesToDisplay = races.slice(0, numberOfRaces)
     const shouldDisplayRaces = races !== undefined && races !== null && races.length > 0
     return (
       <div className={classes.root}>
@@ -44,7 +57,7 @@ class TournamentRecentRaces extends Component {
           }
           {shouldDisplayRaces ?
             <div>
-              {races.map(race =>
+              {racesToDisplay.map(race =>
                 <RaceResult
                   race={race}
                   deleteRace={this.deleteRace}
@@ -56,6 +69,11 @@ class TournamentRecentRaces extends Component {
             </Typography>
           }
         </div>
+        <Button
+          color="primary"
+          onClick={this.displayMoreRaces}>
+          Load More...
+        </Button>
       </div>
     )
   }

@@ -27,10 +27,6 @@ const styles = theme => ({
   col: {
     width: '50%',
   },
-  timeAgo: {
-    textAlign: 'left',
-    margin: '0 10px 10px 0'
-  },
   button: {
     margin: theme.spacing.unit,
   },
