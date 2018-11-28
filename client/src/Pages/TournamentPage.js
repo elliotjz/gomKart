@@ -119,11 +119,19 @@ class TournamentPage extends Component {
     })
   }
 
-  updatedRacesCallback(races) {
+  updatedRacesCallback(races, page) {
     const parsedRaces = this.parseRaces(races)
-    this.setState({
-      races: parsedRaces
-    })
+    if (page && page > 1) {
+      let existingRaces = this.state.races
+      existingRaces.push.apply(existingRaces, parsedRaces)
+      this.setState({
+        races: existingRaces
+      })
+    } else {
+      this.setState({
+        races: parsedRaces
+      })
+    }
   }
 
   addPlayerCallback(tournament) {

@@ -16,11 +16,11 @@ function makeTournamentCode() {
   return code;
 }
 
-function getCodeFromQueryString(query) {
+function getCodeFromQueryString(query, param) {
   const vars = query.split('&')
   for (let i = 0; i < vars.length; i++) {
     let pair = vars[i].split('=')
-    if (decodeURIComponent(pair[0]) == 'code') {
+    if (decodeURIComponent(pair[0]) == param) {
       return decodeURIComponent(pair[1])
     }
   }
@@ -134,7 +134,7 @@ module.exports = (app, jsonParser) => {
 
   app.get('/api/get-races', (req, res) => {
     const query = req._parsedUrl.query
-    const code = getCodeFromQueryString(query)
+    const code = getCodeFromQueryString(query, 'code')
     if (code === undefined) {
       res.json({ error: "Tournament not found" })
     } else {
@@ -142,7 +142,18 @@ module.exports = (app, jsonParser) => {
         if (races === null) {
           res.json({ error: "No races found"})
         } else {
-          res.json({ races })
+          const page = getCodeFromQueryString(query, 'page')
+          const pageLength = 10
+          const length = races.length
+          let startIndex = length - page * pageLength
+          let endIndex = startIndex + 10
+          if (endIndex < 0) {
+            res.json({ error: "No more races to load" })
+          } else {
+            startIndex = startIndex < 0 ? 0 : startIndex
+            races = races.slice(startIndex, endIndex)
+            res.json({ races })
+          }
         }
       })
     }
@@ -150,7 +161,7 @@ module.exports = (app, jsonParser) => {
 
   app.get('/api/get-tournament-data', (req, res) => {
     const query = req._parsedUrl.query
-    const code = getCodeFromQueryString(query)
+    const code = getCodeFromQueryString(query, 'code')
     if (code === undefined) {
       res.json({ error: 'Tournament not found' })
     } else {
