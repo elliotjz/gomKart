@@ -32,74 +32,63 @@ const styles = theme => ({
   },
 });
 
-class SingleInputForm extends React.Component {
+const SingleInputForm = ({
+  classes,
+  inputLabel,
+  buttonLabel,
+  errorMessage,
+  successMessage,
+  loading,
+  handleChange,
+  handleSubmit,
+  value }) => (
 
-  constructor(props) {
-    super(props)
-    this.state = {
-      name: "",
-    }
-  }
-
-  handleChange = event => {
-    this.setState({
-      name: event.target.value,
-    })
-  }
-
-  submitForm = () => {
-    this.props.handleSubmit(this.state.name)
-  }
-
-  render() {
-    const { classes } = this.props
-    const { inputLabel, buttonLabel, errorMessage, successMessage, loading } = this.props
-    let { name } = this.state
-    return (
-      <form className={classes.root} autoComplete="off" onSubmit={e => e.preventDefault()}>
-        <TextField
-          id="name"
-          label={inputLabel}
-          className={classes.textField}
-          margin="dense"
-          value={name}
-          onChange={this.handleChange}
-        />
-        {loading ?
-          <div><CircularProgress className={classes.progress} /></div> :
-          <div>
-            {errorMessage !== "" &&
-              <Typography class={classes.errorMessage}>
-                {errorMessage}
-              </Typography>
-            }
-            {successMessage !== "" &&
-              <Typography class={classes.successMessage}>
-                {successMessage}
-              </Typography>
-            }
-          </div>
+  <form className={classes.root} autoComplete="off" onSubmit={e => e.preventDefault()}>
+    <TextField
+      id="name"
+      label={inputLabel}
+      className={classes.textField}
+      margin="dense"
+      value={value}
+      onChange={handleChange}
+    />
+    {loading ?
+      <div><CircularProgress className={classes.progress} /></div> :
+      <div>
+        {errorMessage !== "" &&
+          <Typography class={classes.errorMessage}>
+            {errorMessage}
+          </Typography>
         }
-        
-        <div className={classes.buttonContainer}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={this.submitForm}>
-            {buttonLabel}
-          </Button>
-        </div>
-      </form>
-    );
-  }
-}
+        {successMessage !== "" &&
+          <Typography class={classes.successMessage}>
+            {successMessage}
+          </Typography>
+        }
+      </div>
+    }
+    
+    <div className={classes.buttonContainer}>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleSubmit}>
+        {buttonLabel}
+      </Button>
+    </div>
+  </form>
+)
 
 SingleInputForm.propTypes = {
   classes: PropTypes.object.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   inputLabel: PropTypes.string.isRequired,
   buttonLabel: PropTypes.string.isRequired,
-  loading: PropTypes.bool.isRequired
+  loading: PropTypes.bool.isRequired,
+  errorMessage: PropTypes.string.isRequired,
+  successMessage: PropTypes.string.isRequired,
+  handleChange: PropTypes.func.isRequired,
+  value: PropTypes.string.isRequired,
 }
 
 export default withStyles(styles)(SingleInputForm)

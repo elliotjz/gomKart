@@ -28,11 +28,13 @@ class NewTournament extends Component {
   constructor(props) {
     super(props)
     this.addNewTournament = this.addNewTournament.bind(this)
+    this.handleChange = this.handleChange.bind(this)
     this.state = {
       redirect: false,
       errorMessage: "",
       successMessage: "",
-      loading: false
+      loading: false,
+      name: ""
     }
   }
 
@@ -55,7 +57,8 @@ class NewTournament extends Component {
     }
   }
 
-  async addNewTournament(name) {
+  async addNewTournament() {
+    const { name } = this.state
     if (!this.nameVerification(name)) return
 
     this.setState({
@@ -89,9 +92,15 @@ class NewTournament extends Component {
     }
   }
 
+  handleChange = event => {
+    this.setState({
+      name: event.target.value,
+    })
+  }
+
   render() {
     const { classes } = this.props
-    const { redirect, errorMessage, successMessage, loading } = this.state
+    const { redirect, errorMessage, successMessage, loading, name } = this.state
     
     return (
       <div>
@@ -106,6 +115,8 @@ class NewTournament extends Component {
             successMessage={successMessage}
             errorMessage={errorMessage}
             loading={loading}
+            handleChange={this.handleChange}
+            value={name}
           />
         </Paper>
         }

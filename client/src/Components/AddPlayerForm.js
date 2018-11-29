@@ -19,10 +19,12 @@ class AddPlayerForm extends Component {
   constructor(props) {
     super(props)
     this.addNewPlayer = this.addNewPlayer.bind(this)
+    this.handleChange = this.handleChange.bind(this)
     this.state = {
       loading: false,
       errorMessage: "",
-      successMessage: ""
+      successMessage: "",
+      name: ""
     }
   }
 
@@ -52,7 +54,8 @@ class AddPlayerForm extends Component {
     }
   }
 
-  async addNewPlayer(name) {
+  async addNewPlayer() {
+    const { name } = this.state
     if (!this.nameVerification(name)) return
 
     this.setState({ loading: true, errorMessage: "", successMessage: "" })
@@ -74,7 +77,7 @@ class AddPlayerForm extends Component {
           loading: false,
           errorMessage: "",
           successMessage: "Done!",
-
+          name: ""
         })
         this.props.addPlayerCallback(tournament)
         setTimeout(() => this.setState({successMessage: ""}), 5000)
@@ -88,9 +91,15 @@ class AddPlayerForm extends Component {
     }
   }
 
+  handleChange = event => {
+    this.setState({
+      name: event.target.value,
+    })
+  }
+
   render() {
     const { classes } = this.props
-    const { errorMessage, successMessage, loading } = this.state
+    const { errorMessage, successMessage, loading, name } = this.state
 
     return (
       <Paper elevation="0" className={classes.addPlayerContainer}>
@@ -102,6 +111,8 @@ class AddPlayerForm extends Component {
           errorMessage={errorMessage}
           successMessage={successMessage}
           loading={loading}
+          handleChange={this.handleChange}
+          value={name}
         />
       </Paper>
     )

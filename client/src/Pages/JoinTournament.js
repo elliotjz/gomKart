@@ -28,14 +28,17 @@ class JoinTournament extends Component {
   constructor(props) {
     super(props)
     this.submitJoinTournament = this.submitJoinTournament.bind(this)
+    this.handleChange = this.handleChange.bind(this)
     this.state = {
       redirect: false,
       errorMessage: "",
-      loading: false
+      loading: false,
+      code: ""
     }
   }
 
-  async submitJoinTournament(code) {
+  async submitJoinTournament() {
+    const { code }= this.state
     this.setState({
       errorMessage: "",
       loading: true
@@ -67,9 +70,15 @@ class JoinTournament extends Component {
     }
   }
 
+  handleChange = event => {
+    this.setState({
+      code: event.target.value,
+    })
+  }
+
   render() {
     const { classes } = this.props
-    const { redirect, errorMessage, loading } = this.state
+    const { redirect, errorMessage, loading, code } = this.state
     
     return (
       <div>
@@ -84,6 +93,8 @@ class JoinTournament extends Component {
                 buttonLabel="Join"
                 errorMessage={errorMessage}
                 loading={loading}
+                handleChange={this.handleChange}
+                value={code}
               />
             </Paper>
           }
