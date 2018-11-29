@@ -43,7 +43,7 @@ const SingleInputForm = ({
   handleSubmit,
   value }) => (
 
-  <form className={classes.root} autoComplete="off" onSubmit={e => e.preventDefault()}>
+  <form className={classes.root} autoComplete="off" onSubmit={e => {e.preventDefault(); handleSubmit();}}>
     <TextField
       id="name"
       label={inputLabel}
@@ -72,7 +72,7 @@ const SingleInputForm = ({
       <Button
         variant="contained"
         color="primary"
-        onClick={handleSubmit}>
+        type="submit">
         {buttonLabel}
       </Button>
     </div>

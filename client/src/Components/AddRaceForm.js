@@ -100,7 +100,8 @@ class AddRaceForm extends React.Component {
     this.setState({ numPlayers })
   }
 
-  submitRace() {
+  submitRace(event) {
+    event.preventDefault()
     let raceResults = {}
     for (let i = 0; i < this.state.numPlayers; i++) {
       let name = this.state.formData["player" + i]
@@ -198,7 +199,7 @@ class AddRaceForm extends React.Component {
         {players.length > 0 &&
         <Paper elevation="0" className={classes.addRaceContainer}>
           <Typography variant="h5">Add New Race</Typography>
-          <form className={classes.root} autoComplete="off" onSubmit={e => e.preventDefault()}>
+          <form className={classes.root} autoComplete="off" onSubmit={this.submitRace}>
             {playerResultList}
             {loading ?
               <CircularProgress className={classes.progress} /> :
@@ -239,7 +240,8 @@ class AddRaceForm extends React.Component {
               <Button
                 variant="contained"
                 color="primary"
-                onClick={this.submitRace}>
+                type='submit'
+              >
                 Submit
               </Button>
             </div>

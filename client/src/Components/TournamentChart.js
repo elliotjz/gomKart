@@ -27,7 +27,7 @@ class TournamentChart extends Component {
     super(props)
     this.changeDomain = this.changeDomain.bind(this)
     this.state = {
-      chartDomainIndex: 100
+      chartDomainIndex: 0
     }
   }
 
@@ -69,7 +69,12 @@ class TournamentChart extends Component {
               options={chartOptions}
             />
             {chartDomains.map((domain, index) =>
-              <Button key={index} color="primary" onClick={() => this.changeDomain(index)}>
+              <Button
+                key={index}
+                color="primary"
+                size='small'
+                variant={chartDomainIndex === index ? "outlined" : ""}
+                onClick={() => this.changeDomain(index)}>
                 {domain}
               </Button>
               )}
