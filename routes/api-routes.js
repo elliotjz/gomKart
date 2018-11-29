@@ -28,7 +28,7 @@ function getCodeFromQueryString(query, param) {
 
 function verifyName(name) {
   if (name.length > 16) return false
-  if (name.match(/^[a-z0-9]+$/i) === null) return false
+  if (name.match(/^[a-z0-9\s]+$/i) === null) return false
   return true
 }
 

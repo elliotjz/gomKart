@@ -41,20 +41,28 @@ class NewTournament extends Component {
   nameVerification(name) {
     // Check that the name starts with a character
     let errorMessage = ""
+    
+    // verify length
+    if (name.length > 16)
+      errorMessage = "Your name can't be more than 16 characters long."
+    
+    // verify characters
+    if (name.match(/^[a-z0-9\s]+$/i) === null)
+      errorMessage = "Your name must only contain letters and numbers"
+    
+    // verify first letter
     const letters = /^[A-Za-z]+$/
-    if (!name.charAt(0).match(letters)) {
-      errorMessage = "Tournament name must start with a letter"
-    }
+    if (!name.charAt(0).match(letters))
+      errorMessage = "Names must start with a letter"
 
     if (errorMessage !== "") {
       this.setState({
-        errorMessage,
-        loading: false
+        errorMessage
       })
       return false
-    } else {
-      return true
     }
+    
+    return true
   }
 
   async addNewTournament() {
