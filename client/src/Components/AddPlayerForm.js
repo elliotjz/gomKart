@@ -34,7 +34,10 @@ class AddPlayerForm extends Component {
     }
 
     // Check if the name already exists
-    if (this.props.players.includes(name)) {
+    const players = this.props.playerScores.map((player) => 
+      player[0]
+    )
+    if (players.includes(name)) {
       errorMessage = "There's already a player with this name in the tournament"
     }
 

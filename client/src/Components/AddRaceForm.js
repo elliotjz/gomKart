@@ -175,8 +175,9 @@ class AddRaceForm extends React.Component {
   }
 
   render() {
-    const { classes, players } = this.props
+    const { classes, playerScores } = this.props
     const { errorMessage, successMessage, loading } = this.state
+    const players = playerScores.map((player) => player[0])
     let playerResultList = []
 
     for (let i = 0; i < this.state.numPlayers; i++) {

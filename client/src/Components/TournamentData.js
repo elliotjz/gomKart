@@ -102,6 +102,7 @@ class TournamentData extends Component {
       })
       const resData = await res.json()
       if (resData.error) {
+        console.log(resData.error)
         this.setState({
           recentRacesError: resData.error,
           recentRacesLoading: false,
@@ -128,7 +129,7 @@ class TournamentData extends Component {
 
   render() {
     const {
-      players,
+      playerScores,
       parsedData,
       races,
       classes,
@@ -153,15 +154,15 @@ class TournamentData extends Component {
           {tabValue === 0 &&
           <TabContainer>
             <AddRaceForm
-              players={players}
+              playerScores={playerScores}
               updatedRacesCallback={updatedRacesCallback}
               updatedTournamentCallback={updatedTournamentCallback}
             />
-            <AddPlayerForm addPlayerCallback={addPlayerCallback} players={players}/>
+            <AddPlayerForm addPlayerCallback={addPlayerCallback} playerScores={playerScores}/>
           </TabContainer>}
           {tabValue === 1 &&
             <TabContainer>
-              <TournamentChart players={players} parsedData={parsedData}/>
+              <TournamentChart playerScores={playerScores} parsedData={parsedData}/>
             </TabContainer>}
           {tabValue === 2 &&
             <TabContainer>

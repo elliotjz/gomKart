@@ -12,30 +12,13 @@ const styles = {
 
 
 class PlayerChips extends Component {
-  getCurrentScores() {
-    const { players, parsedData } = this.props
-    if (parsedData !== null) {
-      let currentScores = {}
-      for (let i = 0; i < players.length; i++) {
-        const player = players[i]
-        const index = parsedData[0].indexOf(player)
-        const score = parsedData[parsedData.length - 1][index]
-        currentScores[player] = score.toFixed(0)
-      }
-      return currentScores
-    } else {
-      return 0
-    }
-  }
-
   render() {
-    const { classes, players, colors } = this.props
-    const currentScores = this.getCurrentScores()
+    const { classes, playerScores, colors } = this.props
     return (
       <div>
-        {players.map((player, index) => 
+        {playerScores.map((player, index) => 
           <Chip
-            label={`${player}: ${currentScores[player]}`}
+            label={`${player[0]}: ${player[1]}`}
             className={classes.chip}
             style={{borderColor: colors[index]}}
           />

@@ -5,7 +5,7 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 
 import TournamentHeader from '../Components/TournamentHeader'
 import TournamentData from '../Components/TournamentData'
-import { comparePos, compareRaces } from '../helpers'
+import { comparePos, compareRaces, comparePlayerScores } from '../helpers'
 
 const styles = theme => ({
   text: {
@@ -31,13 +31,36 @@ class TournamentPage extends Component {
       tournament: {},
       parsedData: null,
       races: [],
-      players: [],
+      playerScores: [],
       loading: true,
     }
   }
 
   componentWillMount() {
     this.getTournamentData()
+  }
+
+  getCurrentScores(tournament) {
+    if (tournament !== null) {
+      const { scoreHistory } = tournament
+      let currentScores = []
+      for (let i = 0; i < scoreHistory.length; i++) {
+        const player = scoreHistory[i].name
+        if (player.charAt(0) !== '_') {
+          let j = tournament.raceCounter
+          let score
+          while (score === undefined && j >= 0) {
+            if (scoreHistory[i].scores[j]) score = scoreHistory[i].scores[j]
+            j -= 1
+          }
+          currentScores.push([player, score.toFixed()])
+        }
+      }
+      currentScores.sort(comparePlayerScores)
+      return currentScores
+    } else {
+      return 0
+    }
   }
 
   async getTournamentData() {
@@ -47,15 +70,16 @@ class TournamentPage extends Component {
       const res = await fetch(`/api/get-tournament-data${params}`)
       const resData = await res.json()
       const tournament = resData.tournament
-      const players = tournament.scoreHistory.map((player) => (
-        player.name
-      ))
-      const indexOfCompPlayer = players.indexOf("_comp")
-      players.splice(indexOfCompPlayer, 1)
-      const parsedData = this.parseTournament(tournament)
+
+      // get players and current scores
+      const playerScores = this.getCurrentScores(tournament)
+
+      // parse the tournament data for the chart
+      const parsedData = this.parseTournament(tournament, playerScores)
+
       this.setState({
         tournament,
-        players,
+        playerScores,
         parsedData,
         loading: false,
         error: ""
@@ -68,7 +92,7 @@ class TournamentPage extends Component {
     }
   }
  
-  parseTournament(tournament) {
+  parseTournament(tournament, playerScores) {
     if (tournament && tournament.length !== {}) {
       let values = [["Race"]]
       const scoreHistory = tournament.scoreHistory
@@ -79,9 +103,14 @@ class TournamentPage extends Component {
       }
 
       // Add scores for each player
-      scoreHistory.forEach(player => {
-        if (player.name !== "_comp") {
-          values[0].push(player.name)
+      if (!playerScores) playerScores = this.state.playerScores
+      playerScores.forEach(playerScore => {
+        const index = scoreHistory.findIndex(x =>
+          x.name === playerScore[0]
+        )
+        const player = scoreHistory[index]
+        if (player !== "_comp") {
+          values[0].push(player)
           let lastResult = 0
           for (let i = 1; i < values.length; i++) {
             if (player.scores.hasOwnProperty(values[i][0].toString())) {
@@ -138,19 +167,23 @@ class TournamentPage extends Component {
     const players = tournament.scoreHistory.map((player) => (
       player.name
     ))
+    // remove computer player
     const indexOfCompPlayer = players.indexOf("_comp")
     players.splice(indexOfCompPlayer, 1)
+
     const parsedData = this.parseTournament(tournament)
+    const playerScores = this.getCurrentScores(players, parsedData)
+
     this.setState({
       tournament,
       parsedData,
-      players
+      playerScores
     })
   }
 
   render() {
     const { classes, location } = this.props
-    const { tournament, parsedData, races, players, loading, error } = this.state
+    const { tournament, parsedData, races, playerScores, loading, error } = this.state
     const tournamentExists = tournament !== undefined && Object.keys(tournament).length > 0
 
     return (
@@ -166,7 +199,7 @@ class TournamentPage extends Component {
           <div>
             <TournamentHeader name={tournament.name} code={tournament.code} />
             <TournamentData
-              players={players}
+              playerScores={playerScores}
               parsedData={parsedData}
               races={races}
               updatedTournamentCallback={this.updatedTournamentCallback}

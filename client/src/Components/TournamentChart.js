@@ -39,7 +39,7 @@ class TournamentChart extends Component {
   }
 
   render() {
-    const { players, parsedData, classes } = this.props
+    const { playerScores, parsedData, classes } = this.props
     const { chartDomainIndex } = this.state
     let dataToGraph = []
     const chartDomain = chartDomains[chartDomainIndex]
@@ -56,11 +56,11 @@ class TournamentChart extends Component {
       <div>
         {(dataToGraph !== undefined && dataToGraph[0].length > 1) ?
           <div className={classes.root}>
-              <PlayerChips
-              players={players}
+            <PlayerChips
+              playerScores={playerScores}
               parsedData={dataToGraph}
               colors={colors}
-              />
+            />
             <Chart
               chartType="LineChart"
               width="100%"
