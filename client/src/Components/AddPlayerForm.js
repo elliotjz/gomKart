@@ -21,7 +21,8 @@ class AddPlayerForm extends Component {
     this.addNewPlayer = this.addNewPlayer.bind(this)
     this.state = {
       loading: false,
-      errorMessage: ""
+      errorMessage: "",
+      successMessage: ""
     }
   }
 
@@ -72,10 +73,11 @@ class AddPlayerForm extends Component {
         this.setState({
           loading: false,
           errorMessage: "",
-          successMessage: "Done!"
+          successMessage: "Done!",
+
         })
         this.props.addPlayerCallback(tournament)
-        setTimeout(() => this.setState({successMessage: ""}), 2000)
+        setTimeout(() => this.setState({successMessage: ""}), 5000)
       }
     } catch (err) {
       this.setState({

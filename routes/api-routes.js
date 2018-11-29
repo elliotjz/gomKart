@@ -197,7 +197,6 @@ module.exports = (app, jsonParser) => {
 
   app.post('/api/add-player', jsonParser, (req, res) => {
     if (req.user) {
-      const letters = /^[A-Za-z]+$/
       if (verifyName(req.body.name)) {
         const scoreHistoryObject = {
           name: req.body.name,

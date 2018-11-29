@@ -50,22 +50,22 @@ class TournamentRecentRaces extends Component {
                   deleteRace={this.deleteRace}
                 />
               )}
+              {recentRacesBottomError !== "" ?
+                <Typography variant='p' className={classes.error}>
+                  {recentRacesBottomError}
+                </Typography> :
+                <Button
+                  color="primary"
+                  onClick={displayMoreRaces}>
+                  Load More...
+                </Button>
+              }
             </div> :
             <Typography variant="p">
               You need to add race results to the tournament.
             </Typography>
           }
         </div>
-        {recentRacesBottomError !== "" ?
-          <Typography variant='p' className={classes.error}>
-            {recentRacesBottomError}
-          </Typography> :
-          <Button
-            color="primary"
-            onClick={displayMoreRaces}>
-            Load More...
-          </Button>
-        }
       </div>
     )
   }

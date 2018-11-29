@@ -54,6 +54,7 @@ class SingleInputForm extends React.Component {
   render() {
     const { classes } = this.props
     const { inputLabel, buttonLabel, errorMessage, successMessage, loading } = this.props
+    let { name } = this.state
     return (
       <form className={classes.root} autoComplete="off" onSubmit={e => e.preventDefault()}>
         <TextField
@@ -61,7 +62,7 @@ class SingleInputForm extends React.Component {
           label={inputLabel}
           className={classes.textField}
           margin="dense"
-          value={this.state.name}
+          value={name}
           onChange={this.handleChange}
         />
         {loading ?

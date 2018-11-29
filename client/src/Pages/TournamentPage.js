@@ -171,9 +171,12 @@ class TournamentPage extends Component {
     const indexOfCompPlayer = players.indexOf("_comp")
     players.splice(indexOfCompPlayer, 1)
 
-    const parsedData = this.parseTournament(tournament)
-    const playerScores = this.getCurrentScores(players, parsedData)
+    // get players and current scores
+    const playerScores = this.getCurrentScores(tournament)
 
+    // parse the tournament data for the chart
+    const parsedData = this.parseTournament(tournament, playerScores)
+    
     this.setState({
       tournament,
       parsedData,

@@ -134,11 +134,12 @@ class AddRaceForm extends React.Component {
         this.setState({
           errorMessage: "",
           successMessage: "Done!",
-          loading: false
+          loading: false,
+          formData: formDataReset,
         })
         this.props.updatedRacesCallback(resData.races)
         this.props.updatedTournamentCallback(resData.tournament)
-        setTimeout(() => this.setState({successMessage: ""}), 2000)
+        setTimeout(() => this.setState({successMessage: ""}), 5000)
       }
       
     } catch (err) {

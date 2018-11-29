@@ -74,7 +74,6 @@ class TournamentData extends Component {
       }
 
     } catch (err) {
-      console.log(err)
       this.setState({
         recentRacesError: "Error loading races",
         recentRacesLoading: false
@@ -102,7 +101,6 @@ class TournamentData extends Component {
       })
       const resData = await res.json()
       if (resData.error) {
-        console.log(resData.error)
         this.setState({
           recentRacesError: resData.error,
           recentRacesLoading: false,
