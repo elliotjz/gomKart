@@ -17,7 +17,8 @@ const chartOptions = {
   curveType: "none",
   legend: 'none',
   colors,
-  chartArea: {width: '85%', height: '80%'}
+  chartArea: {width: '85%', height: '80%'},
+  vAxis: { baseline: 200 }
 }
 
 const chartDomains = ['All', 400, 100, 50]
