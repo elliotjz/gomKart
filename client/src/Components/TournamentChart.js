@@ -6,6 +6,7 @@ import { Button } from '@material-ui/core'
 
 import { colors } from '../helpers'
 import PlayerChips from './PlayerChips'
+import MoreStats from './MoreStats'
 
 const styles = {
   root: {
@@ -30,13 +31,16 @@ class TournamentChart extends Component {
     this.onChipClick = this.onChipClick.bind(this)
     this.state = {
       chartDomainIndex: 0,
-      excludedPlayers: []
+      excludedPlayers: [],
+      parsedTournament: null
     }
   }
 
   changeDomain(index) {
+    const parsedTournament = this.parseTournament(index, null)
     this.setState({
-      chartDomainIndex: index
+      parsedTournament,
+      chartDomainIndex: index,
     })
   }
 
@@ -45,20 +49,20 @@ class TournamentChart extends Component {
     if (excludedPlayers.includes(name)) {
       const index = excludedPlayers.indexOf(name)
       excludedPlayers.splice(index, 1)
-      this.setState({
-        excludedPlayers
-      })
     } else {
       excludedPlayers.push(name)
-      this.setState({
-        excludedPlayers
-      })
     }
+    const parsedTournament = this.parseTournament(null, excludedPlayers)
+    this.setState({
+      parsedTournament,
+      excludedPlayers
+    })
   }
 
-  parseTournament() {
+  parseTournament(chartDomainIndex, excludedPlayers) {
     const { tournament, playerScores } = this.props
-    const { chartDomainIndex, excludedPlayers } = this.state
+    chartDomainIndex = chartDomainIndex || this.state.chartDomainIndex
+    excludedPlayers = excludedPlayers || this.state.excludedPlayers
     let parsedColors = colors.slice()
     let colorsToRemove = []
 
@@ -109,12 +113,22 @@ class TournamentChart extends Component {
     }
   }
 
+  componentDidMount() {
+    this.setState({
+      parsedTournament: this.parseTournament()
+    })
+  }
+
   render() {
-    const { playerScores, classes } = this.props
-    const { chartDomainIndex, excludedPlayers } = this.state
-    const parsedTournament = this.parseTournament()
-    const parsedData = parsedTournament[0]
-    const parsedColors = parsedTournament[1]
+    const { playerScores, tournament, classes } = this.props
+    const { chartDomainIndex, excludedPlayers, parsedTournament } = this.state
+    
+    let parsedData
+    let parsedColors
+    if (parsedTournament) {
+      parsedData = parsedTournament[0]
+      parsedColors = parsedTournament[1]
+    }
     chartOptions.colors = parsedColors
 
     return (
@@ -145,7 +159,8 @@ class TournamentChart extends Component {
                 onClick={() => this.changeDomain(index)}>
                 {domain}
               </Button>
-              )}
+            )}
+            <MoreStats tournament={tournament} playerScores={playerScores} />
           </div> :
           <div>
             <Typography variant="p">You need to add players to the tournament before you can see the chart</Typography>

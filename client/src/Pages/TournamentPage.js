@@ -104,8 +104,10 @@ class TournamentPage extends Component {
   }
 
   updatedTournamentCallback(tournament) {
+    const playerScores = this.getCurrentScores(tournament)
     this.setState({
       tournament,
+      playerScores
     })
   }
 

@@ -6,8 +6,11 @@ const styles = {
   chip: {
     margin: '8px',
     borderWidth: '3px',
-    borderStyle: 'solid'
-  }
+    borderStyle: 'solid',
+    '&:focus': {
+      backgroundColor: '#ddd'
+    }
+  },
 }
 
 

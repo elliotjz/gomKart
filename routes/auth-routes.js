@@ -16,7 +16,6 @@ module.exports = (app) => {
     '/auth/google/redirect',
     passport.authenticate('google'),
     (req, res) => {
-      // console.log(req.user)
       res.redirect('/')
     }
   )

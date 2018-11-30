@@ -58,8 +58,11 @@ function recalculateScores(code, res) {
     races.sort(sorting.compareRace)
 
     Tournament.findOne({ code: code }, (err, tournament) => {
+
       // Delete score history. TODO: Change this so that it only re-calculates the
       // necessary part of the score history.
+
+      // Initialize new score history
       tournament.scoreHistory.forEach(playerHistory => {
         if (playerHistory.name.charAt(0) === '_') {
           playerHistory.scores = { "0": COMP_INITIAL_SCORE }
@@ -67,13 +70,13 @@ function recalculateScores(code, res) {
           playerHistory.scores = { "0": PLAYER_INITIAL_SCORE }
         }
       })
+
       // Reset race counter
       tournament.raceCounter = 0
-
-      for (let i = 0; i < races.length; i++) {
-        tournament.scoreHistory = eloCalcs.getUpdatedScoreHistory(tournament, races[i].places[0])
+      races.forEach(race => {
+        tournament.scoreHistory = eloCalcs.getUpdatedScoreHistory(tournament, race.places[0])
         tournament.raceCounter += 1
-      }
+      })
       addNewScoresToTournament(code, tournament.scoreHistory, tournament.raceCounter, res)
     })
   })

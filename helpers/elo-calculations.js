@@ -6,6 +6,7 @@ module.exports = {
   getUpdatedScoreHistory: function(tournament, places) {
     let { scoreHistory } = tournament
     const newEloScores = this.getNewEloScores(tournament, places)
+
     const playersInRace = Object.keys(newEloScores)
     if (newEloScores === undefined && playersInRace.length === 0) {
       throw "Error calculating new ELO scores"
@@ -24,8 +25,7 @@ module.exports = {
   },
 
   getNewEloScores: function(tournament, places) {
-    const eloScores = this.getOldScores(tournament)
-    
+    const eloScores = this.getOldScores(tournament, places) // oldScores = { "Elliot": 210, "Jake": 220 }
     // append computer players to places object
     for (let i = 1; i <= 12; i++) {
       if (!Object.values(places).includes(i.toString())) {
@@ -43,7 +43,6 @@ module.exports = {
         const opponentIsComp = opponent.charAt(0) === '_'
         if (player !== opponent && !(playerIsComp && opponentIsComp)) {
           // at least one of the players are not computers
-          // console.log(`${player}, ${opponent}`)
           const playerOldScore = playerIsComp ?
             eloScores["_comp"] : eloScores[player]
           const opponentOldScore = opponentIsComp ?
@@ -55,7 +54,6 @@ module.exports = {
             places[opponent]
           )
           scoreChanges[player] += scoreChange
-          // console.log(`${playerOldScore}, ${opponentOldScore}, ${places[player]}, ${places[opponent]}, ${scoreChange}`)
         }
       }
     }
@@ -73,34 +71,35 @@ module.exports = {
     return eloScores
   },
 
-  getOldScores: function(tournament) {
+  getOldScores: function(tournament, places) {
     let { scoreHistory } = tournament
     // get all player's old scores
     let oldScores = {}
     for (let i = 0; i < scoreHistory.length; i++) {
-      // find latest score
-      let latestScore
-      let j = tournament.raceCounter
-      while (j >= 0 && latestScore === undefined) {
-        if (j.toString() in scoreHistory[i].scores) {
-          latestScore = scoreHistory[i].scores[j.toString()]
+      const name = scoreHistory[i].name
+      if (Object.keys(places).includes(name) || name === "_comp") {
+        // find latest score
+        let latestScore
+        let j = tournament.raceCounter
+        while (j >= 0 && latestScore === undefined) {
+          if (j.toString() in scoreHistory[i].scores) {
+            latestScore = scoreHistory[i].scores[j.toString()]
+          }
+          j -= 1
         }
-        j -= 1
+        if (latestScore === undefined) throw "Couldn't find scores"
+        oldScores[scoreHistory[i].name] = latestScore
       }
-      if (latestScore === undefined) throw "Couldn't find scores"
-      oldScores[scoreHistory[i].name] = latestScore
     }
     return oldScores
   },
 
   getPlayerScoreChange: function(playerScore, opponentScore, playerPlace, opponentPlace) {
-    // console.log(`${playerScore}, ${opponentScore}, ${playerPlace}, ${opponentPlace}`)
     const playerExpected = 1 / (1 + Math.pow(10, (opponentScore - playerScore) / this.SENSITIVITY2))
     let result
     if (playerPlace === opponentPlace) result = 0.5
     else if (playerPlace < opponentPlace) result = 1
     else result = 0
-    // console.log(result)
     const scoreChange = this.SENSITIVITY * (result - playerExpected)
     return scoreChange
   }
