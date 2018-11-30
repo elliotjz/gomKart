@@ -26,8 +26,10 @@ class TournamentChart extends Component {
   constructor(props) {
     super(props)
     this.changeDomain = this.changeDomain.bind(this)
+    this.onChipClick = this.onChipClick.bind(this)
     this.state = {
-      chartDomainIndex: 0
+      chartDomainIndex: 0,
+      excludedPlayers: []
     }
   }
 
@@ -35,39 +37,104 @@ class TournamentChart extends Component {
     this.setState({
       chartDomainIndex: index
     })
+  }
 
+  onChipClick(name) {
+    let { excludedPlayers } = this.state
+    if (excludedPlayers.includes(name)) {
+      const index = excludedPlayers.indexOf(name)
+      excludedPlayers.splice(index, 1)
+      this.setState({
+        excludedPlayers
+      })
+    } else {
+      excludedPlayers.push(name)
+      this.setState({
+        excludedPlayers
+      })
+    }
+  }
+
+  parseTournament() {
+    const { tournament, playerScores } = this.props
+    const { chartDomainIndex, excludedPlayers } = this.state
+    let parsedColors = colors.slice()
+    let colorsToRemove = []
+
+    if (tournament && tournament.length !== {}) {
+      let parsedData = [["Race"]]
+      const { scoreHistory } = tournament
+
+      // Find the domain of the chart
+      let startIndex = 0
+      const chartDomain = chartDomains[chartDomainIndex]
+      if (chartDomainIndex !== 0 && chartDomain < tournament.raceCounter) {
+        startIndex = tournament.raceCounter - chartDomain
+      }
+      
+      // Add a column for each race
+      for (let i = startIndex; i <= tournament.raceCounter; i++) {
+        parsedData.push([i.toString()])
+      }
+
+      // Add scores for each player
+      playerScores.forEach((playerScore, index) => {
+        const name = playerScore[0]
+        // exclude excluded players
+        if (!excludedPlayers.includes(name) && name !== "_comp") {
+          // get index of player
+          const index = scoreHistory.findIndex(x =>
+            x.name === playerScore[0]
+          )
+          const player = scoreHistory[index]
+          parsedData[0].push(player.name)
+          let lastResult = 0
+          for (let i = 1; i < parsedData.length; i++) {
+            if (player.scores.hasOwnProperty(parsedData[i][0].toString())) {
+              lastResult = player.scores[parsedData[i][0].toString()]
+            }
+            parsedData[i].push(lastResult)
+          }
+        } else {
+          if (name !== "_comp") {
+            colorsToRemove.push(index)
+          }
+        }
+      })
+      for (let i = colorsToRemove.length - 1; i >= 0; i--) {
+        parsedColors.splice(colorsToRemove[i], 1)
+      }
+      return [parsedData, parsedColors]
+    }
   }
 
   render() {
-    const { playerScores, parsedData, classes } = this.props
-    const { chartDomainIndex } = this.state
-    let dataToGraph = []
-    const chartDomain = chartDomains[chartDomainIndex]
-    if (chartDomainIndex !== 0 && chartDomain < parsedData.length) {
-      const endIndex =  parsedData.length - 1
-      const startIndex = endIndex - chartDomain
-      dataToGraph.push(parsedData[0])
-      dataToGraph.push.apply(dataToGraph, parsedData.slice(startIndex, endIndex))
-    } else {
-      dataToGraph = parsedData
-    }
+    const { playerScores, classes } = this.props
+    const { chartDomainIndex, excludedPlayers } = this.state
+    const parsedTournament = this.parseTournament()
+    const parsedData = parsedTournament[0]
+    const parsedColors = parsedTournament[1]
+    chartOptions.colors = parsedColors
 
     return (
       <div>
-        {(dataToGraph !== undefined && dataToGraph[0].length > 1) ?
+        {parsedData !== undefined ?
           <div className={classes.root}>
             <PlayerChips
               playerScores={playerScores}
-              parsedData={dataToGraph}
               colors={colors}
+              onClick={this.onChipClick}
+              excludedPlayers={excludedPlayers}
             />
-            <Chart
-              chartType="LineChart"
-              width="100%"
-              height="600px"
-              data={dataToGraph}
-              options={chartOptions}
-            />
+            {parsedData[0].length > 1 &&
+              <Chart
+                chartType="LineChart"
+                width="100%"
+                height="600px"
+                data={parsedData}
+                options={chartOptions}
+              />
+            }
             {chartDomains.map((domain, index) =>
               <Button
                 key={index}

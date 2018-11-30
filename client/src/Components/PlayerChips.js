@@ -13,14 +13,20 @@ const styles = {
 
 class PlayerChips extends Component {
   render() {
-    const { classes, playerScores, colors } = this.props
+    const { classes, playerScores, colors, onClick, excludedPlayers } = this.props
+    
     return (
       <div>
         {playerScores.map((player, index) => 
           <Chip
             label={`${player[0]}: ${player[1]}`}
             className={classes.chip}
-            style={{borderColor: colors[index]}}
+            style={
+              excludedPlayers.includes(player[0]) ?
+              {borderColor: "#bbb"} :
+              {borderColor: colors[index]}
+            }
+            onClick={() => onClick(player[0])}
           />
         )}
       </div>

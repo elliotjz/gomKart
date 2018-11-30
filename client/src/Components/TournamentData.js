@@ -128,7 +128,7 @@ class TournamentData extends Component {
   render() {
     const {
       playerScores,
-      parsedData,
+      tournament,
       races,
       classes,
       updatedTournamentCallback,
@@ -160,7 +160,7 @@ class TournamentData extends Component {
           </TabContainer>}
           {tabValue === 1 &&
             <TabContainer>
-              <TournamentChart playerScores={playerScores} parsedData={parsedData}/>
+              <TournamentChart playerScores={playerScores} tournament={tournament}/>
             </TabContainer>}
           {tabValue === 2 &&
             <TabContainer>

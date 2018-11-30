@@ -29,7 +29,6 @@ class TournamentPage extends Component {
     this.state = {
       error: "",
       tournament: {},
-      parsedData: null,
       races: [],
       playerScores: [],
       loading: true,
@@ -74,13 +73,9 @@ class TournamentPage extends Component {
       // get players and current scores
       const playerScores = this.getCurrentScores(tournament)
 
-      // parse the tournament data for the chart
-      const parsedData = this.parseTournament(tournament, playerScores)
-
       this.setState({
         tournament,
         playerScores,
-        parsedData,
         loading: false,
         error: ""
       })
@@ -89,38 +84,6 @@ class TournamentPage extends Component {
         error: "Error loading data",
         loading: false
       })
-    }
-  }
- 
-  parseTournament(tournament, playerScores) {
-    if (tournament && tournament.length !== {}) {
-      let values = [["Race"]]
-      const scoreHistory = tournament.scoreHistory
-
-      // Add a column for each race
-      for (let i = 0; i <= tournament.raceCounter; i++) {
-        values.push([i.toString()])
-      }
-
-      // Add scores for each player
-      if (!playerScores) playerScores = this.state.playerScores
-      playerScores.forEach(playerScore => {
-        const index = scoreHistory.findIndex(x =>
-          x.name === playerScore[0]
-        )
-        const player = scoreHistory[index]
-        if (player !== "_comp") {
-          values[0].push(player)
-          let lastResult = 0
-          for (let i = 1; i < values.length; i++) {
-            if (player.scores.hasOwnProperty(values[i][0].toString())) {
-              lastResult = player.scores[values[i][0].toString()]
-            }
-            values[i].push(lastResult)
-          }
-        }
-      })
-      return values
     }
   }
 
@@ -141,10 +104,8 @@ class TournamentPage extends Component {
   }
 
   updatedTournamentCallback(tournament) {
-    const parsedData = this.parseTournament(tournament)
     this.setState({
       tournament,
-      parsedData,
     })
   }
 
@@ -173,20 +134,16 @@ class TournamentPage extends Component {
 
     // get players and current scores
     const playerScores = this.getCurrentScores(tournament)
-
-    // parse the tournament data for the chart
-    const parsedData = this.parseTournament(tournament, playerScores)
     
     this.setState({
       tournament,
-      parsedData,
       playerScores
     })
   }
 
   render() {
     const { classes, location } = this.props
-    const { tournament, parsedData, races, playerScores, loading, error } = this.state
+    const { tournament, races, playerScores, loading, error } = this.state
     const tournamentExists = tournament !== undefined && Object.keys(tournament).length > 0
 
     return (
@@ -203,7 +160,7 @@ class TournamentPage extends Component {
             <TournamentHeader name={tournament.name} code={tournament.code} />
             <TournamentData
               playerScores={playerScores}
-              parsedData={parsedData}
+              tournament={tournament}
               races={races}
               updatedTournamentCallback={this.updatedTournamentCallback}
               updatedRacesCallback={this.updatedRacesCallback}
