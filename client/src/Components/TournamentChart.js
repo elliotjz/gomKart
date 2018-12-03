@@ -3,6 +3,8 @@ import { withStyles } from '@material-ui/core/styles'
 import { Chart } from 'react-google-charts'
 import Typography from '@material-ui/core/Typography'
 import { Button } from '@material-ui/core'
+import { CircularProgress } from '@material-ui/core'
+import Divider from '@material-ui/core/Divider'
 
 import { colors } from '../helpers'
 import PlayerChips from './PlayerChips'
@@ -12,6 +14,21 @@ const styles = {
   root: {
 
   },
+  moreStatsBtn: {
+    margin: '30px auto'
+  },
+  chartLoader: {
+    minHeight: '200px',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center'
+  },
+  loader: {
+    margin: 'auto'
+  },
+  divider: {
+    margin: "20px auto"
+  }
 }
 
 const chartOptions = {
@@ -29,11 +46,19 @@ class TournamentChart extends Component {
     super(props)
     this.changeDomain = this.changeDomain.bind(this)
     this.onChipClick = this.onChipClick.bind(this)
+    this.toggleMoreStats = this.toggleMoreStats.bind(this)
     this.state = {
       chartDomainIndex: 0,
       excludedPlayers: [],
-      parsedTournament: null
+      parsedTournament: null,
+      displayAllStats: false
     }
+  }
+
+  toggleMoreStats() {
+    this.setState({
+      displayAllStats: !this.state.displayAllStats
+    })
   }
 
   changeDomain(index) {
@@ -121,7 +146,7 @@ class TournamentChart extends Component {
 
   render() {
     const { playerScores, tournament, classes } = this.props
-    const { chartDomainIndex, excludedPlayers, parsedTournament } = this.state
+    const { chartDomainIndex, excludedPlayers, parsedTournament, displayAllStats } = this.state
     
     let parsedData
     let parsedColors
@@ -142,13 +167,20 @@ class TournamentChart extends Component {
               excludedPlayers={excludedPlayers}
             />
             {parsedData[0].length > 1 &&
-              <Chart
-                chartType="LineChart"
-                width="100%"
-                height="600px"
-                data={parsedData}
-                options={chartOptions}
-              />
+              <div>
+                <Chart
+                  chartType="LineChart"
+                  width="100%"
+                  height="600px"
+                  data={parsedData}
+                  options={chartOptions}
+                  loader={
+                    <div className={classes.chartLoader}>
+                      <CircularProgress className={classes.loader}/>
+                    </div>
+                  }
+                />
+              </div>
             }
             {chartDomains.map((domain, index) =>
               <Button
@@ -160,7 +192,20 @@ class TournamentChart extends Component {
                 {domain}
               </Button>
             )}
-            <MoreStats tournament={tournament} playerScores={playerScores} />
+            <div className={classes.divider}>
+              <Divider variant="middle" />
+            </div>
+            {displayAllStats ? 
+              <div>
+                <MoreStats tournament={tournament} playerScores={playerScores} />
+                <div className={classes.moreStatsBtn}>
+                  <Button variant="contained" onClick={this.toggleMoreStats} color="primary">Less Stats</Button>
+                </div>
+              </div> :
+              <div className={classes.moreStatsBtn}>
+                <Button variant="contained" onClick={this.toggleMoreStats} color="primary">More Stats</Button>
+              </div>
+            }
           </div> :
           <div>
             <Typography variant="p">You need to add players to the tournament before you can see the chart</Typography>

@@ -79,17 +79,6 @@ class App extends Component {
       </BrowserRouter>
     )
   }
-  /* 
-  render() {
-    const { user, loading, isLoggedIn } = this.state
-    const redirect = !loading && !isLoggedIn && window.location.pathname !== '/login'
-    return (
-      <div className="App">
-        <Header loading={loading} user={user} isLoggedIn={isLoggedIn}/>
-        <Main isLoggedIn={isLoggedIn} redirect={redirect}/>
-      </div>
-    );
-  } */
 }
 
 export default App

@@ -2,17 +2,23 @@ import React, { Component } from 'react'
 import { Chart } from 'react-google-charts'
 import { withStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
-import { Button } from '@material-ui/core'
+import { CircularProgress } from '@material-ui/core';
 
 const styles = {
   root: {
-
-  },
-  moreStats: {
     marginTop: '50px',
   },
   bestAndWorst: {
     margin: '30px auto'
+  },
+  chartLoader: {
+    minHeight: '200px',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center'
+  },
+  loader: {
+    margin: 'auto'
   }
 }
 
@@ -22,36 +28,46 @@ const mostRacesChartOptions = {
     title: 'Races'
   },
   legend: 'none',
+  chartArea: {width: '85%', height: '80%'},
+
+}
+
+const swingChartOptions = {
+  title: "Swings (last 50 races)",
+  vAxis: {
+    title: 'Score Change'
+  },
+  legend: 'none',
+  chartArea: {width: '85%', height: '80%'},
+
 }
 
 class MoreStats extends Component {
   constructor(props) {
     super(props)
-    this.toggleMoreStats = this.toggleMoreStats.bind(this)
     this.state = {
-      display: false
+      raceCountData: null,
+      highAndLow: null,
+      swingChartData: null
     }
-  }
-
-  toggleMoreStats() {
-    this.setState({
-      display: !this.state.display
-    })
   }
 
   getRaceCountData() {
     const { scoreHistory } = this.props.tournament
+
     let raceCounts = scoreHistory.map(player => (
       [ player.name, Object.keys(player.scores).length ]
     ))
+
     raceCounts.sort((a,b) => b[1] - a[1])
     let raceCountData = [["Player", "Race Count"]]
-    raceCountData.push.apply(raceCountData, raceCounts.slice(1, 11))
+    raceCountData.push.apply(raceCountData, raceCounts.slice(1, 9))
     return raceCountData
   }
 
   getHighestAndLowestScores() {
     const { scoreHistory } = this.props.tournament
+    
     let maxScore = -200
     let minScore = 99999999
     let maxScorePlayer = ""
@@ -71,36 +87,96 @@ class MoreStats extends Component {
         }
       }
     })
-    return [maxScore.toFixed(), maxScorePlayer, minScore.toFixed(), minScorePlayer]
+    maxScore = maxScore.toFixed()
+    minScore = minScore.toFixed()
+    return { maxScore, maxScorePlayer, minScore, minScorePlayer }
+  }
+
+  getSwings(period) {
+    console.log('getSwing')
+    const { scoreHistory, raceCounter } = this.props.tournament
+    if (raceCounter < period) {
+      return null
+    }
+    let swingChartData = []
+
+    scoreHistory.forEach(player => {
+      if (player.name !== '_comp') {
+        const currentScore = this.getCurrentScore(player.scores, raceCounter)
+        const score50RacesAgo = this.getCurrentScore(player.scores, raceCounter - period)
+        let swing = currentScore - score50RacesAgo
+        swing = parseInt(swing.toFixed())
+        swingChartData.push([ player.name, swing ])
+      }
+    })
+    swingChartData.sort((a,b) => b[1] - a[1])
+    if (swingChartData.length > 8) {
+      swingChartData.splice(4, swingChartData.length - 8)
+    }
+    swingChartData.unshift(["Player", "Swing (last 50 races)"])
+    return swingChartData
+  }
+
+  getCurrentScore(scores, raceCounter) {
+    let currentScore
+    let i = raceCounter
+    while (currentScore === undefined && i >= 0) {
+      if (scores[i.toString()] !== undefined) {
+        currentScore = scores[i.toString()]
+      }
+      i -= 1
+    }
+    return currentScore
+  }
+
+  componentDidMount() {
+    const raceCountData = this.getRaceCountData()
+    const highAndLow = this.getHighestAndLowestScores()
+    const swingChartData = this.getSwings(50)
+    this.setState({
+      raceCountData,
+      highAndLow,
+      swingChartData
+    })
   }
 
   render() {
-    const { display } = this.state
     const { classes } = this.props
-    const raceCountData = this.getRaceCountData()
-    const highAndLow = this.getHighestAndLowestScores()
+    const { raceCountData, highAndLow, swingChartData } = this.state
+
+    const loader =
+      <div className={classes.chartLoader}>
+        <CircularProgress className={classes.loader}/>
+      </div>
 
     return (
       <div>
-        {display ?
-          <div className={classes.moreStats}>
-            <Typography variant='h4'>Stats</Typography>
-            <Chart
-              chartType="ColumnChart"
-              width="100%"
-              height="400px"
-              data={raceCountData}
-              options={mostRacesChartOptions}
-            />
-            <div className={classes.bestAndWorst}>
-              <Typography variant='h6'>Highest Score Ever - {highAndLow[1]}: {highAndLow[0]}</Typography>
-              <Typography variant='h6'>Lowest Score Ever -  {highAndLow[3]}: {highAndLow[2]}</Typography>
-            </div>
-            <Button variant="contained" onClick={this.toggleMoreStats} color="primary">Less Stats</Button>
-          </div> :
-          <div className={classes.moreStats}>
-            <Button variant="contained" onClick={this.toggleMoreStats} color="primary">More Stats</Button>
+        {swingChartData !== null && 
+        <div className={classes.root}>
+          <Typography variant='h4'>Stats</Typography>
+          <Chart
+            chartType="ColumnChart"
+            width="100%"
+            height="400px"
+            data={raceCountData}
+            options={mostRacesChartOptions}
+            loader={loader}
+          />
+          <div className={classes.bestAndWorst}>
+            <Typography variant='h6'>Highest Score Ever - {highAndLow.maxScorePlayer}: {highAndLow.maxScore}</Typography>
+            <Typography variant='h6'>Lowest Score Ever -  {highAndLow.minScorePlayer}: {highAndLow.minScore}</Typography>
           </div>
+          {swingChartData &&
+            <Chart 
+            chartType="ColumnChart"
+            width="100%"
+            height="400px"
+            data={swingChartData}
+            options={swingChartOptions}
+            loader={loader}
+          />
+          }
+        </div>
         }
       </div>
     )
