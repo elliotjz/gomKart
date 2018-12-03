@@ -118,7 +118,7 @@ class TournamentChart extends Component {
           )
           const player = scoreHistory[index]
           parsedData[0].push(player.name)
-          let lastResult = 0
+          let lastResult = this.getCurrentScore(player.scores, startIndex)
           for (let i = 1; i < parsedData.length; i++) {
             if (player.scores.hasOwnProperty(parsedData[i][0].toString())) {
               lastResult = player.scores[parsedData[i][0].toString()]
@@ -136,6 +136,18 @@ class TournamentChart extends Component {
       }
       return [parsedData, parsedColors]
     }
+  }
+
+  getCurrentScore(scores, raceCounter) {
+    let currentScore
+    let i = raceCounter
+    while (currentScore === undefined && i >= 0) {
+      if (scores[i.toString()] !== undefined) {
+        currentScore = scores[i.toString()]
+      }
+      i -= 1
+    }
+    return currentScore
   }
 
   componentDidMount() {
