@@ -1,4 +1,3 @@
-
 export const colors = [
   '#3366CC',
   '#DC3912',
@@ -39,40 +38,34 @@ export const colors = [
   '#8B0707',
   '#329262',
   '#5574A6',
-  '#3B3EAC'
+  '#3B3EAC',
 ]
 
-export const getQueryVariable = (variable) => {
-  let query = window.location.search.substring(1);
-  let vars = query.split('&')
+export const getQueryVariable = variable => {
+  const query = window.location.search.substring(1)
+  const vars = query.split('&')
   for (let i = 0; i < vars.length; i++) {
-    let pair = vars[i].split('=')
+    const pair = vars[i].split('=')
     if (decodeURIComponent(pair[0]) === variable) {
       return decodeURIComponent(pair[1])
     }
   }
 }
 
-export const comparePos = (a,b) => {
-  a = parseInt(a.position)
-  b = parseInt(b.position)
-  if (a < b)
-    return -1;
-  if (a > b)
-    return 1;
-  return 0;
+export const comparePos = (a, b) => {
+  const aPos = parseInt(a.position)
+  const bPos = parseInt(b.position)
+  if (aPos < bPos) return -1
+  if (aPos > bPos) return 1
+  return 0
 }
 
-export const compareRaces = (a,b) => {
-  a = a.date
-  b = b.date
-  if (a > b)
-    return -1;
-  if (a < b)
-    return 1;
-  return 0;
+export const compareRaces = (a, b) => {
+  const aDate = a.date
+  const bDate = b.date
+  if (aDate > bDate) return -1
+  if (aDate < bDate) return 1
+  return 0
 }
 
-export const comparePlayerScores = (a,b) => {
-  return b[1] - a[1]
-}
+export const comparePlayerScores = (a, b) => b[1] - a[1]

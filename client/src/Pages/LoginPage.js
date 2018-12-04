@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles';
-import { Button, Typography } from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles'
+import { Button, Typography } from '@material-ui/core'
 
 const styles = theme => ({
   root: {
@@ -20,7 +20,7 @@ class LoginPage extends Component {
 
     return (
       <div className={classes.root}>
-        <Typography variant='h5'>Login</Typography>
+        <Typography variant="h5">Login</Typography>
         <Button
           variant="contained"
           className={classes.button}
@@ -28,7 +28,7 @@ class LoginPage extends Component {
         >
           Login with Google+
         </Button>
-        </div>
+      </div>
     )
   }
 }

@@ -17,10 +17,10 @@ class App extends Component {
     this.state = {
       user: null,
       isLoggedIn: false,
-      loading: true
+      loading: true,
     }
   }
-  
+
   componentWillMount() {
     this.getUser()
   }
@@ -33,20 +33,20 @@ class App extends Component {
         this.setState({
           user: null,
           isLoggedIn: false,
-          loading: false
+          loading: false,
         })
       } else {
         this.setState({
           user: resData.user,
           isLoggedIn: true,
-          loading: false
+          loading: false,
         })
       }
     } catch (err) {
       this.setState({
         user: null,
         isLoggedIn: false,
-        loading: false
+        loading: false,
       })
     }
   }
@@ -54,27 +54,29 @@ class App extends Component {
   render() {
     const { user, loading, isLoggedIn } = this.state
     const redirect = !loading && !isLoggedIn
-    
+
     return (
       <BrowserRouter>
         <div className="App">
-          <Header loading={loading} user={user} isLoggedIn={isLoggedIn}/>
-          {loading ?
-            null :
+          <Header loading={loading} user={user} isLoggedIn={isLoggedIn} />
+          {loading ? null : (
             <div>
-              {redirect ?
-              <Switch><Route component={LoginPage}/></Switch> :
-              <Switch>
-                <Route exact path="/" component={Home} />
-                <Route exact path="/login" component={LoginPage} />
-                <Route exact path="/tournament" component={TournamentPage} />
-                <Route exact path="/new" component={NewTournament} />
-                <Route exact path="/join" component={JoinTournament} />
-                <Route component={NotFound}/>
-              </Switch>
-              }
+              {redirect ? (
+                <Switch>
+                  <Route component={LoginPage} />
+                </Switch>
+              ) : (
+                <Switch>
+                  <Route exact path="/" component={Home} />
+                  <Route exact path="/login" component={LoginPage} />
+                  <Route exact path="/tournament" component={TournamentPage} />
+                  <Route exact path="/new" component={NewTournament} />
+                  <Route exact path="/join" component={JoinTournament} />
+                  <Route component={NotFound} />
+                </Switch>
+              )}
             </div>
-          }
+          )}
         </div>
       </BrowserRouter>
     )

@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 import { withStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
@@ -12,9 +13,9 @@ import Divider from '@material-ui/core/Divider'
 
 const styles = theme => ({
   paper: {
-    maxWidth: "350px",
-    margin: "30px auto",
-    padding: "20px",
+    maxWidth: '350px',
+    margin: '30px auto',
+    padding: '20px',
   },
   buttonContainer: {
     marginTop: '15px',
@@ -22,17 +23,17 @@ const styles = theme => ({
     justifyContent: 'center',
   },
   h4: {
-    margin: '20px'
+    margin: '20px',
   },
   progress: {
     margin: theme.spacing.unit * 2,
   },
   listLink: {
-    textDecoration: 'none'
+    textDecoration: 'none',
   },
   listItem: {
     textAlign: 'center',
-  }
+  },
 })
 
 class Home extends Component {
@@ -40,9 +41,13 @@ class Home extends Component {
     super(props)
     this.state = {
       tournaments: [],
-      error: "",
-      loading: true
+      error: '',
+      loading: true,
     }
+  }
+
+  componentWillMount() {
+    this.getTournaments()
   }
 
   async getTournaments() {
@@ -52,19 +57,16 @@ class Home extends Component {
       const resData = await res.json()
       this.setState({
         tournaments: resData.tournaments,
-        error: "",
-        loading: false
+        error: '',
+        loading: false,
       })
     } catch (err) {
       this.setState({
-        error: "We're having trouble connecting to our server. Try again later.",
-        loading: false
+        error:
+          "We're having trouble connecting to our server. Try again later.",
+        loading: false,
       })
     }
-  }
-
-  componentWillMount() {
-    this.getTournaments()
   }
 
   render() {
@@ -72,59 +74,72 @@ class Home extends Component {
     const { tournaments, error, loading } = this.state
     return (
       <div>
-        {error === "" ?
-        <div>
-          <Paper elevation="0" className={classes.paper}>
-            <Typography variant="h5">Tournaments</Typography>
-            {loading ?
-              <CircularProgress className={classes.progress} /> :
-              <div>
-              {(tournaments && tournaments.length > 0) ?
-                <List component="nav">
-                  <Divider />
-                  {tournaments.map((tournament, index) => {
-                    const toLink = `/tournament?code=${tournament.code}`
-                    return (
-                      <Link key={index} to={toLink} className={classes.listLink}>
-                        <ListItem button className={classes.listItem}>
-                          <ListItemText primary={tournament.name} />
-                        </ListItem>
-                        <Divider />
-                      </Link>
-                    )
-                  })}
-                </List>:
+        {error === '' ? (
+          <div>
+            <Paper elevation="0" className={classes.paper}>
+              <Typography variant="h5">Tournaments</Typography>
+              {loading ? (
+                <CircularProgress className={classes.progress} />
+              ) : (
                 <div>
-                  <Typography variant="p">
-                    You don't have any tournaments yet.
-                  </Typography>
+                  {tournaments && tournaments.length > 0 ? (
+                    <List component="nav">
+                      <Divider />
+                      {tournaments.map((tournament, index) => {
+                        const toLink = `/tournament?code=${tournament.code}`
+                        return (
+                          <Link
+                            key={index}
+                            to={toLink}
+                            className={classes.listLink}
+                          >
+                            <ListItem button className={classes.listItem}>
+                              <ListItemText primary={tournament.name} />
+                            </ListItem>
+                            <Divider />
+                          </Link>
+                        )
+                      })}
+                    </List>
+                  ) : (
+                    <div>
+                      <Typography variant="p">
+                        You don't have any tournaments yet.
+                      </Typography>
+                    </div>
+                  )}
                 </div>
-              }
+              )}
+              <div className={classes.buttonContainer}>
+                <Link to="/new">
+                  <Button variant="contained" color="primary">
+                    New Tournament
+                  </Button>
+                </Link>
               </div>
-            }
-            <div className={classes.buttonContainer}>
-              <Link to="/new"><Button
-                variant="contained"
-                color="primary"
-              >New Tournament</Button></Link>
-            </div>
-            <div className={classes.buttonContainer}>
-              <Link to="/join"><Button
-                variant="contained"
-                color="primary"
-              >Join Tournament</Button></Link>
-            </div>
-          </Paper>
-        </div> :
-        <div>
-          <Typography variant="p" className={classes.h4}>
-            {error}
-          </Typography>
-        </div>
-        }
+              <div className={classes.buttonContainer}>
+                <Link to="/join">
+                  <Button variant="contained" color="primary">
+                    Join Tournament
+                  </Button>
+                </Link>
+              </div>
+            </Paper>
+          </div>
+        ) : (
+          <div>
+            <Typography variant="p" className={classes.h4}>
+              {error}
+            </Typography>
+          </div>
+        )}
       </div>
     )
   }
+}
+
+Home.propTypes = {
+  classes: PropTypes.object.isRequired,
 }
 
 export default withStyles(styles)(Home)

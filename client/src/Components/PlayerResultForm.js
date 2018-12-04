@@ -1,9 +1,9 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import InputLabel from '@material-ui/core/InputLabel';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
+import React from 'react'
+import PropTypes from 'prop-types'
+import { withStyles } from '@material-ui/core/styles'
+import InputLabel from '@material-ui/core/InputLabel'
+import FormControl from '@material-ui/core/FormControl'
+import Select from '@material-ui/core/Select'
 
 const styles = theme => ({
   root: {
@@ -16,13 +16,13 @@ const styles = theme => ({
   selectEmpty: {
     marginTop: theme.spacing.unit * 2,
   },
-});
+})
 
 class PlayerResultForm extends React.Component {
   render() {
-    const { classes } = this.props;
+    const { classes } = this.props
 
-    let options = []
+    const options = []
     options.push(<option value="" />)
     if (this.props.players) {
       this.props.players.forEach(player => {
@@ -30,7 +30,7 @@ class PlayerResultForm extends React.Component {
       })
     }
 
-    let positions = []
+    const positions = []
     positions.push(<option value="" />)
     for (let i = 1; i <= 12; i++) {
       positions.push(<option value={i}>{i}</option>)
@@ -53,21 +53,21 @@ class PlayerResultForm extends React.Component {
           </Select>
         </FormControl>
         <FormControl className={classes.formControl}>
-          <InputLabel htmlFor={this.props.name + "Pos"}>Position</InputLabel>
+          <InputLabel htmlFor={`${this.props.name}Pos`}>Position</InputLabel>
           <Select
             native
             value={this.props.position}
             onChange={this.props.handleChange}
             inputProps={{
-              name: this.props.name + "Pos",
-              id: this.props.name + "Pos",
+              name: `${this.props.name}Pos`,
+              id: `${this.props.name}Pos`,
             }}
           >
             {positions}
           </Select>
         </FormControl>
       </div>
-    );
+    )
   }
 }
 
@@ -77,11 +77,7 @@ PlayerResultForm.propTypes = {
   handleChange: PropTypes.func.isRequired,
   selectedPlayer: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
-};
+  position: PropTypes.number.isRequired,
+}
 
-export default withStyles(styles)(PlayerResultForm);
-
-
-
-
-
+export default withStyles(styles)(PlayerResultForm)

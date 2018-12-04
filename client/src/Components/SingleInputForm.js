@@ -1,10 +1,10 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from 'react'
+import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress from '@material-ui/core/CircularProgress'
 
 const styles = theme => ({
   root: {
@@ -30,7 +30,7 @@ const styles = theme => ({
   progress: {
     margin: theme.spacing.unit * 2,
   },
-});
+})
 
 const SingleInputForm = ({
   classes,
@@ -41,9 +41,16 @@ const SingleInputForm = ({
   loading,
   handleChange,
   handleSubmit,
-  value }) => (
-
-  <form className={classes.root} autoComplete="off" onSubmit={e => {e.preventDefault(); handleSubmit();}}>
+  value,
+}) => (
+  <form
+    className={classes.root}
+    autoComplete="off"
+    onSubmit={e => {
+      e.preventDefault()
+      handleSubmit()
+    }}
+  >
     <TextField
       id="name"
       label={inputLabel}
@@ -52,27 +59,25 @@ const SingleInputForm = ({
       value={value}
       onChange={handleChange}
     />
-    {loading ?
-      <div><CircularProgress className={classes.progress} /></div> :
+    {loading ? (
       <div>
-        {errorMessage !== "" &&
-          <Typography class={classes.errorMessage}>
-            {errorMessage}
-          </Typography>
-        }
-        {successMessage !== "" &&
+        <CircularProgress className={classes.progress} />
+      </div>
+    ) : (
+      <div>
+        {errorMessage !== '' && (
+          <Typography class={classes.errorMessage}>{errorMessage}</Typography>
+        )}
+        {successMessage !== '' && (
           <Typography class={classes.successMessage}>
             {successMessage}
           </Typography>
-        }
+        )}
       </div>
-    }
-    
+    )}
+
     <div className={classes.buttonContainer}>
-      <Button
-        variant="contained"
-        color="primary"
-        type="submit">
+      <Button variant="contained" color="primary" type="submit">
         {buttonLabel}
       </Button>
     </div>

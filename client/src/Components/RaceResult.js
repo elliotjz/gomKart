@@ -1,5 +1,5 @@
-
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import TimeAgo from 'react-timeago'
 import { withStyles } from '@material-ui/core/styles'
 import Chip from '@material-ui/core/Chip'
@@ -22,7 +22,7 @@ const styles = theme => ({
   },
   container: {
     display: 'flex',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   col: {
     width: '50%',
@@ -31,8 +31,8 @@ const styles = theme => ({
     margin: theme.spacing.unit,
   },
   chip: {
-    marginTop: '20px'
-  }
+    marginTop: '20px',
+  },
 })
 
 const PlayerResult = ({ player, classes }) => (
@@ -47,7 +47,7 @@ class RaceResult extends Component {
     super(props)
     this.deleteRace = this.deleteRace.bind(this)
     this.state = {
-      deleteOpen: false
+      deleteOpen: false,
     }
   }
 
@@ -86,10 +86,13 @@ class RaceResult extends Component {
             </Button>
           </DialogActions>
         </Dialog>
-        <div className={classes.container}> 
+        <div className={classes.container}>
           <div className={classes.col}>
             <div>
-              <Chip label={ <TimeAgo date={race.date} />} className={classes.chip} />
+              <Chip
+                label={<TimeAgo date={race.date} />}
+                className={classes.chip}
+              />
             </div>
             <div>
               <Button
@@ -103,18 +106,28 @@ class RaceResult extends Component {
             </div>
           </div>
           <List className={classes.col}>
-            {race.places.map((player, index) =>
-            <div>
-              {index !== 0 && <Divider />}
-              <PlayerResult player={player} classes={classes}/>
-            </div>
-            )}
+            {race.places.map((player, index) => (
+              <div>
+                {index !== 0 && <Divider />}
+                <PlayerResult player={player} classes={classes} />
+              </div>
+            ))}
           </List>
-          
         </div>
       </Paper>
     )
   }
+}
+
+PlayerResult.propTypes = {
+  player: PropTypes.object.isRequired,
+  classes: PropTypes.object.isRequired,
+}
+
+RaceResult.propTypes = {
+  classes: PropTypes.object.isRequired,
+  deleteRace: PropTypes.func.isRequired,
+  race: PropTypes.object.isRequired,
 }
 
 export default withStyles(styles)(RaceResult)

@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import AppBar from '@material-ui/core/AppBar'
 import Tabs from '@material-ui/core/Tabs'
@@ -11,9 +12,8 @@ import AddIcon from '@material-ui/icons/Add'
 
 import TournamentChart from './TournamentChart'
 import TournamentRecentRaces from './TournamentRecentRaces'
-import AddRaceForm from '../Components/AddRaceForm'
-import AddPlayerForm from '../Components/AddPlayerForm'
-
+import AddRaceForm from './AddRaceForm'
+import AddPlayerForm from './AddPlayerForm'
 
 function TabContainer(props) {
   return (
@@ -30,7 +30,6 @@ const styles = theme => ({
   },
 })
 
-
 class TournamentData extends Component {
   constructor(props) {
     super(props)
@@ -40,9 +39,43 @@ class TournamentData extends Component {
     this.state = {
       tabValue: 0,
       recentRacesLoading: true,
-      recentRacesError: "",
-      recentRacesBottomError: "",
-      recentRacesPage: 1
+      recentRacesError: '',
+      recentRacesBottomError: '',
+      recentRacesPage: 1,
+    }
+  }
+
+  componentWillMount() {
+    this.getRecentRaces(1)
+  }
+
+  async getRecentRaces(page) {
+    this.setState({
+      recentRacesLoading: true,
+    })
+    try {
+      let params = this.props.location.search
+      params += `&page=${page}`
+      const res = await fetch(`/api/get-races${params}`)
+      const resData = await res.json()
+      if (!resData.error) {
+        this.setState({
+          recentRacesLoading: false,
+          recentRacesError: '',
+        })
+        this.props.updatedRacesCallback(resData.races, page)
+      } else {
+        this.setState({
+          recentRacesLoading: false,
+          recentRacesError: '',
+          recentRacesBottomError: 'No more races to display',
+        })
+      }
+    } catch (err) {
+      this.setState({
+        recentRacesError: 'Error loading races',
+        recentRacesLoading: false,
+      })
     }
   }
 
@@ -50,54 +83,26 @@ class TournamentData extends Component {
     this.setState({ tabValue })
   }
 
-  async getRecentRaces(page) {
-    this.setState({
-      recentRacesLoading: true
-    })
-    try {
-      let params = this.props.location.search
-      params += "&page=" + page
-      const res = await fetch(`/api/get-races${params}`)
-      const resData = await res.json()
-      if (!resData.error) {
-        this.setState({
-          recentRacesLoading: false,
-          recentRacesError: ""
-        })
-        this.props.updatedRacesCallback(resData.races, page)
-      } else {
-        this.setState({
-          recentRacesLoading: false,
-          recentRacesError: "",
-          recentRacesBottomError: "No more races to display"
-        })
-      }
-
-    } catch (err) {
-      this.setState({
-        recentRacesError: "Error loading races",
-        recentRacesLoading: false
-      })
-    }
-  }
-
   displayMoreRaces() {
     const { recentRacesPage } = this.state
     this.getRecentRaces(recentRacesPage + 1)
     this.setState({
-      recentRacesPage: recentRacesPage + 1
+      recentRacesPage: recentRacesPage + 1,
     })
   }
 
   async deleteRace(race) {
     this.setState({
-      recentRacesLoading: true
+      recentRacesLoading: true,
     })
     try {
       const res = await fetch('/api/delete-race', {
         method: 'post',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ raceID: race._id, tournamentCode: race.tournament })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          raceID: race._id,
+          tournamentCode: race.tournament,
+        }),
       })
       const resData = await res.json()
       if (resData.error) {
@@ -107,7 +112,7 @@ class TournamentData extends Component {
         })
       } else {
         this.setState({
-          recentRacesError: "",
+          recentRacesError: '',
           recentRacesLoading: false,
         })
         this.props.updatedRacesCallback(resData.races)
@@ -121,10 +126,6 @@ class TournamentData extends Component {
     }
   }
 
-  componentWillMount() {
-    this.getRecentRaces(1)
-  }
-
   render() {
     const {
       playerScores,
@@ -134,9 +135,14 @@ class TournamentData extends Component {
       updatedTournamentCallback,
       updatedRacesCallback,
       addPlayerCallback,
-      location
+      location,
     } = this.props
-    const { tabValue, recentRacesError, recentRacesLoading, recentRacesBottomError } = this.state
+    const {
+      tabValue,
+      recentRacesError,
+      recentRacesLoading,
+      recentRacesBottomError,
+    } = this.state
 
     return (
       <div>
@@ -149,20 +155,28 @@ class TournamentData extends Component {
               <Tab icon={<SettingsIcon />} />
             </Tabs>
           </AppBar>
-          {tabValue === 0 &&
-          <TabContainer>
-            <AddRaceForm
-              playerScores={playerScores}
-              updatedRacesCallback={updatedRacesCallback}
-              updatedTournamentCallback={updatedTournamentCallback}
-            />
-            <AddPlayerForm addPlayerCallback={addPlayerCallback} playerScores={playerScores}/>
-          </TabContainer>}
-          {tabValue === 1 &&
+          {tabValue === 0 && (
             <TabContainer>
-              <TournamentChart playerScores={playerScores} tournament={tournament}/>
-            </TabContainer>}
-          {tabValue === 2 &&
+              <AddRaceForm
+                playerScores={playerScores}
+                updatedRacesCallback={updatedRacesCallback}
+                updatedTournamentCallback={updatedTournamentCallback}
+              />
+              <AddPlayerForm
+                addPlayerCallback={addPlayerCallback}
+                playerScores={playerScores}
+              />
+            </TabContainer>
+          )}
+          {tabValue === 1 && (
+            <TabContainer>
+              <TournamentChart
+                playerScores={playerScores}
+                tournament={tournament}
+              />
+            </TabContainer>
+          )}
+          {tabValue === 2 && (
             <TabContainer>
               <TournamentRecentRaces
                 location={location}
@@ -172,9 +186,9 @@ class TournamentData extends Component {
                 loading={recentRacesLoading}
                 deleteRace={this.deleteRace}
                 displayMoreRaces={this.displayMoreRaces}
-                
               />
-            </TabContainer>}
+            </TabContainer>
+          )}
           {tabValue === 3 && <TabContainer>Setting Coming Soon</TabContainer>}
         </div>
       </div>
@@ -182,11 +196,19 @@ class TournamentData extends Component {
   }
 }
 
+TabContainer.propTypes = {
+  children: PropTypes.object.isRequired,
+}
+
+TournamentData.propTypes = {
+  classes: PropTypes.object.isRequired,
+  location: PropTypes.object.isRequired,
+  updatedRacesCallback: PropTypes.func.isRequired,
+  updatedTournamentCallback: PropTypes.func.isRequired,
+  addPlayerCallback: PropTypes.func.isRequired,
+  playerScores: PropTypes.array.isRequired,
+  tournament: PropTypes.array.isRequired,
+  races: PropTypes.array.isRequired,
+}
+
 export default withStyles(styles)(TournamentData)
-
-
-
-
-
-
-
