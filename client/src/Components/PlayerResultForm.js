@@ -23,17 +23,25 @@ class PlayerResultForm extends React.Component {
     const { classes } = this.props
 
     const options = []
-    options.push(<option value="" />)
+    options.push(<option key={0} value="" />)
     if (this.props.players) {
-      this.props.players.forEach(player => {
-        options.push(<option value={player}>{player}</option>)
+      this.props.players.forEach((player, index) => {
+        options.push(
+          <option key={index + 1} value={player}>
+            {player}
+          </option>
+        )
       })
     }
 
     const positions = []
-    positions.push(<option value="" />)
+    positions.push(<option key={0} value="" />)
     for (let i = 1; i <= 12; i++) {
-      positions.push(<option value={i}>{i}</option>)
+      positions.push(
+        <option key={i} value={i}>
+          {i}
+        </option>
+      )
     }
 
     return (
@@ -73,11 +81,11 @@ class PlayerResultForm extends React.Component {
 
 PlayerResultForm.propTypes = {
   classes: PropTypes.object.isRequired,
-  players: PropTypes.object.isRequired,
+  players: PropTypes.array.isRequired,
   handleChange: PropTypes.func.isRequired,
   selectedPlayer: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
-  position: PropTypes.number.isRequired,
+  position: PropTypes.string.isRequired,
 }
 
 export default withStyles(styles)(PlayerResultForm)

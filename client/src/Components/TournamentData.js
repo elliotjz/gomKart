@@ -157,15 +157,17 @@ class TournamentData extends Component {
           </AppBar>
           {tabValue === 0 && (
             <TabContainer>
-              <AddRaceForm
-                playerScores={playerScores}
-                updatedRacesCallback={updatedRacesCallback}
-                updatedTournamentCallback={updatedTournamentCallback}
-              />
-              <AddPlayerForm
-                addPlayerCallback={addPlayerCallback}
-                playerScores={playerScores}
-              />
+              <div>
+                <AddRaceForm
+                  playerScores={playerScores}
+                  updatedRacesCallback={updatedRacesCallback}
+                  updatedTournamentCallback={updatedTournamentCallback}
+                />
+                <AddPlayerForm
+                  addPlayerCallback={addPlayerCallback}
+                  playerScores={playerScores}
+                />
+              </div>
             </TabContainer>
           )}
           {tabValue === 1 && (
@@ -189,7 +191,11 @@ class TournamentData extends Component {
               />
             </TabContainer>
           )}
-          {tabValue === 3 && <TabContainer>Setting Coming Soon</TabContainer>}
+          {tabValue === 3 && (
+            <TabContainer>
+              <Typography variant="body1">Settings Coming Soon</Typography>
+            </TabContainer>
+          )}
         </div>
       </div>
     )
@@ -207,7 +213,7 @@ TournamentData.propTypes = {
   updatedTournamentCallback: PropTypes.func.isRequired,
   addPlayerCallback: PropTypes.func.isRequired,
   playerScores: PropTypes.array.isRequired,
-  tournament: PropTypes.array.isRequired,
+  tournament: PropTypes.object.isRequired,
   races: PropTypes.array.isRequired,
 }
 

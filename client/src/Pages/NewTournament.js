@@ -117,7 +117,7 @@ class NewTournament extends Component {
         {redirect ? (
           <Redirect to="/" />
         ) : (
-          <Paper elevation="3" className={classes.formContainer}>
+          <Paper elevation={0} className={classes.formContainer}>
             <Typography variant="h5">Add New Tournament</Typography>
             <SingleInputForm
               handleSubmit={this.addNewTournament}

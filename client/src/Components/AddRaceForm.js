@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
+import Fab from '@material-ui/core/Fab'
 import AddIcon from '@material-ui/icons/Add'
 import Minimize from '@material-ui/icons/Minimize'
 import Typography from '@material-ui/core/Typography'
@@ -213,7 +214,7 @@ class AddRaceForm extends React.Component {
     return (
       <div>
         {players.length > 0 && (
-          <Paper elevation="0" className={classes.addRaceContainer}>
+          <Paper elevation={0} className={classes.addRaceContainer}>
             <Typography variant="h5">Add New Race</Typography>
             <form
               className={classes.root}
@@ -239,24 +240,22 @@ class AddRaceForm extends React.Component {
               )}
               <div className={classes.buttonContainer}>
                 <div className={classes.plusMinusContainer}>
-                  <Button
-                    variant="fab"
+                  <Fab
                     color="primary"
                     aria-label="Add"
                     className={classes.button}
                     onClick={this.addPlayer}
                   >
                     <AddIcon />
-                  </Button>
-                  <Button
-                    variant="fab"
+                  </Fab>
+                  <Fab
                     color="primary"
                     aria-label="Add"
                     className={classes.button}
                     onClick={this.removePlayer}
                   >
                     <Minimize className={classes.minimizeIcon} />
-                  </Button>
+                  </Fab>
                 </div>
                 <Button variant="contained" color="primary" type="submit">
                   Submit

@@ -66,10 +66,12 @@ const SingleInputForm = ({
     ) : (
       <div>
         {errorMessage !== '' && (
-          <Typography class={classes.errorMessage}>{errorMessage}</Typography>
+          <Typography className={classes.errorMessage}>
+            {errorMessage}
+          </Typography>
         )}
         {successMessage !== '' && (
-          <Typography class={classes.successMessage}>
+          <Typography className={classes.successMessage}>
             {successMessage}
           </Typography>
         )}
@@ -91,7 +93,7 @@ SingleInputForm.propTypes = {
   buttonLabel: PropTypes.string.isRequired,
   loading: PropTypes.bool.isRequired,
   errorMessage: PropTypes.string.isRequired,
-  successMessage: PropTypes.string.isRequired,
+  successMessage: PropTypes.string,
   handleChange: PropTypes.func.isRequired,
   value: PropTypes.string.isRequired,
 }

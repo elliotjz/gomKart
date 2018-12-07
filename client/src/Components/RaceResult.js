@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import TimeAgo from 'react-timeago'
 import { withStyles } from '@material-ui/core/styles'
 import Chip from '@material-ui/core/Chip'
+import Fab from '@material-ui/core/Fab'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
@@ -95,19 +96,18 @@ class RaceResult extends Component {
               />
             </div>
             <div>
-              <Button
-                variant="fab"
+              <Fab
                 aria-label="Delete"
                 className={classes.button}
                 onClick={this.handleDeleteOpen}
               >
                 <DeleteIcon />
-              </Button>
+              </Fab>
             </div>
           </div>
           <List className={classes.col}>
             {race.places.map((player, index) => (
-              <div>
+              <div key={index}>
                 {index !== 0 && <Divider />}
                 <PlayerResult player={player} classes={classes} />
               </div>

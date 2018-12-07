@@ -76,7 +76,7 @@ class Home extends Component {
       <div>
         {error === '' ? (
           <div>
-            <Paper elevation="0" className={classes.paper}>
+            <Paper elevation={0} className={classes.paper}>
               <Typography variant="h5">Tournaments</Typography>
               {loading ? (
                 <CircularProgress className={classes.progress} />

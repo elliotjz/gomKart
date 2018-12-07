@@ -108,7 +108,7 @@ class AddPlayerForm extends Component {
     const { errorMessage, successMessage, loading, name } = this.state
 
     return (
-      <Paper elevation="0" className={classes.addPlayerContainer}>
+      <Paper elevation={0} className={classes.addPlayerContainer}>
         <Typography variant="h5">Add New Player</Typography>
         <SingleInputForm
           handleSubmit={this.addNewPlayer}

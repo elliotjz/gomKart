@@ -68,7 +68,7 @@ class Header extends Component {
 
 Header.propTypes = {
   classes: PropTypes.object.isRequired,
-  user: PropTypes.object.isRequired,
+  user: PropTypes.object,
   isLoggedIn: PropTypes.bool.isRequired,
   loading: PropTypes.bool.isRequired,
 }

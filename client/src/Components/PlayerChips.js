@@ -28,6 +28,7 @@ class PlayerChips extends Component {
       <div>
         {playerScores.map((player, index) => (
           <Chip
+            key={index}
             label={`${player[0]}: ${player[1]}`}
             className={classes.chip}
             style={

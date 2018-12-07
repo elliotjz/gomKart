@@ -200,7 +200,7 @@ class TournamentChart extends Component {
                 key={index}
                 color="primary"
                 size="small"
-                variant={chartDomainIndex === index ? 'outlined' : ''}
+                variant={chartDomainIndex === index ? 'outlined' : 'text'}
                 onClick={() => this.changeDomain(index)}
               >
                 {domain}
@@ -239,7 +239,7 @@ class TournamentChart extends Component {
           </div>
         ) : (
           <div>
-            <Typography variant="p">
+            <Typography variant="body1">
               You need to add players to the tournament before you can see the
               chart
             </Typography>
@@ -251,7 +251,7 @@ class TournamentChart extends Component {
 }
 
 TournamentChart.propTypes = {
-  tournament: PropTypes.array.isRequired,
+  tournament: PropTypes.object.isRequired,
   playerScores: PropTypes.array.isRequired,
   classes: PropTypes.object.isRequired,
 }

@@ -57,8 +57,12 @@ class TournamentRecentRaces extends Component {
           )}
           {shouldDisplayRaces ? (
             <div>
-              {races.map(race => (
-                <RaceResult race={race} deleteRace={this.deleteRace} />
+              {races.map((race, index) => (
+                <RaceResult
+                  key={index}
+                  race={race}
+                  deleteRace={this.deleteRace}
+                />
               ))}
               {recentRacesBottomError !== '' ? (
                 <Typography variant="p" className={classes.error}>
