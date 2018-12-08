@@ -33,8 +33,6 @@ function verifyName(name) {
 }
 
 function addNewScoresToTournament(tournamentCode, scoreHistory, raceCounter, res) {
-  // TODO: Update tournament first, get the race number, then create the race instance
-  // TODO: Can I make this synchronous???
   Tournament.findOneAndUpdate(
     { code: tournamentCode },
     { $set: { raceCounter, scoreHistory }},
@@ -82,60 +80,49 @@ function recalculateScores(code, res) {
   })
 }
 
+function isAuthenticated(req, res, next) {
+  if (req.user) return next()
+  res.json({
+    success: false,
+    error: 'user is not logged in'
+  })
+}
+
 module.exports = (app, jsonParser) => {
-  app.get('/api/profile', (req, res) => {
-    if (req.user) {
-      res.json({
-        user: req.user,
+  app.get('/api/profile', isAuthenticated, (req, res) => {
+    res.json({
+      user: req.user,
+    })
+  })
+
+  app.post('/api/new-tournament', isAuthenticated, jsonParser, (req, res) => {
+    if (verifyName(req.body.name)) {
+      const code = makeTournamentCode()
+      const scoreHistory = [{
+        name: "_comp",
+        scores: { "0": COMP_INITIAL_SCORE }
+      }]
+      new Tournament({
+        name: req.body.name,
+        adminUsers: req.user.email,
+        code,
+        raceCounter: 0,
+        scoreHistory
+      }).save().then(() => {
+        res.json({ success: true })
       })
     } else {
-      res.json({
-        error: 'User is not logged in'
-      })
+      res.json({ success: false, error: "Name is not valid"})
     }
   })
 
-  app.post('/api/new-tournament', jsonParser, (req, res) => {
-    if (req.user) {
-      if (verifyName(req.body.name)) {
-        const code = makeTournamentCode()
-        const scoreHistory = [{
-          name: "_comp",
-          scores: { "0": COMP_INITIAL_SCORE }
-        }]
-        new Tournament({
-          name: req.body.name,
-          adminUsers: req.user.email,
-          code,
-          raceCounter: 0,
-          scoreHistory
-        }).save().then(() => {
-          res.json({ success: true })
-        })
-      } else {
-        res.json({ success: false, error: "Name is not valid"})
-      }
-    } else {
-      res.json({
-        success: false,
-        error: 'user is not logged in'
-      })
-    }
+  app.get('/api/get-tournaments', isAuthenticated, (req, res) => {
+    Tournament.find({ adminUsers: req.user.email }).then(tournaments => {
+      res.json({ tournaments })
+    })
   })
 
-  app.get('/api/get-tournaments', (req, res) => {
-    if (req.user) {
-      Tournament.find({ adminUsers: req.user.email }).then(tournaments => {
-        res.json({ tournaments })
-      })
-    } else {
-      res.json({
-        error: 'user is not logged in'
-      })
-    }
-  })
-
-  app.get('/api/get-races', (req, res) => {
+  app.get('/api/get-races', isAuthenticated, (req, res) => {
     const query = req._parsedUrl.query
     const code = getCodeFromQueryString(query, 'code')
     if (code === undefined) {
@@ -162,13 +149,13 @@ module.exports = (app, jsonParser) => {
     }
   })
 
-  app.get('/api/get-tournament-data', (req, res) => {
+  app.get('/api/get-tournament-data', isAuthenticated, (req, res) => {
     const query = req._parsedUrl.query
     const code = getCodeFromQueryString(query, 'code')
     if (code === undefined) {
       res.json({ error: 'Tournament not found' })
     } else {
-      Tournament.findOne({ code: code })
+      Tournament.findOne({ code: code, adminUsers: req.user.email })
       .then(tournament => {
         if (tournament === null) {
           res.json({ error: 'Tournament not found' })
@@ -179,108 +166,93 @@ module.exports = (app, jsonParser) => {
     }
   })
 
-  app.post('/api/join-tournament', jsonParser, (req, res) => {
-    if (req.user) {
-      Tournament.findOneAndUpdate(
-        { code: req.body.code },
-        {$addToSet: { adminUsers: req.user.email }}
-      ).then((tournament) => {
-        if (tournament !== null) {
-          res.json({ success: true })
-        } else {
-          res.json({success: false})
-        }
-      })
-    } else {
-      res.json({
-        error: 'User is not logged in'
-      })
-    }
-  })
-
-  app.post('/api/add-player', jsonParser, (req, res) => {
-    if (req.user) {
-      if (verifyName(req.body.name)) {
-        const scoreHistoryObject = {
-          name: req.body.name,
-          scores: { "0": PLAYER_INITIAL_SCORE }
-        }
-        Tournament.findOne(
-          { code: req.body.code, adminUsers: req.user.email },
-          (err, tournament) => {
-            if (err) {
-              res.json({ error: "error adding player" })
-            } else {
-              let { scoreHistory } = tournament
-              scoreHistory.push(scoreHistoryObject)
-              scoreHistory.sort(sorting.comparePlayerNames)
-              Tournament.findOneAndUpdate(
-                { code: req.body.code, adminUsers: req.user.email },
-                { $set: { scoreHistory: scoreHistory }},
-                {new: true},
-                (err, tournament) => {
-                  if (err) {
-                    res.json({ error: "error adding player" })
-                  } else {
-                    res.json(tournament)
-                  }
-                }
-              )
-            }
-          }
-        )
+  app.post('/api/join-tournament', isAuthenticated, jsonParser, (req, res) => {
+    Tournament.findOneAndUpdate(
+      { code: req.body.code },
+      {$addToSet: { adminUsers: req.user.email }}
+    ).then((tournament) => {
+      if (tournament !== null) {
+        res.json({ success: true })
       } else {
-        res.json({ error: "Player name is not valid." })
+        res.json({success: false})
       }
+    })
+  })
+
+  app.post('/api/add-player', isAuthenticated, jsonParser, (req, res) => {
+    if (verifyName(req.body.name)) {
+      const scoreHistoryObject = {
+        name: req.body.name,
+        scores: { "0": PLAYER_INITIAL_SCORE }
+      }
+      Tournament.findOne(
+        { code: req.body.code, adminUsers: req.user.email },
+        (err, tournament) => {
+          if (err) {
+            res.json({ error: "error adding player" })
+          } else {
+            let { scoreHistory } = tournament
+            scoreHistory.push(scoreHistoryObject)
+            scoreHistory.sort(sorting.comparePlayerNames)
+            Tournament.findOneAndUpdate(
+              { code: req.body.code, adminUsers: req.user.email },
+              { $set: { scoreHistory: scoreHistory }},
+              {new: true},
+              (err, tournament) => {
+                if (err) {
+                  res.json({ error: "error adding player" })
+                } else {
+                  res.json(tournament)
+                }
+              }
+            )
+          }
+        }
+      )
     } else {
-      req.json({ error: "You must be logged in to add players. "})
+      res.json({ error: "Player name is not valid." })
     }
   })
 
-  app.post('/api/add-race', jsonParser, (req, res) => {
-    if (req.user) {
-      const date = new Date()
-      const places = req.body.places
-      const tournamentCode = req.body.code
+  app.post('/api/add-race', isAuthenticated, jsonParser, (req, res) => {
+    const date = new Date()
+    const places = req.body.places
+    const tournamentCode = req.body.code
 
-      // Make sure they haven't added a computer player
-      if (Object.keys(places).includes("_comp")) {
-        res.json({ error: "Player not in tournament" })
-        return
-      }
-
+    // Make sure they haven't added a computer player
+    if (Object.keys(places).includes("_comp")) {
+      res.json({ error: "Player not in tournament" })
+      return
+    }
+    Tournament.findOne(
+      { code: tournamentCode, adminUsers: req.user.email },
+      (err, tournament) => {
+      const raceCounter = tournament.raceCounter + 1
+      const scoreHistory = eloCalcs.getUpdatedScoreHistory(tournament, places)
+      addNewScoresToTournament(tournament.code, scoreHistory, raceCounter, res)
+    }).then(() => {
       new Race({
         user: req.user.email,
         tournament: tournamentCode,
         places,
         date
-      }).save().then(() => {
-        Tournament.findOne({ code: tournamentCode }, (err, tournament) => {
-          const raceCounter = tournament.raceCounter + 1
-          const scoreHistory = eloCalcs.getUpdatedScoreHistory(tournament, places)
-          addNewScoresToTournament(tournament.code, scoreHistory, raceCounter, res)
-        })
-      }).catch(err => console.log(err))
-    }
+      }).save().catch(err => console.log(err))
+    })
   })
 
-  app.post('/api/delete-race', jsonParser, (req, res) => {
-    if (req.user) {
-      const { raceID, tournamentCode } = req.body
-      // Make sure user is an admin of tournament
-      Tournament.findOne({ code: tournamentCode, adminUsers: req.user.email }, (err, tournament) => {
-        if (tournament) {
-          // delete race
-          Race.findOneAndDelete({ _id: raceID, tournament: tournamentCode }, (err, race) => {
-            if (race !== null) recalculateScores(tournamentCode, res)
-          })
-        } else {
-          res.json({error: "User is not an admin of this tournament."})
-        }
-      })
-    } else {
-      res.json({ error: "User is not logged in."})
-    }
+  app.post('/api/delete-race', isAuthenticated, jsonParser, (req, res) => {
+    const { raceID, tournamentCode } = req.body
+    // Make sure user is an admin of tournament
+    Tournament.findOne({ code: tournamentCode, adminUsers: req.user.email }, (err, tournament) => {
+      if (tournament) {
+        // delete race
+        Race.findOneAndDelete({ _id: raceID, tournament: tournamentCode }, (err, race) => {
+          if (race !== null) recalculateScores(tournamentCode, res)
+        })
+      } else {
+        res.json({error: "User is not an admin of this tournament."})
+      }
+    })
   })
 }
 

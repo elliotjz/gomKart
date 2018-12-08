@@ -26,7 +26,7 @@ class LoginPage extends Component {
           className={classes.button}
           href="/auth/google"
         >
-          Login with Google+
+          Login with Google
         </Button>
       </div>
     )
