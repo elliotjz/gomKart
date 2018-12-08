@@ -5,7 +5,8 @@ module.exports = {
 
   getUpdatedScoreHistory: function(tournament, places) {
     let { scoreHistory } = tournament
-    const newEloScores = this.getNewEloScores(tournament, places)
+    const newEloScores = this.getNewEloScores(tournament,
+      JSON.parse(JSON.stringify(places)))
 
     const playersInRace = Object.keys(newEloScores)
     if (newEloScores === undefined && playersInRace.length === 0) {

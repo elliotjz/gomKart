@@ -78,11 +78,13 @@ class AddPlayerForm extends Component {
       errorMessage = "Your name can't be more than 16 characters long."
 
     // verify characters
-    if (name.match(/^[a-z0-9\s]+$/i) === null)
+    // /^[a-z0-9\s]+$/i
+
+    if (name.match(/^[-'0-9a-zÀ-ÿ]+$/i) === null)
       errorMessage = 'Your name must only contain letters and numbers'
 
     // verify first letter
-    const letters = /^[A-Za-z]+$/
+    const letters = /^[A-Za-zÀ-ÿ]+$/
     if (!name.charAt(0).match(letters))
       errorMessage = 'Names must start with a letter'
 
