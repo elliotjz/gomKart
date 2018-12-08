@@ -101,7 +101,9 @@ class TournamentChart extends Component {
   parseTournament(chartDomainIndexParam, excludedPlayersParam) {
     const { tournament, playerScores } = this.props
     const chartDomainIndex =
-      chartDomainIndexParam || this.state.chartDomainIndex
+      chartDomainIndexParam === null
+        ? this.state.chartDomainIndex
+        : chartDomainIndexParam
     const excludedPlayers = excludedPlayersParam || this.state.excludedPlayers
     const parsedColors = colors.slice()
     const colorsToRemove = []

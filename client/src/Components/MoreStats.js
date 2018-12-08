@@ -33,7 +33,7 @@ const mostRacesChartOptions = {
 }
 
 const swingChartOptions = {
-  title: 'Swings (last 50 races)',
+  title: `Swings (last 50 races)`,
   vAxis: {
     title: 'Score Change',
   },
@@ -48,17 +48,23 @@ class MoreStats extends Component {
       raceCountData: null,
       highAndLow: null,
       swingChartData: null,
+      swingPeriod: null,
     }
   }
 
   componentDidMount() {
     const raceCountData = this.getRaceCountData()
     const highAndLow = this.getHighestAndLowestScores()
-    const swingChartData = this.getSwings(50)
+    const period =
+      this.props.tournament.raceCounter > 50
+        ? 50
+        : this.props.tournament.raceCounter
+    const swingChartData = this.getSwings(period)
     this.setState({
       raceCountData,
       highAndLow,
       swingChartData,
+      swingPeriod: period,
     })
   }
 
@@ -97,7 +103,7 @@ class MoreStats extends Component {
     if (swingChartData.length > 8) {
       swingChartData.splice(4, swingChartData.length - 8)
     }
-    swingChartData.unshift(['Player', 'Swing (last 50 races)'])
+    swingChartData.unshift(['Player', `Swing (last ${period} races)`])
     return swingChartData
   }
 
@@ -144,17 +150,27 @@ class MoreStats extends Component {
 
   render() {
     const { classes } = this.props
-    const { raceCountData, highAndLow, swingChartData } = this.state
-
+    const {
+      raceCountData,
+      highAndLow,
+      swingChartData,
+      swingPeriod,
+    } = this.state
+    console.log('More Stats')
     const loader = (
       <div className={classes.chartLoader}>
         <CircularProgress className={classes.loader} />
       </div>
     )
 
+    console.log(swingChartData)
+
+    const editedSwingChartOptions = swingChartOptions
+    editedSwingChartOptions.title = `Swings (last ${swingPeriod} races)`
+
     return (
       <div>
-        {swingChartData !== null && (
+        {highAndLow !== null && (
           <div className={classes.root}>
             <Typography variant="h4">Stats</Typography>
             <Chart
@@ -181,7 +197,7 @@ class MoreStats extends Component {
                 width="100%"
                 height="400px"
                 data={swingChartData}
-                options={swingChartOptions}
+                options={editedSwingChartOptions}
                 loader={loader}
               />
             )}
