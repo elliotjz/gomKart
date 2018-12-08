@@ -19,12 +19,7 @@ const styles = theme => ({
 })
 
 class TournamentRecentRaces extends Component {
-  constructor(props) {
-    super(props)
-    this.deleteRace = this.deleteRace.bind(this)
-  }
-
-  deleteRace(race) {
+  deleteRace = race => {
     this.props.deleteRace(race)
   }
 
@@ -36,6 +31,7 @@ class TournamentRecentRaces extends Component {
       recentRacesBottomError,
       races,
       displayMoreRaces,
+      loadingMoreRaces,
     } = this.props
     const shouldDisplayRaces =
       races !== undefined && races !== null && races.length > 0
@@ -50,34 +46,45 @@ class TournamentRecentRaces extends Component {
               {error}
             </Typography>
           )}
-          {loading && (
+          {loading ? (
             <div>
               <CircularProgress className={classes.progress} />
             </div>
-          )}
-          {shouldDisplayRaces ? (
+          ) : (
             <div>
-              {races.map((race, index) => (
-                <RaceResult
-                  key={index}
-                  race={race}
-                  deleteRace={this.deleteRace}
-                />
-              ))}
-              {recentRacesBottomError !== '' ? (
-                <Typography variant="p" className={classes.error}>
-                  {recentRacesBottomError}
-                </Typography>
+              {shouldDisplayRaces ? (
+                <div>
+                  {races.map((race, index) => (
+                    <RaceResult
+                      key={index}
+                      race={race}
+                      deleteRace={this.deleteRace}
+                    />
+                  ))}
+                  {recentRacesBottomError !== '' ? (
+                    <Typography variant="body1" className={classes.error}>
+                      {recentRacesBottomError}
+                    </Typography>
+                  ) : (
+                    <div>
+                      {loadingMoreRaces ? (
+                        <div>
+                          <CircularProgress className={classes.progress} />
+                        </div>
+                      ) : (
+                        <Button color="primary" onClick={displayMoreRaces}>
+                          Load More
+                        </Button>
+                      )}
+                    </div>
+                  )}
+                </div>
               ) : (
-                <Button color="primary" onClick={displayMoreRaces}>
-                  Load More...
-                </Button>
+                <Typography variant="body1">
+                  You need to add race results to the tournament.
+                </Typography>
               )}
             </div>
-          ) : (
-            <Typography variant="p">
-              You need to add race results to the tournament.
-            </Typography>
           )}
         </div>
       </div>
@@ -93,6 +100,7 @@ TournamentRecentRaces.propTypes = {
   recentRacesBottomError: PropTypes.string.isRequired,
   races: PropTypes.array.isRequired,
   displayMoreRaces: PropTypes.func.isRequired,
+  loadingMoreRaces: PropTypes.bool.isRequired,
 }
 
 export default withStyles(styles)(TournamentRecentRaces)

@@ -28,8 +28,6 @@ const styles = {
 class JoinTournament extends Component {
   constructor(props) {
     super(props)
-    this.submitJoinTournament = this.submitJoinTournament.bind(this)
-    this.handleChange = this.handleChange.bind(this)
     this.state = {
       redirect: false,
       errorMessage: '',
@@ -44,7 +42,7 @@ class JoinTournament extends Component {
     })
   }
 
-  async submitJoinTournament() {
+  submitJoinTournament = async () => {
     const { code } = this.state
     this.setState({
       errorMessage: '',

@@ -18,8 +18,6 @@ const styles = {
 class AddPlayerForm extends Component {
   constructor(props) {
     super(props)
-    this.addNewPlayer = this.addNewPlayer.bind(this)
-    this.handleChange = this.handleChange.bind(this)
     this.state = {
       loading: false,
       errorMessage: '',
@@ -34,7 +32,7 @@ class AddPlayerForm extends Component {
     })
   }
 
-  async addNewPlayer() {
+  addNewPlayer = async () => {
     const { name } = this.state
     if (!this.nameVerification(name)) return
 

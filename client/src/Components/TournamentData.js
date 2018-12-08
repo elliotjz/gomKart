@@ -33,15 +33,13 @@ const styles = theme => ({
 class TournamentData extends Component {
   constructor(props) {
     super(props)
-    this.handleTabChange = this.handleTabChange.bind(this)
-    this.deleteRace = this.deleteRace.bind(this)
-    this.displayMoreRaces = this.displayMoreRaces.bind(this)
     this.state = {
       tabValue: 0,
       recentRacesLoading: true,
       recentRacesError: '',
       recentRacesBottomError: '',
       recentRacesPage: 1,
+      loadingMoreRaces: false,
     }
   }
 
@@ -51,7 +49,8 @@ class TournamentData extends Component {
 
   async getRecentRaces(page) {
     this.setState({
-      recentRacesLoading: true,
+      recentRacesLoading: page === 1,
+      loadingMoreRaces: page !== 1,
     })
     try {
       let params = this.props.location.search
@@ -62,6 +61,7 @@ class TournamentData extends Component {
         this.setState({
           recentRacesLoading: false,
           recentRacesError: '',
+          loadingMoreRaces: false,
         })
         this.props.updatedRacesCallback(resData.races, page)
       } else {
@@ -69,21 +69,23 @@ class TournamentData extends Component {
           recentRacesLoading: false,
           recentRacesError: '',
           recentRacesBottomError: 'No more races to display',
+          loadingMoreRaces: false,
         })
       }
     } catch (err) {
       this.setState({
         recentRacesError: 'Error loading races',
         recentRacesLoading: false,
+        loadingMoreRaces: false,
       })
     }
   }
 
-  handleTabChange(event, tabValue) {
+  handleTabChange = (event, tabValue) => {
     this.setState({ tabValue })
   }
 
-  displayMoreRaces() {
+  displayMoreRaces = () => {
     const { recentRacesPage } = this.state
     this.getRecentRaces(recentRacesPage + 1)
     this.setState({
@@ -91,7 +93,7 @@ class TournamentData extends Component {
     })
   }
 
-  async deleteRace(race) {
+  deleteRace = async race => {
     this.setState({
       recentRacesLoading: true,
     })
@@ -142,6 +144,7 @@ class TournamentData extends Component {
       recentRacesError,
       recentRacesLoading,
       recentRacesBottomError,
+      loadingMoreRaces,
     } = this.state
 
     return (
@@ -188,6 +191,7 @@ class TournamentData extends Component {
                 loading={recentRacesLoading}
                 deleteRace={this.deleteRace}
                 displayMoreRaces={this.displayMoreRaces}
+                loadingMoreRaces={loadingMoreRaces}
               />
             </TabContainer>
           )}

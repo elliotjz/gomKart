@@ -75,7 +75,6 @@ class MoreStats extends Component {
   }
 
   getSwings(period) {
-    console.log('getSwing')
     const { scoreHistory, raceCounter } = this.props.tournament
     if (raceCounter < period) {
       return null

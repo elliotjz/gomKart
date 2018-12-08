@@ -23,10 +23,6 @@ const styles = theme => ({
 class TournamentPage extends Component {
   constructor(props) {
     super(props)
-    this.addPlayerCallback = this.addPlayerCallback.bind(this)
-    this.updatedTournamentCallback = this.updatedTournamentCallback.bind(this)
-    this.updatedRacesCallback = this.updatedRacesCallback.bind(this)
-
     this.state = {
       error: '',
       tournament: {},
@@ -87,23 +83,7 @@ class TournamentPage extends Component {
     }
   }
 
-  parseRaces(races) {
-    for (let i = 0; i < races.length; i++) {
-      const places = races[i].places[0]
-      const parsedPlaces = []
-      Object.keys(places).forEach(name => {
-        parsedPlaces.push({
-          name,
-          position: places[name],
-        })
-      })
-      parsedPlaces.sort(comparePos)
-      races[i].places = parsedPlaces
-    }
-    return races.sort(compareRaces)
-  }
-
-  updatedTournamentCallback(tournament) {
+  updatedTournamentCallback = tournament => {
     const playerScores = this.getCurrentScores(tournament)
     this.setState({
       tournament,
@@ -111,7 +91,7 @@ class TournamentPage extends Component {
     })
   }
 
-  updatedRacesCallback(newRaces, page) {
+  updatedRacesCallback = (newRaces, page) => {
     const parsedRaces = this.parseRaces(newRaces)
     if (page && page > 1) {
       this.setState(prevState => {
@@ -126,7 +106,7 @@ class TournamentPage extends Component {
     }
   }
 
-  addPlayerCallback(tournament) {
+  addPlayerCallback = tournament => {
     const players = tournament.scoreHistory.map(player => player.name)
     // remove computer player
     const indexOfCompPlayer = players.indexOf('_comp')
@@ -139,6 +119,22 @@ class TournamentPage extends Component {
       tournament,
       playerScores,
     })
+  }
+
+  parseRaces(races) {
+    for (let i = 0; i < races.length; i++) {
+      const places = races[i].places[0]
+      const parsedPlaces = []
+      Object.keys(places).forEach(name => {
+        parsedPlaces.push({
+          name,
+          position: places[name],
+        })
+      })
+      parsedPlaces.sort(comparePos)
+      races[i].places = parsedPlaces
+    }
+    return races.sort(compareRaces)
   }
 
   render() {

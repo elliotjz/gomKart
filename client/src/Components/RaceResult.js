@@ -46,7 +46,6 @@ const PlayerResult = ({ player, classes }) => (
 class RaceResult extends Component {
   constructor(props) {
     super(props)
-    this.deleteRace = this.deleteRace.bind(this)
     this.state = {
       deleteOpen: false,
     }
@@ -60,7 +59,7 @@ class RaceResult extends Component {
     this.setState({ deleteOpen: false })
   }
 
-  deleteRace() {
+  deleteRace = () => {
     this.setState({ deleteOpen: false })
     this.props.deleteRace(this.props.race)
   }

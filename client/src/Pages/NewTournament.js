@@ -28,8 +28,6 @@ const styles = {
 class NewTournament extends Component {
   constructor(props) {
     super(props)
-    this.addNewTournament = this.addNewTournament.bind(this)
-    this.handleChange = this.handleChange.bind(this)
     this.state = {
       redirect: false,
       errorMessage: '',
@@ -45,7 +43,7 @@ class NewTournament extends Component {
     })
   }
 
-  async addNewTournament() {
+  addNewTournament = async () => {
     const { name } = this.state
     if (!this.nameVerification(name)) return
 

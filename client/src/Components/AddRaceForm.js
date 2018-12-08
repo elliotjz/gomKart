@@ -85,7 +85,6 @@ const styles = theme => ({
 class AddRaceForm extends React.Component {
   constructor(props) {
     super(props)
-    this.submitRace = this.submitRace.bind(this)
     this.state = {
       numPlayers: 4,
       errorMessage: '',
@@ -118,7 +117,7 @@ class AddRaceForm extends React.Component {
     this.setState({ numPlayers })
   }
 
-  submitRace(event) {
+  submitRace = event => {
     event.preventDefault()
     const raceResults = {}
     for (let i = 0; i < this.state.numPlayers; i++) {
@@ -227,12 +226,12 @@ class AddRaceForm extends React.Component {
               ) : (
                 <div>
                   {errorMessage !== '' && (
-                    <Typography class={classes.errorMessage}>
+                    <Typography className={classes.errorMessage}>
                       {errorMessage}
                     </Typography>
                   )}
                   {successMessage !== '' && (
-                    <Typography class={classes.successMessage}>
+                    <Typography className={classes.successMessage}>
                       {successMessage}
                     </Typography>
                   )}

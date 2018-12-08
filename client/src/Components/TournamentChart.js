@@ -42,9 +42,6 @@ const chartDomains = ['All', 400, 100, 50]
 class TournamentChart extends Component {
   constructor(props) {
     super(props)
-    this.changeDomain = this.changeDomain.bind(this)
-    this.onChipClick = this.onChipClick.bind(this)
-    this.toggleMoreStats = this.toggleMoreStats.bind(this)
     this.state = {
       chartDomainIndex: 0,
       excludedPlayers: [],
@@ -59,7 +56,7 @@ class TournamentChart extends Component {
     })
   }
 
-  onChipClick(name) {
+  onChipClick = name => {
     const { excludedPlayers } = this.state
     if (excludedPlayers.includes(name)) {
       const index = excludedPlayers.indexOf(name)
@@ -84,6 +81,21 @@ class TournamentChart extends Component {
       i -= 1
     }
     return currentScore
+  }
+
+  changeDomain = index => {
+    const parsedTournament = this.parseTournament(index, null)
+    this.setState({
+      parsedTournament,
+      chartDomainIndex: index,
+    })
+  }
+
+  toggleMoreStats = () => {
+    const { displayAllStats } = this.state
+    this.setState({
+      displayAllStats: !displayAllStats,
+    })
   }
 
   parseTournament(chartDomainIndexParam, excludedPlayersParam) {
@@ -137,21 +149,6 @@ class TournamentChart extends Component {
     }
   }
 
-  changeDomain(index) {
-    const parsedTournament = this.parseTournament(index, null)
-    this.setState({
-      parsedTournament,
-      chartDomainIndex: index,
-    })
-  }
-
-  toggleMoreStats() {
-    const { displayAllStats } = this.state
-    this.setState({
-      displayAllStats: !displayAllStats,
-    })
-  }
-
   render() {
     const { playerScores, tournament, classes } = this.props
     const {
@@ -171,7 +168,7 @@ class TournamentChart extends Component {
 
     return (
       <div>
-        {parsedData !== undefined ? (
+        {parsedData !== undefined && parsedData.length > 2 ? (
           <div className={classes.root}>
             <PlayerChips
               playerScores={playerScores}
@@ -240,8 +237,7 @@ class TournamentChart extends Component {
         ) : (
           <div>
             <Typography variant="body1">
-              You need to add players to the tournament before you can see the
-              chart
+              Add a race result to see the tournament statistics.
             </Typography>
           </div>
         )}
