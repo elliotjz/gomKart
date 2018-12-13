@@ -30,6 +30,11 @@ const styles = theme => ({
   progress: {
     margin: theme.spacing.unit * 2,
   },
+  progressContainer: {
+    display: 'flex',
+    margin: 'auto',
+    justifyContent: 'center',
+  },
 })
 
 const SingleInputForm = ({
@@ -60,7 +65,7 @@ const SingleInputForm = ({
       onChange={handleChange}
     />
     {loading ? (
-      <div>
+      <div className={classes.progressContainer}>
         <CircularProgress className={classes.progress} />
       </div>
     ) : (

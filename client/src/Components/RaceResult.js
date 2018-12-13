@@ -3,12 +3,10 @@ import PropTypes from 'prop-types'
 import TimeAgo from 'react-timeago'
 import { withStyles } from '@material-ui/core/styles'
 import Chip from '@material-ui/core/Chip'
-import Fab from '@material-ui/core/Fab'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
 import { Divider, Paper, Button } from '@material-ui/core'
-import DeleteIcon from '@material-ui/icons/Delete'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogTitle from '@material-ui/core/DialogTitle'
@@ -67,7 +65,7 @@ class RaceResult extends Component {
   render() {
     const { race, classes } = this.props
     return (
-      <Paper className={classes.root}>
+      <Paper elevation={0} className={classes.root}>
         <Dialog
           open={this.state.deleteOpen}
           onClose={this.handleDeleteClose}
@@ -95,13 +93,14 @@ class RaceResult extends Component {
               />
             </div>
             <div>
-              <Fab
-                aria-label="Delete"
+              <Button
                 className={classes.button}
                 onClick={this.handleDeleteOpen}
+                variant="contained"
+                color="secondary"
               >
-                <DeleteIcon />
-              </Fab>
+                Delete
+              </Button>
             </div>
           </div>
           <List className={classes.col}>

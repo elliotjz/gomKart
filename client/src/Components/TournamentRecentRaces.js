@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
-import { Typography, Button } from '@material-ui/core'
+import { Typography, Button, Divider } from '@material-ui/core'
 
 import CircularProgress from '@material-ui/core/CircularProgress'
 import RaceResult from './RaceResult'
@@ -55,11 +55,10 @@ class TournamentRecentRaces extends Component {
               {shouldDisplayRaces ? (
                 <div>
                   {races.map((race, index) => (
-                    <RaceResult
-                      key={index}
-                      race={race}
-                      deleteRace={this.deleteRace}
-                    />
+                    <div key={index}>
+                      <RaceResult race={race} deleteRace={this.deleteRace} />
+                      <Divider />
+                    </div>
                   ))}
                   {recentRacesBottomError !== '' ? (
                     <Typography variant="body1" className={classes.error}>

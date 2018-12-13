@@ -69,3 +69,35 @@ export const compareRaces = (a, b) => {
 }
 
 export const comparePlayerScores = (a, b) => b[1] - a[1]
+
+export const nameVerification = (name, playerScores) => {
+  // Check that the name starts with a character
+  let errorMessage = ''
+
+  // verify length
+  if (name.length > 16)
+    errorMessage = "Name can't be more than 16 characters long."
+
+  // verify characters
+  if (name.match(/^[-'0-9a-zÀ-ʯ]+$/i) === null)
+    errorMessage = 'Name must only contain letters and numbers'
+
+  // verify first letter
+  const letters = /^[A-Za-zÀ-ʯ]+$/
+  if (!name.charAt(0).match(letters))
+    errorMessage = 'Name must start with a letter'
+
+  // Check if the name already exists
+  const players = playerScores.map(player => player[0])
+  if (players.includes(name))
+    errorMessage = "There's already a player with this name in the tournament"
+
+  if (errorMessage !== '') {
+    return {
+      success: false,
+      errorMessage,
+    }
+  }
+
+  return { success: true }
+}

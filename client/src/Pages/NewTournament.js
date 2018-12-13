@@ -6,6 +6,7 @@ import Typography from '@material-ui/core/Typography'
 import Paper from '@material-ui/core/Paper'
 
 import SingleInputForm from '../Components/SingleInputForm'
+import { nameVerification } from '../helpers'
 
 const styles = {
   chartContainer: {
@@ -45,7 +46,11 @@ class NewTournament extends Component {
 
   addNewTournament = async () => {
     const { name } = this.state
-    if (!this.nameVerification(name)) return
+    const verification = nameVerification(name, [])
+    if (!verification.success) {
+      this.setState({ errorMessage: verification.errorMessage })
+      return
+    }
 
     this.setState({
       errorMessage: '',
@@ -77,33 +82,6 @@ class NewTournament extends Component {
         loading: false,
       })
     }
-  }
-
-  nameVerification(name) {
-    // Check that the name starts with a character
-    let errorMessage = ''
-
-    // verify length
-    if (name.length > 16)
-      errorMessage = "Your name can't be more than 16 characters long."
-
-    // verify characters
-    if (name.match(/^[-'0-9a-zÀ-ÿ]+$/i) === null)
-      errorMessage = 'Your name must only contain letters and numbers'
-
-    // verify first letter
-    const letters = /^[-'A-Za-zÀ-ÿ]+$/
-    if (!name.charAt(0).match(letters))
-      errorMessage = 'Names must start with a letter'
-
-    if (errorMessage !== '') {
-      this.setState({
-        errorMessage,
-      })
-      return false
-    }
-
-    return true
   }
 
   render() {

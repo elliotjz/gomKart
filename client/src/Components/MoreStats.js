@@ -139,7 +139,7 @@ class MoreStats extends Component {
 
     const raceCounts = scoreHistory.map(player => [
       player.name,
-      Object.keys(player.scores).length,
+      Object.keys(player.scores).length - 1,
     ])
 
     raceCounts.sort((a, b) => b[1] - a[1])
@@ -156,14 +156,11 @@ class MoreStats extends Component {
       swingChartData,
       swingPeriod,
     } = this.state
-    console.log('More Stats')
     const loader = (
       <div className={classes.chartLoader}>
         <CircularProgress className={classes.loader} />
       </div>
     )
-
-    console.log(swingChartData)
 
     const editedSwingChartOptions = swingChartOptions
     editedSwingChartOptions.title = `Swings (last ${swingPeriod} races)`

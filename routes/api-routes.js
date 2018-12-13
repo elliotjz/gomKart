@@ -28,7 +28,7 @@ function getCodeFromQueryString(query, param) {
 
 function verifyName(name) {
   if (name.length > 16) return false
-  if (name.match(/^[-a-z0-9À-ÿ\s]+$/i) === null) return false
+  if (name.match(/^[-a-z0-9À-ʯ\s]+$/i) === null) return false
   return true
 }
 
@@ -207,6 +207,56 @@ module.exports = (app, jsonParser) => {
               }
             )
           }
+        }
+      )
+    } else {
+      res.json({ error: "Player name is not valid." })
+    }
+  })
+
+  app.post('/api/change-player-name', isAuthenticated, jsonParser, (req, res) => {
+    const { code, newPlayerName, oldPlayerName } = req.body
+    if (verifyName(newPlayerName)) {
+      Tournament.findOne(
+        { code, adminUsers: req.user.email },
+        (err, tournament) => {
+          const { scoreHistory }= tournament
+          const playerHist = scoreHistory.find((el) => {
+            return el.name === oldPlayerName
+          })
+          playerHist.name = newPlayerName
+          Tournament.findOneAndUpdate(
+            { code, adminUsers: req.user.email },
+            { $set: { scoreHistory }},
+            { new: true },
+            (err, tournament) => {
+              Race.find(
+                { tournament: code },
+                (err, races) => {
+                  const newRaces = []
+                  races.forEach(race => {
+                    let { places } = race
+                    if (Object.keys(places[0]).includes(oldPlayerName)) {
+                      places[0][newPlayerName] = places[0][oldPlayerName]
+                      delete places[0][oldPlayerName]
+                      Race.findByIdAndUpdate(
+                        race.id,
+                        { $set: { places }},
+                        (err, race) => {
+                          if (err) console.log(err)
+                        }
+                      )
+                      race.places = places
+                    }
+                    newRaces.push(race)
+                  })
+                  const length = races.length
+                  const startIndex = length > 10 ? length - 11 : 0
+                  res.json({ tournament, races: newRaces.slice(startIndex, length) })
+                }
+              )
+            }
+          )
         }
       )
     } else {

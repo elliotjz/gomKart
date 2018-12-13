@@ -14,6 +14,7 @@ import TournamentChart from './TournamentChart'
 import TournamentRecentRaces from './TournamentRecentRaces'
 import AddRaceForm from './AddRaceForm'
 import AddPlayerForm from './AddPlayerForm'
+import Settings from './Settings'
 
 function TabContainer(props) {
   return (
@@ -197,7 +198,11 @@ class TournamentData extends Component {
           )}
           {tabValue === 3 && (
             <TabContainer>
-              <Typography variant="body1">Settings Coming Soon</Typography>
+              <Settings
+                playerScores={playerScores}
+                updatedRacesCallback={updatedRacesCallback}
+                updatedTournamentCallback={updatedTournamentCallback}
+              />
             </TabContainer>
           )}
         </div>

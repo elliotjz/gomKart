@@ -21,6 +21,9 @@ const styles = {
     flexDirection: 'column',
     justifyContent: 'center',
   },
+  title: {
+    marginBottom: '20px',
+  },
   loader: {
     margin: 'auto',
   },
@@ -170,6 +173,9 @@ class TournamentChart extends Component {
 
     return (
       <div>
+        <Typography variant="h4" className={classes.title}>
+          Tournament Statistics
+        </Typography>
         {parsedData !== undefined && parsedData.length > 2 ? (
           <div className={classes.root}>
             <PlayerChips
