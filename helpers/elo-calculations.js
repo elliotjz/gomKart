@@ -28,11 +28,24 @@ module.exports = {
   getNewEloScores: function(tournament, places) {
     const eloScores = this.getOldScores(tournament, places) // oldScores = { "Elliot": 210, "Jake": 220 }
     // append computer players to places object
-    for (let i = 1; i <= 12; i++) {
-      if (!Object.values(places).includes(i.toString())) {
+    let i = 1
+    while (Object.keys(places).length < 12) {
+      const placeValues = Object.values(places)
+      if (!placeValues.includes(i.toString())) {
         const compName = "_comp" + i.toString()
         places[compName] = i
+      } else {
+        // Check whether there are more than one players in
+        // the previous position.
+        const count = placeValues.reduce((n, val) => {
+          return n + (val === i.toString())
+        }, 0)
+        if (count > 1) {
+          // make sure a computer player is not added in the next position
+          i += count - 1
+        }
       }
+      i += 1
     }
 
     // calculate the change in score for each player
