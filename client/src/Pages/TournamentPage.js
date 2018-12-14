@@ -41,15 +41,17 @@ class TournamentPage extends Component {
       const { scoreHistory } = tournament
       const currentScores = []
       for (let i = 0; i < scoreHistory.length; i++) {
-        const player = scoreHistory[i].name
-        if (player.charAt(0) !== '_') {
-          let j = tournament.raceCounter
-          let score
-          while (score === undefined && j >= 0) {
-            if (scoreHistory[i].scores[j]) score = scoreHistory[i].scores[j]
-            j -= 1
+        if (scoreHistory[i].active) {
+          const player = scoreHistory[i].name
+          if (player.charAt(0) !== '_') {
+            let j = tournament.raceCounter
+            let score
+            while (score === undefined && j >= 0) {
+              if (scoreHistory[i].scores[j]) score = scoreHistory[i].scores[j]
+              j -= 1
+            }
+            currentScores.push([player, score.toFixed()])
           }
-          currentScores.push([player, score.toFixed()])
         }
       }
       currentScores.sort(comparePlayerScores)

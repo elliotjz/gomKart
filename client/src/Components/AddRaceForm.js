@@ -256,7 +256,7 @@ class AddRaceForm extends React.Component {
                     <Minimize className={classes.minimizeIcon} />
                   </Fab>
                 </div>
-                <Button variant="contained" color="primary" type="submit">
+                <Button color="primary" type="submit">
                   Submit
                 </Button>
               </div>

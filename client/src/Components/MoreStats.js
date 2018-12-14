@@ -88,7 +88,7 @@ class MoreStats extends Component {
     const swingChartData = []
 
     scoreHistory.forEach(player => {
-      if (player.name !== '_comp') {
+      if (player.name !== '_comp' && player.active) {
         const currentScore = this.getCurrentScore(player.scores, raceCounter)
         const score50RacesAgo = this.getCurrentScore(
           player.scores,
@@ -115,7 +115,7 @@ class MoreStats extends Component {
     let maxScorePlayer = ''
     let minScorePlayer = ''
     scoreHistory.forEach(player => {
-      if (player.name !== '_comp') {
+      if (player.name !== '_comp' && player.active) {
         const scores = Object.values(player.scores)
         const playerMax = Math.max.apply(null, scores)
         const playerMin = Math.min.apply(null, scores)
@@ -136,8 +136,8 @@ class MoreStats extends Component {
 
   getRaceCountData() {
     const { scoreHistory } = this.props.tournament
-
-    const raceCounts = scoreHistory.map(player => [
+    let raceCounts = scoreHistory.filter(el => el.active)
+    raceCounts = scoreHistory.map(player => [
       player.name,
       Object.keys(player.scores).length - 1,
     ])

@@ -43,7 +43,6 @@ class ChangeNameDialog extends Component {
       newPlayerName: '',
       errorMessage: '',
       loading: false,
-      successMessage: '',
     }
   }
 
@@ -60,11 +59,13 @@ class ChangeNameDialog extends Component {
   }
 
   handleSubmit = () => {
-    const { newPlayerName } = this.state
+    const { newPlayerName, selectedPlayer } = this.state
     const { playerScores } = this.props
     const verification = nameVerification(newPlayerName, playerScores)
     if (!verification.success) {
       this.setState({ errorMessage: verification.errorMessage })
+    } else if (selectedPlayer === '') {
+      this.setState({ errorMessage: 'Please select a player' })
     } else {
       this.changeName()
     }
@@ -88,10 +89,12 @@ class ChangeNameDialog extends Component {
       if (resData.error) {
         this.setState({
           errorMessage: resData.error,
-          successMessage: '',
           loading: false,
         })
       } else {
+        this.props.changeSuccessMessage(
+          `Successfully changed player name from ${selectedPlayer} to ${newPlayerName}`
+        )
         this.setState({
           errorMessage: '',
           loading: false,
@@ -104,7 +107,6 @@ class ChangeNameDialog extends Component {
       }
     } catch (err) {
       this.setState({
-        successMessage: '',
         loading: false,
       })
     }
@@ -112,13 +114,7 @@ class ChangeNameDialog extends Component {
 
   render() {
     const { classes, open, handleClose, playerScores } = this.props
-    const {
-      selectedPlayer,
-      newPlayerName,
-      errorMessage,
-      successMessage,
-      loading,
-    } = this.state
+    const { selectedPlayer, newPlayerName, errorMessage, loading } = this.state
 
     const options = []
     options.push(<option key={0} value="" />)
@@ -161,7 +157,7 @@ class ChangeNameDialog extends Component {
             inputLabel="New Name"
             buttonLabel="Submit"
             errorMessage={errorMessage}
-            successMessage={successMessage}
+            successMessage=""
             loading={loading}
             handleChange={this.handleNewPlayerNameChange}
             handleSubmit={this.handleSubmit}
@@ -180,6 +176,7 @@ ChangeNameDialog.propTypes = {
   playerScores: PropTypes.array.isRequired,
   updatedRacesCallback: PropTypes.func.isRequired,
   updatedTournamentCallback: PropTypes.func.isRequired,
+  changeSuccessMessage: PropTypes.func.isRequired,
 }
 
 export default withStyles(styles)(ChangeNameDialog)

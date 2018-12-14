@@ -84,7 +84,7 @@ const SingleInputForm = ({
     )}
 
     <div className={classes.buttonContainer}>
-      <Button variant="contained" color="primary" type="submit">
+      <Button color="primary" type="submit">
         {buttonLabel}
       </Button>
     </div>

@@ -96,7 +96,6 @@ class RaceResult extends Component {
               <Button
                 className={classes.button}
                 onClick={this.handleDeleteOpen}
-                variant="contained"
                 color="secondary"
               >
                 Delete

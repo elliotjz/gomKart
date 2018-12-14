@@ -180,32 +180,41 @@ module.exports = (app, jsonParser) => {
   })
 
   app.post('/api/add-player', isAuthenticated, jsonParser, (req, res) => {
+    const { name, code } = req.body
     if (verifyName(req.body.name)) {
       const scoreHistoryObject = {
-        name: req.body.name,
-        scores: { "0": PLAYER_INITIAL_SCORE }
+        name,
+        scores: { "0": PLAYER_INITIAL_SCORE },
+        active: true
       }
       Tournament.findOne(
-        { code: req.body.code, adminUsers: req.user.email },
+        { code, adminUsers: req.user.email },
         (err, tournament) => {
           if (err) {
-            res.json({ error: "error adding player" })
+            res.json({ error: "Error adding player" })
           } else {
             let { scoreHistory } = tournament
-            scoreHistory.push(scoreHistoryObject)
-            scoreHistory.sort(sorting.comparePlayerNames)
-            Tournament.findOneAndUpdate(
-              { code: req.body.code, adminUsers: req.user.email },
-              { $set: { scoreHistory: scoreHistory }},
-              {new: true},
-              (err, tournament) => {
-                if (err) {
-                  res.json({ error: "error adding player" })
-                } else {
-                  res.json(tournament)
+            let playersWithSameName = scoreHistory.find(player => {
+              return player.name === name
+            })
+            if (playersWithSameName === undefined) {
+              scoreHistory.push(scoreHistoryObject)
+              scoreHistory.sort(sorting.comparePlayerNames)
+              Tournament.findOneAndUpdate(
+                { code, adminUsers: req.user.email },
+                { $set: { scoreHistory: scoreHistory }},
+                {new: true},
+                (err, tournament) => {
+                  if (err) {
+                    res.json({ error: "Error adding player" })
+                  } else {
+                    res.json(tournament)
+                  }
                 }
-              }
-            )
+              )
+            } else {
+              res.json({ error: "There's already a player with this name in the tournament" })
+            }
           }
         }
       )
@@ -262,6 +271,32 @@ module.exports = (app, jsonParser) => {
     } else {
       res.json({ error: "Player name is not valid." })
     }
+  })
+
+  app.post('/api/delete-player', isAuthenticated, jsonParser, (req, res) => {
+    const { code, playerName } = req.body
+    Tournament.findOne({ code, adminUsers: req.user.email}, (err, tournament) => {
+      let { scoreHistory } = tournament
+      scoreHistory.forEach(player => {
+        if (player.name === playerName) {
+          player.active = false
+          Tournament.findOneAndUpdate(
+            { code, adminUsers: req.user.email},
+            { $set: { scoreHistory }},
+            {new: true},
+            (err, tournament) => {
+              if (err) {
+                console.log(err)
+                res.json({ error: 'err' })
+              }
+              else {
+                res.json({ tournament })
+              }
+            }
+          )
+        }
+      })
+    })
   })
 
   app.post('/api/add-race', isAuthenticated, jsonParser, (req, res) => {
