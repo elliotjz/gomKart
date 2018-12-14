@@ -38,9 +38,10 @@ const jsonParser = bodyParser.json()
 
 // Connect to mongodb
 const uri = production ? process.env.mongodbURI : keys.mongodb.dbURI
-mongoose.connect(uri, () => {
+mongoose.connect(uri, { useNewUrlParser: true }, () => {
   console.log('connected to mongodb')
 })
+mongoose.set('useFindAndModify', false);
 
 // setup routes
 routes(app, jsonParser)
