@@ -79,7 +79,7 @@ export const nameVerification = (name, playerScores) => {
     errorMessage = "Name can't be more than 16 characters long."
 
   // verify characters
-  if (name.match(/^[-'0-9a-zÀ-ʯ]+$/i) === null)
+  if (name.match(/^[-'0-9a-zÀ-ʯ\s]+$/i) === null)
     errorMessage = 'Name must only contain letters and numbers'
 
   // verify first letter
