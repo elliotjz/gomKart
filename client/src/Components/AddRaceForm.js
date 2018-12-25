@@ -157,6 +157,7 @@ class AddRaceForm extends React.Component {
         })
         this.props.updatedRacesCallback(resData.races)
         this.props.updatedTournamentCallback(resData.tournament)
+        this.props.handleTabChange(null, 1)
         setTimeout(() => this.setState({ successMessage: '' }), 5000)
       }
     } catch (err) {
@@ -273,6 +274,7 @@ AddRaceForm.propTypes = {
   playerScores: PropTypes.array.isRequired,
   updatedRacesCallback: PropTypes.func.isRequired,
   updatedTournamentCallback: PropTypes.func.isRequired,
+  handleTabChange: PropTypes.func.isRequired,
 }
 
 export default withStyles(styles)(AddRaceForm)

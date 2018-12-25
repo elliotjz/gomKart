@@ -166,6 +166,7 @@ class TournamentData extends Component {
                   playerScores={playerScores}
                   updatedRacesCallback={updatedRacesCallback}
                   updatedTournamentCallback={updatedTournamentCallback}
+                  handleTabChange={this.handleTabChange}
                 />
                 <AddPlayerForm
                   addPlayerCallback={addPlayerCallback}

@@ -46,7 +46,7 @@ class TournamentChart extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      chartDomainIndex: 0,
+      chartDomainIndex: 2,
       excludedPlayers: [],
       parsedTournament: null,
       displayAllStats: false,
@@ -54,8 +54,11 @@ class TournamentChart extends Component {
   }
 
   componentDidMount() {
+    const { playerScores } = this.props
+    const excludedPlayers = playerScores.slice(10).map(player => player[0])
     this.setState({
-      parsedTournament: this.parseTournament(),
+      parsedTournament: this.parseTournament(null, excludedPlayers),
+      excludedPlayers,
     })
   }
 
@@ -104,7 +107,7 @@ class TournamentChart extends Component {
   parseTournament(chartDomainIndexParam, excludedPlayersParam) {
     const { tournament, playerScores } = this.props
     const chartDomainIndex =
-      chartDomainIndexParam === null
+      chartDomainIndexParam === null || chartDomainIndexParam === undefined
         ? this.state.chartDomainIndex
         : chartDomainIndexParam
     const excludedPlayers = excludedPlayersParam || this.state.excludedPlayers
@@ -162,7 +165,6 @@ class TournamentChart extends Component {
       parsedTournament,
       displayAllStats,
     } = this.state
-
     let parsedData
     let parsedColors
     if (parsedTournament) {
