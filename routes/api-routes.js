@@ -42,6 +42,10 @@ function addNewScoresToTournament(tournamentCode, scoreHistory, raceCounter, res
         res.json({ error: err })
       } else {
         Race.find({ tournament: tournamentCode }, (err, races) => {
+          let startIndex = races.length - 10
+          let endIndex = startIndex + 10
+          startIndex = startIndex < 0 ? 0 : startIndex
+          races = races.slice(startIndex, endIndex)
           res.json({ tournament, races })
         })
       }
