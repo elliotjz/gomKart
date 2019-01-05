@@ -4,17 +4,12 @@ import { withStyles } from '@material-ui/core/styles'
 import { Chart } from 'react-google-charts'
 import Typography from '@material-ui/core/Typography'
 import { Button, CircularProgress } from '@material-ui/core'
-import Divider from '@material-ui/core/Divider'
 
-import { colors } from '../helpers'
-import PlayerChips from './PlayerChips'
-import MoreStats from './MoreStats'
+import { colors } from '../../helpers'
+import PlayerChips from '../PlayerChips'
 
-const styles = {
+const styles = theme => ({
   root: {},
-  moreStatsBtn: {
-    margin: '30px auto',
-  },
   chartLoader: {
     minHeight: '200px',
     display: 'flex',
@@ -27,10 +22,10 @@ const styles = {
   loader: {
     margin: 'auto',
   },
-  divider: {
-    margin: '20px auto',
+  domainButtonContainer: {
+    color: theme.palette.primary.dark,
   },
-}
+})
 
 const chartOptions = {
   curveType: 'none',
@@ -49,7 +44,6 @@ class TournamentChart extends Component {
       chartDomainIndex: 2,
       excludedPlayers: [],
       parsedTournament: null,
-      displayAllStats: false,
     }
   }
 
@@ -94,13 +88,6 @@ class TournamentChart extends Component {
     this.setState({
       parsedTournament,
       chartDomainIndex: index,
-    })
-  }
-
-  toggleMoreStats = () => {
-    const { displayAllStats } = this.state
-    this.setState({
-      displayAllStats: !displayAllStats,
     })
   }
 
@@ -158,13 +145,8 @@ class TournamentChart extends Component {
   }
 
   render() {
-    const { playerScores, tournament, classes } = this.props
-    const {
-      chartDomainIndex,
-      excludedPlayers,
-      parsedTournament,
-      displayAllStats,
-    } = this.state
+    const { playerScores, classes } = this.props
+    const { chartDomainIndex, excludedPlayers, parsedTournament } = this.state
     let parsedData
     let parsedColors
     if (parsedTournament) {
@@ -176,7 +158,7 @@ class TournamentChart extends Component {
     return (
       <div>
         <Typography variant="h4" className={classes.title}>
-          Tournament Statistics
+          Tournament Chart
         </Typography>
         {parsedData !== undefined && parsedData.length > 2 ? (
           <div className={classes.root}>
@@ -202,47 +184,19 @@ class TournamentChart extends Component {
                 />
               </div>
             )}
-            {chartDomains.map((domain, index) => (
-              <Button
-                key={index}
-                color="primary"
-                size="small"
-                variant={chartDomainIndex === index ? 'outlined' : 'text'}
-                onClick={() => this.changeDomain(index)}
-              >
-                {domain}
-              </Button>
-            ))}
-            <div className={classes.divider}>
-              <Divider variant="middle" />
-            </div>
-            {displayAllStats ? (
-              <div>
-                <MoreStats
-                  tournament={tournament}
-                  playerScores={playerScores}
-                />
-                <div className={classes.moreStatsBtn}>
-                  <Button
-                    variant="contained"
-                    onClick={this.toggleMoreStats}
-                    color="primary"
-                  >
-                    Less Stats
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <div className={classes.moreStatsBtn}>
+            <div className={classes.domainButtonContainer}>
+              {chartDomains.map((domain, index) => (
                 <Button
-                  variant="contained"
-                  onClick={this.toggleMoreStats}
-                  color="primary"
+                  key={index}
+                  color="inherit"
+                  size="small"
+                  variant={chartDomainIndex === index ? 'outlined' : 'text'}
+                  onClick={() => this.changeDomain(index)}
                 >
-                  More Stats
+                  {domain}
                 </Button>
-              </div>
-            )}
+              ))}
+            </div>
           </div>
         ) : (
           <div>

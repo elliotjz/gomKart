@@ -14,12 +14,13 @@ const styles = theme => ({
     marginTop: '15px',
     display: 'flex',
     justifyContent: 'center',
+    color: theme.palette.primary.dark,
   },
   errorMessage: {
-    color: 'red',
+    color: theme.palette.error.dark,
   },
   successMessage: {
-    color: 'green',
+    color: theme.palette.common.success,
   },
   textField: {
     marginLeft: theme.spacing.unit,
@@ -84,7 +85,7 @@ const SingleInputForm = ({
     )}
 
     <div className={classes.buttonContainer}>
-      <Button color="primary" type="submit">
+      <Button color="inherit" type="submit">
         {buttonLabel}
       </Button>
     </div>

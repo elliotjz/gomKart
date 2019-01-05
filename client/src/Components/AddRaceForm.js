@@ -64,6 +64,7 @@ const styles = theme => ({
     marginTop: '15px',
     display: 'flex',
     justifyContent: 'center',
+    color: theme.palette.primary.dark,
   },
   plusMinusContainer: {
     marginRight: '30px',
@@ -72,10 +73,10 @@ const styles = theme => ({
     marginBottom: '15px',
   },
   errorMessage: {
-    color: 'red',
+    color: theme.palette.error.dark,
   },
   successMessage: {
-    color: 'green',
+    color: theme.palette.common.success,
   },
   progress: {
     margin: theme.spacing.unit * 2,
@@ -239,7 +240,7 @@ class AddRaceForm extends React.Component {
               <div className={classes.buttonContainer}>
                 <div className={classes.plusMinusContainer}>
                   <Fab
-                    color="primary"
+                    color="inherit"
                     aria-label="Add"
                     className={classes.button}
                     onClick={this.addPlayer}
@@ -247,7 +248,7 @@ class AddRaceForm extends React.Component {
                     <AddIcon />
                   </Fab>
                   <Fab
-                    color="primary"
+                    color="inherit"
                     aria-label="Add"
                     className={classes.button}
                     onClick={this.removePlayer}
@@ -255,7 +256,7 @@ class AddRaceForm extends React.Component {
                     <Minimize className={classes.minimizeIcon} />
                   </Fab>
                 </div>
-                <Button color="primary" type="submit">
+                <Button color="inherit" type="submit">
                   Submit
                 </Button>
               </div>

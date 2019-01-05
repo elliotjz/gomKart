@@ -3,19 +3,19 @@ import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 
-const styles = {
+const styles = theme => ({
   container: {
-    backgroundColor: '#eee',
+    backgroundColor: theme.palette.primary.light,
     padding: '20px 0px 40px 0px',
   },
   text: {
     margin: '20px',
   },
   shareCode: {
-    color: '#666',
+    color: theme.palette.text.secondary,
     fontSize: '18px',
   },
-}
+})
 
 const TournamentHeader = ({ name, code, classes }) => (
   <div className={classes.container}>

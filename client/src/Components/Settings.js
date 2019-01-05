@@ -5,21 +5,25 @@ import { Typography, Button } from '@material-ui/core'
 import EditPlayerDialog from './EditPlayerDialog'
 import DeletePlayerDialog from './DeletePlayerDialog'
 
-const styles = {
+const styles = theme => ({
   root: {},
   title: {
     marginBottom: '20px',
   },
   successContainer: {
-    border: 'green 1px solid',
+    border: `${theme.palette.common.success} 1px solid`,
     borderRadius: '3px',
-    backgroundColor: '#cdf4cd',
+    backgroundColor: theme.palette.common.successLight,
     marginBottom: '10px',
+    width: 'min-content',
+    minWidth: '400px',
+    margin: 'auto',
+    padding: '2px',
   },
   buttonContainer: {
     margin: '10px',
   },
-}
+})
 
 class Settings extends Component {
   constructor(props) {

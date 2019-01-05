@@ -13,7 +13,7 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import { Button } from '@material-ui/core'
 import { getQueryVariable } from '../helpers'
 
-const styles = {
+const styles = theme => ({
   dialog: {
     display: 'flex',
     flexDirection: 'column',
@@ -32,12 +32,12 @@ const styles = {
     minWidth: 120,
   },
   errorMessage: {
-    color: 'red',
+    color: theme.palette.error.dark,
   },
   select: {
     marginLeft: '5px',
   },
-}
+})
 
 class DeletePlayerDialog extends Component {
   constructor(props) {

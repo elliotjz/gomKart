@@ -9,9 +9,13 @@ const styles = theme => ({
   root: {
     display: 'block',
   },
-  formControl: {
+  formControlPlayer: {
     margin: theme.spacing.unit,
     minWidth: 120,
+  },
+  formControlPos: {
+    margin: theme.spacing.unit,
+    minWidth: 50,
   },
   selectEmpty: {
     marginTop: theme.spacing.unit * 2,
@@ -46,7 +50,7 @@ class PlayerResultForm extends React.Component {
 
     return (
       <div className={classes.root}>
-        <FormControl className={classes.formControl}>
+        <FormControl className={classes.formControlPlayer}>
           <InputLabel htmlFor={this.props.name}>Player</InputLabel>
           <Select
             native
@@ -60,8 +64,8 @@ class PlayerResultForm extends React.Component {
             {options}
           </Select>
         </FormControl>
-        <FormControl className={classes.formControl}>
-          <InputLabel htmlFor={`${this.props.name}Pos`}>Position</InputLabel>
+        <FormControl className={classes.formControlPos}>
+          <InputLabel htmlFor={`${this.props.name}Pos`}>Pos</InputLabel>
           <Select
             native
             value={this.props.position}

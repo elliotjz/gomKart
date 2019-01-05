@@ -5,7 +5,7 @@ import Typography from '@material-ui/core/Typography'
 import CircularProgress from '@material-ui/core/CircularProgress'
 
 import TournamentHeader from '../Components/TournamentHeader'
-import TournamentData from '../Components/TournamentData'
+import TournamentInfo from '../Components/TournamentContent'
 import { comparePos, compareRaces, comparePlayerScores } from '../helpers'
 
 const styles = theme => ({
@@ -13,7 +13,7 @@ const styles = theme => ({
     margin: '20px',
   },
   error: {
-    color: '#990000',
+    color: theme.palette.error.dark,
   },
   progress: {
     margin: theme.spacing.unit * 2,
@@ -170,7 +170,7 @@ class TournamentPage extends Component {
                   name={tournament.name}
                   code={tournament.code}
                 />
-                <TournamentData
+                <TournamentInfo
                   playerScores={playerScores}
                   tournament={tournament}
                   races={races}

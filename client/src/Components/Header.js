@@ -40,9 +40,7 @@ class Header extends Component {
                 Home
               </Button>
             </div>
-            <Typography variant="h6" color="inherit" className={classes.grow}>
-              GOM KART
-            </Typography>
+            <Typography variant="h6" color="inherit" className={classes.grow} />
             {!loading && (
               <div>
                 {isLoggedIn && (

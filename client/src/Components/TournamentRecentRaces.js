@@ -8,7 +8,7 @@ import RaceResult from './RaceResult'
 
 const styles = theme => ({
   error: {
-    color: 'red',
+    color: theme.palette.error.dark,
   },
   progress: {
     margin: theme.spacing.unit * 2,

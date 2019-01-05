@@ -3,16 +3,16 @@ import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import Chip from '@material-ui/core/Chip'
 
-const styles = {
+const styles = theme => ({
   chip: {
     margin: '8px',
     borderWidth: '3px',
     borderStyle: 'solid',
     '&:focus': {
-      backgroundColor: '#ddd',
+      backgroundColor: theme.palette.common.grey,
     },
   },
-}
+})
 
 class PlayerChips extends Component {
   render() {

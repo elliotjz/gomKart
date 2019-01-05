@@ -4,30 +4,28 @@ import { withStyles } from '@material-ui/core/styles'
 import AppBar from '@material-ui/core/AppBar'
 import Tabs from '@material-ui/core/Tabs'
 import Tab from '@material-ui/core/Tab'
-import Typography from '@material-ui/core/Typography'
 import BarChartIcon from '@material-ui/icons/BarChart'
 import ListIcon from '@material-ui/icons/List'
 import SettingsIcon from '@material-ui/icons/Settings'
 import AddIcon from '@material-ui/icons/Add'
 
-import TournamentChart from './TournamentChart'
+import TournamentStats from './TournamentStats/TournamentStats'
 import TournamentRecentRaces from './TournamentRecentRaces'
 import AddRaceForm from './AddRaceForm'
 import AddPlayerForm from './AddPlayerForm'
 import Settings from './Settings'
 
-function TabContainer(props) {
-  return (
-    <Typography component="div" style={{ padding: 8 * 3 }}>
-      {props.children}
-    </Typography>
-  )
-}
-
 const styles = theme => ({
+  tabsContainer: {},
+  appBar: {
+    boxShadow: `0 5px 5px -2px ${theme.palette.common.grey}`,
+  },
   tabsRoot: {
     flexGrow: 1,
-    backgroundColor: theme.palette.background.paper,
+    backgroundColor: theme.palette.primary.light,
+  },
+  tabContainer: {
+    paddingTop: '20px',
   },
 })
 
@@ -150,9 +148,16 @@ class TournamentData extends Component {
 
     return (
       <div>
-        <div className={classes.tabsRoot}>
-          <AppBar position="static" color="default">
-            <Tabs value={tabValue} onChange={this.handleTabChange}>
+        <div className={classes.tabsContainer}>
+          <AppBar position="static" color="default" className={classes.appBar}>
+            <Tabs
+              classes={{
+                root: classes.tabsRoot,
+              }}
+              value={tabValue}
+              onChange={this.handleTabChange}
+              centered
+            >
               <Tab icon={<AddIcon />} />
               <Tab icon={<BarChartIcon />} />
               <Tab icon={<ListIcon />} />
@@ -160,31 +165,29 @@ class TournamentData extends Component {
             </Tabs>
           </AppBar>
           {tabValue === 0 && (
-            <TabContainer>
-              <div>
-                <AddRaceForm
-                  playerScores={playerScores}
-                  updatedRacesCallback={updatedRacesCallback}
-                  updatedTournamentCallback={updatedTournamentCallback}
-                  handleTabChange={this.handleTabChange}
-                />
-                <AddPlayerForm
-                  addPlayerCallback={addPlayerCallback}
-                  playerScores={playerScores}
-                />
-              </div>
-            </TabContainer>
+            <div className={classes.tabContainer}>
+              <AddRaceForm
+                playerScores={playerScores}
+                updatedRacesCallback={updatedRacesCallback}
+                updatedTournamentCallback={updatedTournamentCallback}
+                handleTabChange={this.handleTabChange}
+              />
+              <AddPlayerForm
+                addPlayerCallback={addPlayerCallback}
+                playerScores={playerScores}
+              />
+            </div>
           )}
           {tabValue === 1 && (
-            <TabContainer>
-              <TournamentChart
+            <div>
+              <TournamentStats
                 playerScores={playerScores}
                 tournament={tournament}
               />
-            </TabContainer>
+            </div>
           )}
           {tabValue === 2 && (
-            <TabContainer>
+            <div className={classes.tabContainer}>
               <TournamentRecentRaces
                 location={location}
                 races={races}
@@ -195,25 +198,21 @@ class TournamentData extends Component {
                 displayMoreRaces={this.displayMoreRaces}
                 loadingMoreRaces={loadingMoreRaces}
               />
-            </TabContainer>
+            </div>
           )}
           {tabValue === 3 && (
-            <TabContainer>
+            <div className={classes.tabContainer}>
               <Settings
                 playerScores={playerScores}
                 updatedRacesCallback={updatedRacesCallback}
                 updatedTournamentCallback={updatedTournamentCallback}
               />
-            </TabContainer>
+            </div>
           )}
         </div>
       </div>
     )
   }
-}
-
-TabContainer.propTypes = {
-  children: PropTypes.object.isRequired,
 }
 
 TournamentData.propTypes = {
