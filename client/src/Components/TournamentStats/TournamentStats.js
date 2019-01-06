@@ -5,10 +5,15 @@ import AppBar from '@material-ui/core/AppBar'
 import Tabs from '@material-ui/core/Tabs'
 import Tab from '@material-ui/core/Tab'
 import Typography from '@material-ui/core/Typography'
-import BarChartIcon from '@material-ui/icons/BarChart'
+import ShowChart from '@material-ui/icons/ShowChart'
+import SwapVert from '@material-ui/icons/SwapVert'
+import LooksOne from '@material-ui/icons/LooksOne'
+import PeopleOutline from '@material-ui/icons/PeopleOutline'
+
 import TournamentChart from './TournamentChart'
 import Swings from './Swings'
 import RacesPlayed from './RacesPlayed'
+import HeadToHead from './HeadToHead'
 
 function TabContainer(props) {
   return (
@@ -42,7 +47,7 @@ class TournamentStats extends Component {
 
   render() {
     const { tabValue } = this.state
-    const { classes, tournament, playerScores } = this.props
+    const { classes, tournament, playerScores, location } = this.props
 
     return (
       <div className={classes.root}>
@@ -55,10 +60,10 @@ class TournamentStats extends Component {
             onChange={this.handleTabChange}
             centered
           >
-            <Tab icon={<BarChartIcon />} label="Scores" />
-            <Tab icon={<BarChartIcon />} label="Swings" />
-            <Tab icon={<BarChartIcon />} label="Played" />
-            <Tab icon={<BarChartIcon />} label="Head To Head" />
+            <Tab icon={<ShowChart />} label="Scores" />
+            <Tab icon={<SwapVert />} label="Swings" />
+            <Tab icon={<LooksOne />} label="Played" />
+            <Tab icon={<PeopleOutline />} label="Head To Head" />
           </Tabs>
         </AppBar>
         {tabValue === 0 && (
@@ -88,7 +93,7 @@ class TournamentStats extends Component {
         {tabValue === 3 && (
           <TabContainer>
             <div className={classes.tabContainer}>
-              <Typography>Martin is a sack</Typography>
+              <HeadToHead playerScores={playerScores} location={location} />
             </div>
           </TabContainer>
         )}
@@ -105,6 +110,7 @@ TournamentStats.propTypes = {
   tournament: PropTypes.object.isRequired,
   playerScores: PropTypes.array.isRequired,
   classes: PropTypes.object.isRequired,
+  location: PropTypes.object.isRequired,
 }
 
 export default withStyles(styles)(TournamentStats)

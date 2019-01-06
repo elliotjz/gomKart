@@ -5,7 +5,7 @@ import Typography from '@material-ui/core/Typography'
 import CircularProgress from '@material-ui/core/CircularProgress'
 
 import TournamentHeader from '../Components/TournamentHeader'
-import TournamentInfo from '../Components/TournamentContent'
+import TournamentContent from '../Components/TournamentContent'
 import { comparePos, compareRaces, comparePlayerScores } from '../helpers'
 
 const styles = theme => ({
@@ -170,7 +170,7 @@ class TournamentPage extends Component {
                   name={tournament.name}
                   code={tournament.code}
                 />
-                <TournamentInfo
+                <TournamentContent
                   playerScores={playerScores}
                   tournament={tournament}
                   races={races}

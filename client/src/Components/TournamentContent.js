@@ -183,6 +183,7 @@ class TournamentData extends Component {
               <TournamentStats
                 playerScores={playerScores}
                 tournament={tournament}
+                location={location}
               />
             </div>
           )}

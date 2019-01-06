@@ -137,16 +137,20 @@ module.exports = (app, jsonParser) => {
           res.json({ error: "No races found"})
         } else {
           const page = getCodeFromQueryString(query, 'page')
-          const pageLength = 10
-          const length = races.length
-          let startIndex = length - page * pageLength
-          let endIndex = startIndex + 10
-          if (endIndex < 0) {
-            res.json({ error: "No more races to load" })
-          } else {
-            startIndex = startIndex < 0 ? 0 : startIndex
-            races = races.slice(startIndex, endIndex)
+          if (page === undefined) {
             res.json({ races })
+          } else {
+            const pageLength = 10
+            const length = races.length
+            let startIndex = length - page * pageLength
+            let endIndex = startIndex + 10
+            if (endIndex < 0) {
+              res.json({ error: "No more races to load" })
+            } else {
+              startIndex = startIndex < 0 ? 0 : startIndex
+              races = races.slice(startIndex, endIndex)
+              res.json({ races })
+            }
           }
         }
       })

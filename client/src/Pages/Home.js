@@ -34,6 +34,10 @@ const styles = theme => ({
   listItem: {
     textAlign: 'center',
   },
+  link: {
+    textDecoration: 'none',
+    color: theme.palette.primary.dark,
+  },
 })
 
 class Home extends Component {
@@ -111,18 +115,18 @@ class Home extends Component {
                 </div>
               )}
               <div className={classes.buttonContainer}>
-                <Link to="/new">
-                  <Button variant="contained" color="primary">
+                <Button color="inherit">
+                  <Link to="/new" className={classes.link}>
                     New Tournament
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               </div>
               <div className={classes.buttonContainer}>
-                <Link to="/join">
-                  <Button variant="contained" color="primary">
+                <Button color="inherit">
+                  <Link to="/join" className={classes.link}>
                     Join Tournament
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               </div>
             </Paper>
           </div>
