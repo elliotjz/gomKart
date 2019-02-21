@@ -42,15 +42,36 @@ class TournamentPage extends Component {
       const currentScores = []
       for (let i = 0; i < scoreHistory.length; i++) {
         if (scoreHistory[i].active) {
+          // Player has not been deleted from the tournament
           const player = scoreHistory[i].name
           if (player.charAt(0) !== '_') {
+            // Player is not a computer
             let j = tournament.raceCounter
             let score
+            let scoreChange
+
+            // Find the current score
             while (score === undefined && j >= 0) {
-              if (scoreHistory[i].scores[j]) score = scoreHistory[i].scores[j]
+              if (scoreHistory[i].scores[j]) {
+                // Found the most recent score
+                score = scoreHistory[i].scores[j]
+
+                if (j === tournament.raceCounter) {
+                  // look for previous score
+                  while (scoreChange === undefined && j >= 0) {
+                    j -= 1
+                    scoreChange = score - scoreHistory[i].scores[j]
+                  }
+                }
+              }
               j -= 1
             }
-            currentScores.push([player, score.toFixed()])
+
+            currentScores.push([
+              player,
+              score.toFixed(),
+              scoreChange ? scoreChange.toFixed(1) : null,
+            ])
           }
         }
       }
