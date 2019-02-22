@@ -55,12 +55,15 @@ class TournamentPage extends Component {
               if (scoreHistory[i].scores[j]) {
                 // Found the most recent score
                 score = scoreHistory[i].scores[j]
-
                 if (j === tournament.raceCounter) {
-                  // look for previous score
+                  // Player played in most recent race
+                  // So look for previous score
                   while (scoreChange === undefined && j >= 0) {
                     j -= 1
-                    scoreChange = score - scoreHistory[i].scores[j]
+                    if (scoreHistory[i].scores[j]) {
+                      // Found the previous score
+                      scoreChange = score - scoreHistory[i].scores[j]
+                    }
                   }
                 }
               }

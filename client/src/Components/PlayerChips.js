@@ -2,25 +2,35 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 
+const truncateName = (name, n) =>
+  name.length > n ? `${name.substr(0, n - 1)}...` : name
+
 const styles = theme => ({
   root: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+    gridAutoFlow: 'dense',
+    // flexWrap: 'wrap',
+    // justifyContent: 'center',
   },
   playerButton: {
     margin: '8px',
+    height: '30px',
     padding: '2px',
-    display: 'flex',
-    alignItems: 'center',
-    border: 0,
-    background: 'transparent',
+    borderRadius: '15px',
+    background: '#ddd',
+    fontAlign: 'center',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
     '&:hover': {
       cursor: 'pointer',
     },
+    '&:focus': {
+      outline: 'none',
+      boxShadow: `0 0 20px 0px ${theme.palette.primary.main}`,
+    },
   },
-  color: {
-    backgroundColor: 'red',
+  bubble: {
     height: '16px',
     width: '16px',
     borderRadius: '50%',
@@ -29,7 +39,6 @@ const styles = theme => ({
   text: {
     fontSize: '14px',
     marginLeft: '5px',
-    float: 'left',
   },
   scoreChange: {
     marginLeft: '5px',
@@ -54,6 +63,9 @@ class PlayerChips extends Component {
             ? '#bbb'
             : colors[index]
           const [name, score, change] = player
+          const truncatedName = change
+            ? truncateName(name, 6)
+            : truncateName(name, 9)
 
           return (
             <button
@@ -61,14 +73,13 @@ class PlayerChips extends Component {
               onClick={() => onClick(player[0])}
               key={index}
               className={classes.playerButton}
-              style={{ outlineColor: color }}
+              style={{
+                outlineColor: color,
+                border: `solid 3px ${color}`,
+              }}
             >
-              <span
-                className={classes.color}
-                style={{ backgroundColor: color }}
-              />
               <span className={classes.text}>
-                {name}: {score}
+                {truncatedName} {score}
                 {change && (
                   <span
                     className={classes.scoreChange}
