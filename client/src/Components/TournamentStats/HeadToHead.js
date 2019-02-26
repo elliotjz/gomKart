@@ -39,6 +39,7 @@ class HeadToHead extends Component {
       player1Wins: 0,
       player2Wins: 0,
       draws: 0,
+      ELOPrediction: '',
       races: null,
       loading: true,
       error: '',
@@ -75,6 +76,27 @@ class HeadToHead extends Component {
     }
   }
 
+  getELOPrediction() {
+    const SENSITIVITY = 250
+    const { playerScores } = this.props
+    const { player1, player2 } = this.state
+    let player1Score
+    let player2Score
+
+    playerScores.forEach(player => {
+      if (player[0] === player1) player1Score = parseInt(player[1])
+      if (player[0] === player2) player2Score = parseInt(player[1])
+    })
+
+    const chanceOfWinning =
+      1 / (1 + 10 ** ((player2Score - player1Score) / SENSITIVITY))
+    const winPercentage = (chanceOfWinning * 100).toFixed()
+
+    return player1Score > player2Score
+      ? `${player1} will win ${winPercentage}% of the time`
+      : `${player2} will win ${100 - winPercentage}% of the time`
+  }
+
   getHeadToHeadData() {
     const { player1, player2, races } = this.state
 
@@ -103,7 +125,10 @@ class HeadToHead extends Component {
           }
         }
       })
-      this.setState({ player1Wins, player2Wins, draws })
+
+      const ELOPrediction = this.getELOPrediction()
+
+      this.setState({ player1Wins, player2Wins, draws, ELOPrediction })
     }
   }
 
@@ -125,6 +150,7 @@ class HeadToHead extends Component {
       player1Wins,
       player2Wins,
       draws,
+      ELOPrediction,
       loading,
       error,
     } = this.state
@@ -204,6 +230,8 @@ class HeadToHead extends Component {
                     loader={loader}
                   />
                 )}
+                <h3>GOM Kart Prediction</h3>
+                <p>{ELOPrediction}</p>
               </div>
             )}
           </div>
