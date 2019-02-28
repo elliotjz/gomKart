@@ -64,8 +64,8 @@ module.exports = {
           const scoreChange = this.getPlayerScoreChange(
             playerOldScore,
             opponentOldScore,
-            places[player],
-            places[opponent]
+            parseInt(places[player]),
+            parseInt(places[opponent])
           )
           scoreChanges[player] += scoreChange
         }
@@ -111,6 +111,8 @@ module.exports = {
   getPlayerScoreChange: function(playerScore, opponentScore, playerPlace, opponentPlace) {
     const playerExpected = 1 / (1 + Math.pow(10, (opponentScore - playerScore) / this.SENSITIVITY2))
     let result
+    console.log(playerPlace + 1);
+    console.log(opponentPlace + 1);
     if (playerPlace === opponentPlace) result = 0.5 // Draw
     else if (playerPlace < opponentPlace) result = 1 // Player won
     else result = 0 // Player lost

@@ -31,8 +31,7 @@ const tournament = {
 const places = {
   ez: '1',
   jake: '2',
-  harps: '3',
-  cunt: "4"
+  harps: '10',
 }
 
 console.log(elo.getUpdatedScoreHistory(tournament, places))
