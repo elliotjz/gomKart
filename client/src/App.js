@@ -1,16 +1,17 @@
-import React, { Component } from 'react'
-import { BrowserRouter, Route, Switch } from 'react-router-dom'
-import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
+import React, { Component } from 'react';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 
-import Home from './Pages/Home'
-import LoginPage from './Pages/LoginPage'
-import NewTournament from './Pages/NewTournament'
-import TournamentPage from './Pages/TournamentPage'
-import JoinTournament from './Pages/JoinTournament'
-import NotFound from './Pages/NotFound'
-import Header from './Components/Header'
+import Home from './Pages/Home';
+import LoginPage from './Pages/LoginPage';
+import NewTournament from './Pages/NewTournament';
+import TournamentPage from './Pages/TournamentPage';
+import JoinTournament from './Pages/JoinTournament';
+import NotFound from './Pages/NotFound';
+import Header from './Components/Header';
 
-import './App.css'
+import './App.css';
+import ChartOnly from './Pages/ChartOnly';
 
 const gomKartTheme = createMuiTheme({
   palette: {
@@ -29,13 +30,13 @@ const gomKartTheme = createMuiTheme({
       light: '#E4EDEF',
       main: 'rgba(65, 148, 165, 1)',
       dark: 'rgba(0, 59, 71, 1)',
-      contrastText: '#fff',
+      contrastText: '#fff'
     },
     secondary: {
       light: 'rgba(248, 206, 207, 1)',
       main: 'rgba(218, 50, 52, 1)',
       dark: 'rgba(141, 1, 5, 1)',
-      contrastText: '#fff',
+      contrastText: '#fff'
     },
     error: {
       light: '#e57373',
@@ -47,7 +48,7 @@ const gomKartTheme = createMuiTheme({
       primary: 'rgba(0, 0, 0, 0.87)',
       secondary: 'rgba(0, 0, 0, 0.54)',
       disabled: 'rgba(0, 0, 0, 0.38)',
-      hint: 'rgba(0, 0, 0, 0.38)',
+      hint: 'rgba(0, 0, 0, 0.38)'
     },
   },
   typography: {
@@ -110,29 +111,51 @@ class App extends Component {
       <MuiThemeProvider theme={gomKartTheme}>
         <BrowserRouter>
           <div className="App">
-            <Header loading={loading} user={user} isLoggedIn={isLoggedIn} />
-            {loading ? null : (
-              <div>
-                {redirect ? (
-                  <Switch>
-                    <Route component={LoginPage} />
-                  </Switch>
-                ) : (
-                  <Switch>
-                    <Route exact path="/" component={Home} />
-                    <Route exact path="/login" component={LoginPage} />
-                    <Route
-                      exact
-                      path="/tournament"
-                      component={TournamentPage}
+            <Switch>
+              <Route exact path="/chart" component={ChartOnly} />
+              <Route
+                path="/"
+                component={() => (
+                  <>
+                    <Header
+                      loading={loading}
+                      user={user}
+                      isLoggedIn={isLoggedIn}
                     />
-                    <Route exact path="/new" component={NewTournament} />
-                    <Route exact path="/join" component={JoinTournament} />
-                    <Route component={NotFound} />
-                  </Switch>
+                    {loading ? null : (
+                      <div>
+                        {redirect ? (
+                          <Switch>
+                            <Route component={LoginPage} />
+                          </Switch>
+                        ) : (
+                          <Switch>
+                            <Route exact path="/" component={Home} />
+                            <Route exact path="/login" component={LoginPage} />
+                            <Route
+                              exact
+                              path="/tournament"
+                              component={TournamentPage}
+                            />
+                            <Route
+                              exact
+                              path="/new"
+                              component={NewTournament}
+                            />
+                            <Route
+                              exact
+                              path="/join"
+                              component={JoinTournament}
+                            />
+                            <Route component={NotFound} />
+                          </Switch>
+                        )}
+                      </div>
+                    )}
+                  </>
                 )}
-              </div>
-            )}
+              />
+            </Switch>
           </div>
         </BrowserRouter>
       </MuiThemeProvider>
